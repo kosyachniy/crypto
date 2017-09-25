@@ -1,10 +1,10 @@
 import json, telebot, urllib
 
-with open('set.txt', 'r') as file:
-	token = json.loads(file.read())['token']
-bot=telebot.TeleBot(token)
-
 def telegram(x):
+	with open('set.txt', 'r') as file:
+		token = json.loads(file.read())['token']
+	bot=telebot.TeleBot(token)
+
 	@bot.message_handler(commands=['start', 'help'])
 	def start(message):
 		bot.send_message(message.chat.id, 'Hi!')
@@ -18,9 +18,10 @@ def telegram(x):
 		for i in range(len(x)):
 			if x[i][0] == 1:
 				x[i][0] = 0
-				bot.send_message(-1001124440739, 'BitCoin\n----------\nΔ +%f$\nT %d.%d %d:%d' % x[i][1:])
+				print(x[i][1:])
+				bot.send_message(-1001124440739, 'BitCoin\n----------\nΔ +%f$\nT %d.%d %d:%d' % list(x[i][1:]))
 
-		#bot.send_message(message.chat.id, message.text)
+		bot.send_message(message.chat.id, message.text)
 		#delta, day, month, hour, minute
 		print(message.chat.id, message.forward_from_chat)
 
