@@ -19,31 +19,30 @@ exchanges = [
 def price(x):
 	return [0.0000046, 0.00000062][x+1]
 
-medium = 0.0023
-
 while True:
 	buy = 0
 	exc = 0
 	count = 1.0
 	rub = price(-1)
 
+#Распознание сигнала
 	buy = 2
 	total = 0.02268417
 	cur = 0
 	exc = 1
 
+#Определение количества
 	operation = price(cur)
-	count = medium / operation
+	delta = total * 0.03
+	count = delta / operation
 
 #Сборка сообщения на Telegram-канал
-	operation = operation * count
-	delta = str(operation)
 	if buy == 2:
-		delta = '-' + delta
+		sign = '-'
 	elif buy == 1:
-		delta = '+' + delta
+		sign = '+'
 	else:
-		delta = '±' + delta
+		sign = '±'
 
 	if buy == 2:
 		buy = 'купить'
@@ -54,7 +53,8 @@ while True:
 
 	#постваить процент, после которого сделка совершится
 	#проверка хватает ли денег
-	bot.send_message(136563129, '%s (%s)\n%s - %s\n----------\n∑ %f%s (%f₽)\nK %f\nΔ %s%s(%f₽)' % (currencies[cur][0], buy, exchanges[exc][0], currencies[cur][1], total, transfer, total / rub, count, delta, transfer, operation / rub)) #T %d.%d %d:%d , day, month, hour, minute #-1001124440739 #бота перенести в отдельный файл
+	bot.send_message(136563129, '%s (%s)\n%s - %s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (currencies[cur][0], buy, exchanges[exc][0], currencies[cur][1], total, transfer, total / rub, count, sign, delta, transfer, sign, delta / rub)) #T %d.%d %d:%d , day, month, hour, minute #-1001124440739 #бота перенести в отдельный файл
+	bot.forward_message(136563129, 136563129, 1)
 	#запись в базу данных
 
 	sleep(5)
