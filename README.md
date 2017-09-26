@@ -1,7 +1,7 @@
 # КриптоСовет
 
-[Канал Telegram](https://t.me/cryptosovet)
-[Бот Telegram](https://t.me/CryptoSovetBot)
+Канал Telegram | [@cryptosovet](https://t.me/cryptosovet)
+Бот Telegram | [@CryptoSovetBot](https://t.me/CryptoSovetBot)
 
 Сделать
 ---

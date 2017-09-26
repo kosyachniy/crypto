@@ -1,6 +1,8 @@
-import json, urllib, telebot, sqlite3
+import json, urllib, telebot, sqlite3, requests
 from time import sleep
+from bs4 import BeautifulSoup
 
+#Telegram
 with open('data/set.txt', 'r') as file:
 	token = json.loads(file.read())['token']
 bot = telebot.TeleBot(token)
