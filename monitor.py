@@ -22,7 +22,7 @@ exchanges = [
 ]
 
 vocabulary = {
-	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок', 'рост'},
+	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок', 'рост', 'среднесрочной'},
 	'sell': {'sell', 'продать', 'продаём', 'продаем'}
 }
 
@@ -38,18 +38,22 @@ def price(x):
 
 		name = td[1].text
 		index = td[2].text
-		price = td[3].text.replace('.', '')
+		price = td[7].text.replace('.', '').replace(',', '.')
 		
 		if index == x:
 			print(name, index, price)
-			return float(price.replace(',', '.'))
+			return float(price)
 
-url2 = 'https://yandex.ru/search/?text=btc%2Frub'
+#добавить актуальный перевод курса биткоинов
+#url2 = 'https://yandex.ru/search/?text=btc%2Frub'
 def ru():
+	'''
 	page = requests.get(url2).text
 	soup = BeautifulSoup(page, 'lxml')
 	inp = soup.find_all('input', class_='input__control')
 	return int(inp[2]['value'].replace('\u2009', ''))
+	'''
+	return 226683
 
 on = lambda text, words: any([word in text for word in words])
 
@@ -63,7 +67,6 @@ while True:
 		for i in db.execute("SELECT * FROM lastmessage"):
 			chat, id = i
 			text = ''
-			#id = 595 #
 
 			try:
 				text = bot.forward_message(meid, chat, id + 1).text
@@ -125,7 +128,7 @@ while True:
 
 		total = 0
 		with db:
-			for i in db.execute("SELECT * FROM currencies WHERE changer=(?) and currency=-1", (exc,)):
+			for i in db.execute("SELECT * FROM currencies WHERE changer=(?) and currency=0", (exc,)):
 				total = i[3]
 
 		#убрать рассчёт доли при продаже
@@ -163,27 +166,36 @@ while True:
 			rub = ru()
 
 			#T %d.%d %d:%d , day, month, hour, minute
-			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buy, exchanges[exc][0] + ' - ' if exc else '', cur2, total, transfer, total * rub, count, sign, delta, transfer, sign, delta * rub)
+			#exchanges[exc][0] + ' - ' if exc else ''
+			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buy, exchanges[exc][0] + ' - ', cur2, total, transfer, total * rub, count, sign, delta, transfer, sign, delta * rub)
 
 			#бота перенести в отдельный файл
 			bot.send_message(meid, formated)
-			bot.forward_message(meid, chat, id + 2)
+			bot.forward_message(meid, chat, id)
 
-			t = ['', '', '']
+			t = [''] * len(exchanges)
+			btc = [0] * len(exchanges)
 			with db:
 				b = True
-				for i in db.execute("SELECT * FROM currencies WHERE (changer, currency) = (?, ?)", (exc, cur)):
+				co = 0
+				for i in db.execute("SELECT * FROM currencies WHERE changer=(?) and currency=(?)", (exc, cur)):
 					b = False
 					co = i[2]
+				print(exc, b, co)
 				if b:
 					db.execute("INSERT INTO currencies (currency, changer, count, price) VALUES (?, ?, ?, ?)", (cur, exc, count, delta))
 				else:
-					db.execute("UPDATE currencies SET count=(?) WHERE (changer, currency) = (?, ?)", (count + co, exc, cur)) #добавить среднюю цену по валюте
-				db.execute("UPDATE currencies SET count=(?) WHERE (changer, currency) = (?, ?)", (count + co, exc, cur))
+					db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=(?)", (count + co, exc, cur)) #добавить среднюю цену по валюте
+				db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=0", (total * 0.97, exc))
 
 				for i in db.execute("SELECT * FROM currencies"):
 					pri = i[3] * price(currencies[i[1]][1]) if i[1] != 0 else i[3]
-					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3]) + '   |   ' + str(pri) + 'Ƀ   |   ' + str(pri * rub) + '₽'
+					btc[i[2]] += pri
+					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri * rub)) + '₽'
+
+			for i in range(len(exchanges)):
+				t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] * rub))
+
 			formated = 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % (t[0], t[1], t[2])
 			bot.send_message(meid, formated)
 			bot.send_message(meid, '-----------------------------------')
