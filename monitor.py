@@ -22,14 +22,14 @@ exchanges = [
 ]
 
 vocabulary = {
-	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок'},
+	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок', 'рост'},
 	'sell': {'sell', 'продать', 'продаём', 'продаем'}
 }
 
-url = 'https://ru.investing.com/crypto/currencies'
+url1 = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
-	page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
+	page = requests.get(url1, headers={"User-agent": "Mozilla/5.0"}).text
 	soup = BeautifulSoup(page, 'lxml')
 	table = soup.find('table', id='top_crypto_tbl')
 	tr = table.find_all('tr')
@@ -40,19 +40,21 @@ def price(x):
 		index = td[2].text
 		price = td[3].text.replace('.', '')
 		
-		if index.lower() == x:
+		if index == x:
 			print(name, index, price)
-			return price
+			return float(price.replace(',', '.'))
 
-url = 'https://yandex.ru/search/?text=btc%2Frub'
+url2 = 'https://yandex.ru/search/?text=btc%2Frub'
 def ru():
-	page = requests.get(url).text
+	page = requests.get(url2).text
 	soup = BeautifulSoup(page, 'lxml')
 	inp = soup.find_all('input', class_='input__control')
-	print('!!!')
 	return int(inp[2]['value'].replace('\u2009', ''))
 
 on = lambda text, words: any([word in text for word in words])
+
+alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
+clean = lambda cont: str(''.join([i if i in alphabet else ' ' for i in cont])).split()
 
 while True:
 #Список сообщений
@@ -107,8 +109,11 @@ while True:
 				break
 
 		t = 0
-		for j in range(len(currencies)):
-			if currencies[j][1].lower() in i[2] or currencies[j][0].lower() in i[2]:
+		for j in range(1, len(currencies)):
+			text = clean(i[2])
+			#print(text)
+			if currencies[j][1].lower() in text or currencies[j][0].lower() in text:
+				print(j, currencies[j])
 				if t == 0:
 					t = 1
 				elif t == 1:
@@ -125,14 +130,14 @@ while True:
 
 		#убрать рассчёт доли при продаже
 		print(total, cur, buy, exc)
-#Определение количества
-		operation = price(currencies[cur][1])
-		delta = total * 0.03
-		count = delta / operation
 
 		#постваить процент, после которого сделка совершится
 		if buy or cur>=0:
-			print(cur) #
+#Определение количества
+			operation = price(currencies[cur][1])
+			delta = total * 0.03
+			count = delta / operation
+
 #Сборка сообщения на Telegram-канал
 			if buy == 2:
 				sign = '-'
@@ -167,8 +172,9 @@ while True:
 			t = ['', '', '']
 			with db:
 				for i in db.execute("SELECT * FROM currencies"):
-					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3])
-			bot.send_message(meid, 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % t)
+					pri = i[3] * price(currencies[i[1]][1]) if i[1] != 0 else i[3]
+					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3]) + '	|	' + str(pri) + 'Ƀ	|	' + str(pri * rub) + '₽'
+			bot.send_message(meid, 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % (t[0], t[1], t[2]))
 			bot.send_message(meid, '----------------------------------------')
 			#запись в базу данных
 
