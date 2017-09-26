@@ -171,11 +171,22 @@ while True:
 
 			t = ['', '', '']
 			with db:
+				b = True
+				for i in db.execute("SELECT * FROM currencies WHERE (changer, currency) = (?, ?)", (exc, cur)):
+					b = False
+					co = i[2]
+				if b:
+					db.execute("INSERT INTO currencies (currency, changer, count, price) VALUES (?, ?, ?, ?)", (cur, exc, count, delta))
+				else:
+					db.execute("UPDATE currencies SET count=(?) WHERE (changer, currency) = (?, ?)", (count + co, exc, cur)) #добавить среднюю цену по валюте
+				db.execute("UPDATE currencies SET count=(?) WHERE (changer, currency) = (?, ?)", (count + co, exc, cur))
+
 				for i in db.execute("SELECT * FROM currencies"):
 					pri = i[3] * price(currencies[i[1]][1]) if i[1] != 0 else i[3]
-					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3]) + '	|	' + str(pri) + 'Ƀ	|	' + str(pri * rub) + '₽'
-			bot.send_message(meid, 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % (t[0], t[1], t[2]))
-			bot.send_message(meid, '----------------------------------------')
+					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3]) + '   |   ' + str(pri) + 'Ƀ   |   ' + str(pri * rub) + '₽'
+			formated = 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % (t[0], t[1], t[2])
+			bot.send_message(meid, formated)
+			bot.send_message(meid, '-----------------------------------')
 			#запись в базу данных
 
 			sleep(5)
