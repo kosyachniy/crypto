@@ -22,11 +22,11 @@ exchanges = [
 ]
 
 vocabulary = {
-	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся'},
+	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок'},
 	'sell': {'sell', 'продать', 'продаём', 'продаем'}
 }
 
-url='https://ru.investing.com/crypto/currencies'
+url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
 	page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
@@ -44,6 +44,14 @@ def price(x):
 			print(name, index, price)
 			return price
 
+url = 'https://yandex.ru/search/?text=btc%2Frub'
+def ru():
+	page = requests.get(url).text
+	soup = BeautifulSoup(page, 'lxml')
+	inp = soup.find_all('input', class_='input__control')
+	print('!!!')
+	return int(inp[2]['value'].replace('\u2009', ''))
+
 on = lambda text, words: any([word in text for word in words])
 
 while True:
@@ -53,6 +61,7 @@ while True:
 		for i in db.execute("SELECT * FROM lastmessage"):
 			chat, id = i
 			text = ''
+			#id = 595 #
 
 			try:
 				text = bot.forward_message(meid, chat, id + 1).text
@@ -79,7 +88,6 @@ while True:
 		exc = 0
 		cur = -1
 		count = 1.0
-		rub = price('BTC')
 
 #Распознание сигнала
 		i_buy = on(i[2], vocabulary['buy'])
@@ -116,7 +124,7 @@ while True:
 				total = i[3]
 
 		#убрать рассчёт доли при продаже
-
+		print(total, cur, buy, exc)
 #Определение количества
 		operation = price(currencies[cur][1])
 		delta = total * 0.03
@@ -147,13 +155,20 @@ while True:
 				cur1 = currencies[cur][0]
 				cur2 = currencies[cur][1]
 
+			rub = ru()
+
 			#T %d.%d %d:%d , day, month, hour, minute
-			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buy, exchanges[exc][0] + ' - ' if exc else '', cur2, total, transfer, total / rub, count, sign, delta, transfer, sign, delta / rub)
+			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buy, exchanges[exc][0] + ' - ' if exc else '', cur2, total, transfer, total * rub, count, sign, delta, transfer, sign, delta * rub)
 
 			#бота перенести в отдельный файл
 			bot.send_message(meid, formated)
 			bot.forward_message(meid, chat, id + 2)
-			bot.send_message(meid, 'Сводка\n--------------------\nYObit\n\n--------------------\nBittrex\n\n--------------------\nPoloniex\n')
+
+			t = ['', '', '']
+			with db:
+				for i in db.execute("SELECT * FROM currencies"):
+					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(i[3])
+			bot.send_message(meid, 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % t)
 			bot.send_message(meid, '----------------------------------------')
 			#запись в базу данных
 

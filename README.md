@@ -1,5 +1,6 @@
-# КриптоСовет
+# КриптоАнализ
 
+---|---
 Канал Telegram | [@cryptosovet](https://t.me/cryptosovet)
 Бот Telegram | [@CryptoSovetBot](https://t.me/CryptoSovetBot)
 
