@@ -1,7 +1,7 @@
 import json, urllib, telebot, sqlite3
 from time import sleep
 
-with open('set.txt', 'r') as file:
+with open('data/set.txt', 'r') as file:
 	token = json.loads(file.read())['token']
 bot = telebot.TeleBot(token)
 
@@ -31,4 +31,4 @@ def text(message):
 #bot.polling(none_stop=True)
 
 #SQLite
-db=sqlite3.connect('main.db')
+db=sqlite3.connect('data/main.db')
