@@ -1,4 +1,4 @@
-import json, urllib, telebot
+import json, urllib, telebot, sqlite3
 from time import sleep
 
 with open('set.txt', 'r') as file:
@@ -29,3 +29,6 @@ def text(message):
 
 #if __name__ == '__main__':
 #bot.polling(none_stop=True)
+
+#SQLite
+db=sqlite3.connect('main.db')
