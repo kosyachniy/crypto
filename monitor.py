@@ -1,3 +1,4 @@
+#Контроль сигналов
 from func import *
 
 #Данные
@@ -22,14 +23,14 @@ exchanges = [
 ]
 
 vocabulary = {
-	'buy': {'buy', 'купить', 'покупаем', 'докупаем', 'докупаемся', 'краткосрок', 'рост', 'среднесрочной'},
-	'sell': {'sell', 'продать', 'продаём', 'продаем'}
+	'buy': {'buy', 'купить', 'покупаем', 'покупка', 'докупаем', 'докупаемся', 'краткосрок', 'рост', 'среднесрочной'},
+	'sell': {'sell', 'продать', 'продаём', 'продаем', 'продажа'}
 }
 
-url1 = 'https://ru.investing.com/crypto/currencies'
+url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
-	page = requests.get(url1, headers={"User-agent": "Mozilla/5.0"}).text
+	page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
 	soup = BeautifulSoup(page, 'lxml')
 	table = soup.find('table', id='top_crypto_tbl')
 	tr = table.find_all('tr')
@@ -44,16 +45,8 @@ def price(x):
 			print(name, index, price)
 			return float(price)
 
-#добавить актуальный перевод курса биткоинов
-#url2 = 'https://yandex.ru/search/?text=btc%2Frub'
 def ru():
-	'''
-	page = requests.get(url2).text
-	soup = BeautifulSoup(page, 'lxml')
-	inp = soup.find_all('input', class_='input__control')
-	return int(inp[2]['value'].replace('\u2009', ''))
-	'''
-	return 226683
+	return float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
 on = lambda text, words: any([word in text for word in words])
 
@@ -95,13 +88,9 @@ while True:
 		count = 1.0
 
 #Распознание сигнала
-		i_buy = on(i[2], vocabulary['buy'])
-		i_sell = on(i[2], vocabulary['sell'])
-		if i_buy and i_sell: continue
-
-		if i_buy:
+		if on(i[2], vocabulary['buy']):
 			buy = 2
-		elif i_sell:
+		elif on(i[2], vocabulary['sell']):
 			buy = 1
 		else:
 			buy = 0
@@ -134,27 +123,26 @@ while True:
 		#убрать рассчёт доли при продаже
 		print(total, cur, buy, exc)
 
-		#постваить процент, после которого сделка совершится
 		if buy or cur>=0:
 #Определение количества
 			operation = price(currencies[cur][1])
-			delta = total * 0.03
-			count = delta / operation
+			count = 0
+			delta = 0
+			if buy==1:
+				with db:
+					for j in db.execute("SELECT * FROM currencies WHERE currency=(?)", (cur,)):
+						count += j[3]
+						delta += count * operation
+			else:
+				delta = total * 0.03
+				count = delta / operation
+		else:
+			continue
 
+		if (buy != 1 and total > 0) or (buy == 1 and count > 0):
 #Сборка сообщения на Telegram-канал
-			if buy == 2:
-				sign = '-'
-			elif buy == 1:
-				sign = '+'
-			else:
-				sign = '±'
-
-			if buy == 2:
-				buy = 'купить'
-			elif buy == 1:
-				buy = 'продать'
-			else:
-				buy = 'не определено'
+			sign = '±+-'[buy]
+			buys = ['не определено', 'продать', 'купить'][buy]
 
 			if cur == -1:
 				cur1 = 'Криптовалюта не определена'
@@ -167,38 +155,45 @@ while True:
 
 			#T %d.%d %d:%d , day, month, hour, minute
 			#exchanges[exc][0] + ' - ' if exc else ''
-			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buy, exchanges[exc][0] + ' - ', cur2, total, transfer, total * rub, count, sign, delta, transfer, sign, delta * rub)
+			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buys, exchanges[exc][0] + ' - ' if buy != 1 else '', cur2, total, transfer, total / rub, count, sign, delta, transfer, sign, delta / rub)
 
 			#бота перенести в отдельный файл
-			bot.send_message(meid, formated)
-			bot.forward_message(meid, chat, id)
+			bot.send_message(channelid, formated)
+			bot.forward_message(channelid, chat, id)
 
-			t = [''] * len(exchanges)
+			t = [i[0] for i in exchanges]
 			btc = [0] * len(exchanges)
+			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 			with db:
-				b = True
-				co = 0
-				for i in db.execute("SELECT * FROM currencies WHERE changer=(?) and currency=(?)", (exc, cur)):
-					b = False
-					co = i[2]
-				print(exc, b, co)
-				if b:
-					db.execute("INSERT INTO currencies (currency, changer, count, price) VALUES (?, ?, ?, ?)", (cur, exc, count, delta))
+#Добавление операции
+				if buy != 1:
+					db.execute("INSERT INTO currencies (currency, changer, count, price, loss, half, full, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, operation * 0.9, operation * 1.05, operation * 1.1, time))
+					db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=0", (total * 0.97, exc))
 				else:
-					db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=(?)", (count + co, exc, cur)) #добавить среднюю цену по валюте
-				db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=0", (total * 0.97, exc))
+					sell = [0] * len(exchanges)
+					for j in db.execute("SELECT * FROM currencies WHERE currency=(?)", (cur,)):
+						sell[j[2]] += j[3]
+						db.execute("DELETE FROM currencies WHERE id=(?)'", (j[0],))
+					for j in db.execute("SELECT * FROM currencies WHERE currency=0", (cur,)):
+						db.execute("UPDATE currencies SET count=(?) WHERE changer=(?) and currency=0", (sell[j[2]] * operation + j[3], j[2]))
 
+#Сводка
 				for i in db.execute("SELECT * FROM currencies"):
-					pri = i[3] * price(currencies[i[1]][1]) if i[1] != 0 else i[3]
+					pric = price(currencies[i[1]][1])
+					pri = i[3] * pric if i[1] != 0 else i[3]
 					btc[i[2]] += pri
-					t[i[2]] += '\n' + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri * rub)) + '₽'
+					rise = '↑ ' if i[4] - pric > 0 else '↓ ' if i[4] - pric < 0 else ''
+					t[i[2]] += '\n' + rise + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri / rub)) + '₽'
+					'''
+					if i[1] != 0:
+						t[i[2]] += '   |   ' + str(i[5]) + '   |   ' + str(i[6]) + '   |   ' + str(i[7]) + '   |   ' + str(i[8])
+					'''
 
 			for i in range(len(exchanges)):
-				t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] * rub))
+				t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
 
-			formated = 'Сводка\n--------------------\nYObit%s\n--------------------\nBittrex%s\n--------------------\nPoloniex%s' % (t[0], t[1], t[2])
-			bot.send_message(meid, formated)
-			bot.send_message(meid, '-----------------------------------')
-			#запись в базу данных
+			formated = 'Сводка\n--------------------\n%s\n--------------------\n%s\n--------------------\n%s' % (t[0], t[1], t[2])
+			bot.send_message(channelid, formated)
+			bot.send_message(channelid, '-----------------------------------')
 
 			sleep(5)
