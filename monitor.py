@@ -2,30 +2,21 @@
 from func import *
 
 #Данные
-botid = 356427214
-channelid = -1001124440739
-meid = 136563129
+with open('data/set.txt', 'r') as file:
+	s = json.loads(file.read())
+	channelid = s['channelid']
+	meid = s['meid']
 
 currencies = []
 with open('data/currencies.txt', 'r') as file:
 	for i in file:
 		currencies.append(json.loads(i[:-1]))
 
-transfers = [
-	['BitCoin', 'BTC', 'Ƀ']
-]
-transfer = transfers[0][2]
+with open('data/exchangers.txt', 'r') as file:
+	exchanges = json.loads(file.read())
 
-exchanges = [
-	['YObit'],
-	['Bittrex'],
-	['Poloniex']
-]
-
-vocabulary = {
-	'buy': {'buy', 'купить', 'покупаем', 'покупка', 'докупаем', 'докупаемся', 'краткосрок', 'рост', 'среднесрочной'},
-	'sell': {'sell', 'продать', 'продаём', 'продаем', 'продажа'}
-}
+with open('data/vocabulary.txt', 'r') as file:
+	vocabulary = json.loads(file.read())
 
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
@@ -45,8 +36,7 @@ def price(x):
 			print(name, index, price)
 			return float(price)
 
-def ru():
-	return float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
+ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
 on = lambda text, words: any([word in text for word in words])
 
@@ -86,6 +76,7 @@ while True:
 		exc = 0
 		cur = -1
 		count = 1.0
+		time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
 #Распознание сигнала
 		if on(i[2], vocabulary['buy']):
@@ -140,6 +131,12 @@ while True:
 			continue
 
 		if (buy != 1 and total > 0) or (buy == 1 and count > 0):
+			with db:
+				db.execute("INSERT INTO operations (act, currency, changer, buy, count, price, time) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)", (cur, exc, buy, count, operation, time, total, delta))
+
+		sleep(5)
+
+'''
 #Сборка сообщения на Telegram-канал
 			sign = '±+-'[buy]
 			buys = ['не определено', 'продать', 'купить'][buy]
@@ -155,15 +152,14 @@ while True:
 
 			#T %d.%d %d:%d , day, month, hour, minute
 			#exchanges[exc][0] + ' - ' if exc else ''
-			formated = '%s (%s)\n%s%s\n--------------------\n∑ %f%s (%d₽)\nK %f\nΔ %s%f%s (%s%d₽)' % (cur1, buys, exchanges[exc][0] + ' - ' if buy != 1 else '', cur2, total, transfer, total / rub, count, sign, delta, transfer, sign, delta / rub)
+			formated = '%s (%s)\n%s%s\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (cur1, buys, exchanges[exc][0] + ' - ' if buy != 1 else '', cur2, total, total / rub, count, sign, delta, sign, delta / rub)
 
 			#бота перенести в отдельный файл
-			bot.send_message(channelid, formated)
-			bot.forward_message(channelid, chat, id)
+			bot.send_message(meid, formated)
+			bot.forward_message(meid, chat, id)
 
 			t = [i[0] for i in exchanges]
 			btc = [0] * len(exchanges)
-			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 			with db:
 #Добавление операции
 				if buy != 1:
@@ -184,16 +180,15 @@ while True:
 					btc[i[2]] += pri
 					rise = '↑ ' if i[4] - pric > 0 else '↓ ' if i[4] - pric < 0 else ''
 					t[i[2]] += '\n' + rise + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri / rub)) + '₽'
-					'''
+					\'\'\'
 					if i[1] != 0:
 						t[i[2]] += '   |   ' + str(i[5]) + '   |   ' + str(i[6]) + '   |   ' + str(i[7]) + '   |   ' + str(i[8])
-					'''
+					\'\'\'
 
 			for i in range(len(exchanges)):
 				t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
 
 			formated = 'Сводка\n--------------------\n%s\n--------------------\n%s\n--------------------\n%s' % (t[0], t[1], t[2])
-			bot.send_message(channelid, formated)
-			bot.send_message(channelid, '-----------------------------------')
-
-			sleep(5)
+			bot.send_message(meid, formated)
+			bot.send_message(meid, '-----------------------------------')
+'''
