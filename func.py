@@ -3,9 +3,21 @@ from time import sleep
 from datetime import datetime
 from bs4 import BeautifulSoup
 
+#Данные
+currencies = []
+with open('data/currencies.txt', 'r') as file:
+	for i in file:
+		currencies.append(json.loads(i[:-1]))
+
+with open('data/exchangers.txt', 'r') as file:
+	exchanges = json.loads(file.read())
+
 #Telegram
 with open('data/set.txt', 'r') as file:
-	token = json.loads(file.read())['token']
+	s = json.loads(file.read())
+	token = s['token']
+	channelid = s['channelid']
+	meid = s['meid']
 bot = telebot.TeleBot(token)
 
 '''
