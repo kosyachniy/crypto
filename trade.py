@@ -12,9 +12,11 @@ def trade():
 				if i[11] == None: #оптимизировать
 					name = currencies[i[2]][1].lower() + '_btc'
 					res = trader.ticker(name)
-					if res['success'] == 0:
-						db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
-						bot.send_message(sendid, 'YoBit: Валюта не найдена (' + i[2] + ')')
-					else:
+					if name in res:
+						time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 						#Покупка / продажа + контроль ошибок
-						bot.send_message(sendid, 'YoBit: Курс покупки: ' + res[name]['buy'] + ' | Курс продажи: ' + res[name]['sell'])
+						db.execute("UPDATE operations SET count=(?), price=(?), time2=(?) WHERE id=(?)", (0, res[name]['buy'], time, i[0]))
+						bot.send_message(sendid, 'YoBit - %s: Курс покупки: %.10f | Курс продажи: %.10f' % (currencies[i[2]][1], res[name]['buy'], res[name]['sell']))
+					else:
+						db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
+						bot.send_message(sendid, 'YoBit - %s: Валюта не найдена' % currencies[i[2]][1])
