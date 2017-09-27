@@ -74,7 +74,11 @@ while True:
 		if t == 2: continue #
 		
 		#вставить биржу сюда? всё равно нет смысла работы этого алгоритма без биржи
-		with db:
-			db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
+		if cur >= 1:
+			with db:
+				db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
+		elif buy >= 1:
+			bot.send_message(sendid, 'Не распознано')
+			bot.forward_message(sendid, chat, id)
 
 		sleep(5)

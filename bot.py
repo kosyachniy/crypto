@@ -1,6 +1,8 @@
 #Ведение канала
 from func import *
 
+sendid = meid
+
 #Данные
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
@@ -70,8 +72,8 @@ while True:
 				formated = '%s (%s)\n%s%s\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (cur1, buys, exchanges[exc][0] + ' - ' if buy != 1 else '', cur2, total, total / rub, count, sign, delta, sign, delta / rub)
 
 				#бота перенести в отдельный файл
-				bot.send_message(meid, formated)
-				bot.forward_message(meid, chat, id)
+				bot.send_message(sendid, formated)
+				bot.forward_message(sendid, chat, id)
 
 				t = [i[0] for i in exchanges]
 				btc = [0] * len(exchanges)
@@ -104,5 +106,5 @@ while True:
 					t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
 
 				formated = 'Сводка\n--------------------\n%s\n--------------------\n%s\n--------------------\n%s' % (t[0], t[1], t[2])
-				bot.send_message(meid, formated)
-				bot.send_message(meid, '-----------------------------------')
+				bot.send_message(sendid, formated)
+				bot.send_message(sendid, '-----------------------------------')
