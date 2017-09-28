@@ -20,6 +20,8 @@ with open('data/set.txt', 'r') as file:
 	meid = s['meid']
 bot = telebot.TeleBot(token)
 
+sendid = meid
+
 '''
 @bot.message_handler(commands=['start', 'help'])
 def start(message):

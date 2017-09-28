@@ -3,8 +3,6 @@ from trade import *
 stock = [YoBit()]
 
 #Данные
-sendid = meid
-
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
@@ -82,9 +80,17 @@ def monitor():
 					exc = j
 					break
 
+			term = ''
+			if on(i[2], vocabulary['short']):
+				term = 'краткосрочный'
+			elif on(i[2], vocabulary['medium']):
+				term = 'среднесрочный'
+			elif on(i[2], vocabulary['long']):
+				term = 'долгосрочный'
+
 			t = 0
+			text = clean(i[2])
 			for j in range(1, len(currencies)):
-				text = clean(i[2])
 				#print(text)
 				if currencies[j][1].lower() in text or currencies[j][0].lower() in text:
 					print(j, currencies[j])
@@ -112,17 +118,18 @@ def monitor():
 					if buy != 1:
 						delta = total * 0.03
 						count = delta / operation
+						delta *= 1 + stock[0].comm
 						new = total - delta
 
-						succ = stock[0].trade(cur, count, operation)
+						succ = stock[0].trade(cur, count, operation, buy)
 
 						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, succ))
 					else:
 						count = 0 #количество этой валюты на бирже
-						delta = count * operation
+						delta = count * operation * (1 - stock[0].comm)
 						new = total + delta
 
-						succ = stock[0].trade(cur, count, operation)
+						succ = stock[0].trade(cur, count, operation, buy)
 
 						'''
 						if succ:
@@ -131,7 +138,7 @@ def monitor():
 							#добавить минусовое поле #
 						'''
 
-					if succ == 1:
+					if succ:
 						db.execute("UPDATE currencies SET count=(?) WHERE currency=0 and changer=(?)", (new, exc))
 
 #Торговля
@@ -163,7 +170,10 @@ def monitor():
 				formated = '%s (%s)\n'  % (cur1, buys)
 				if buy != 1 and exc != -1:
 					formated += exchanges[exc][0] + ' - '
-				formated += '%s\nX %.8fɃ (%d₽)' % (cur2, operation, operation / rub)
+				formated += cur2
+				if len(term):
+					formated += ' - ' + term
+				formated += '\nX %.8fɃ (%d₽)' % (operation, operation / rub)
 				if total != -1:
 					formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 
