@@ -104,21 +104,30 @@ def monitor():
 				res = trader.ticker(name)
 
 				if name in res:
-					total = 0.02 #
+					total = 0.02 #биткоинов на этой бирже
 					if buy != 1:
 						operation = res[name]['buy']
 						delta = total * 0.03
 						count = delta / operation
+						new = total - delta
 					else:
 						operation = res[name]['sell']
-						count = 0 #
+						count = 0 #количество этой валюты на бирже
 						delta = count * operation
+						new = total + delta
+
+
+					succ = True #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
+					if succ:
+						db.execute("UPDATE currencies SET count=(?) WHERE id=0", (new))
+						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, 1)", (cur, exc, count, operation, time))
+					else:
+						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, 0)", (cur, exc, count, operation, time))
 
 #Торговля
-					#Покупка / продажа + контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
-					#db.execute("UPDATE operations SET count=(?), price=(?), time2=(?) WHERE id=(?)", (0, res[name]['buy'], time, i[0]))
+					#+ контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
 #Сборка сообщения на Telegram-канал
-					bot.send_message(sendid, 'YoBit - %s: %.10f - %.10f' % (currencies[cur][1], ...))
+					#bot.send_message(sendid, 'YoBit - %s: %.10f - %.10f' % (currencies[cur][1], ))
 				else:
 					exc = -1
 					total = -1
@@ -127,7 +136,6 @@ def monitor():
 					count = -1
 					#db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
 				#db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
-
 
 				sign = '±+-'[buy]
 				buys = ['не определено', 'продать', 'купить'][buy]
@@ -141,15 +149,12 @@ def monitor():
 
 				rub = ru()
 
-				#T %d.%d %d:%d , day, month, hour, minute
-				#exchanges[exc][0] + ' - ' if exc else ''
 				formated = '%s (%s)\n'  % (cur1, buys)
 				if buy != 1 and exc != -1:
 					formated += exchanges[exc][0] + ' - '
-				formated += '%s\n--------------------\n' % (cur2,)
+				formated += '%s\nX %.8f' % (cur2, operation)
 				if total != -1:
-					formated += '∑ %fɃ (%d₽)\nK %f\n' % (total, total / rub, count)
-				formated += 'Δ %s%fɃ (%s%d₽)' % (sign, delta, sign, delta / rub)
+					formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 
 				#бота перенести в отдельный файл
 				bot.send_message(sendid, formated)
