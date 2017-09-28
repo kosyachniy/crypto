@@ -11,6 +11,9 @@ class YoBit():
 		return total
 
 	def price(self, cur, buy):
+		if cur == 0:
+			return 1 #пока всё покупаем через биткоины
+
 		name = currencies[cur][1].lower() + '_btc'
 		res = self.trader.ticker(name)
 

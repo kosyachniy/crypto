@@ -105,6 +105,7 @@ def monitor():
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
 					total = stock[0].info()
 					succ = 0
+					new = 0
 
 					if buy != 1:
 						delta = total * 0.03
@@ -128,8 +129,9 @@ def monitor():
 							#добавить минусовое поле #
 						'''
 
-					if succ:
-						db.execute("UPDATE currencies SET count=(?) WHERE id=0 and changer=(?)", (new, exc))
+					if succ == 1:
+						print('!!!!!!!!!!!!!!!!!!!!!!', new)
+						db.execute("UPDATE currencies SET count=(?) WHERE currency=0 and changer=(?)", (new, exc))
 
 #Торговля
 					#+ контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
@@ -176,7 +178,7 @@ def monitor():
 					for i in db.execute("SELECT * FROM currencies WHERE succ=1 and changer=0"): #последние условие, т.к. другие биржи ещё не работают
 						pric = stock[i[2]].price(i[1], 1) #
 						pri = i[3] * pric if i[1] != 0 else i[3]
-						print('---', i[4], pric, pric - i[4]) #неправильно выводит количество и стоимость
+						print('---', i[4], pric)
 						btc[i[2]] += pri
 						rise = '↑ ' if pric - i[4] > 0 else '↓ ' if pric - i[4] < 0 else ''
 						t[i[2]] += '\n%s%s	%.6f   |   %.6fɃ   |   %d₽' % (rise, currencies[i[1]][1], i[3], pri, pri / rub)
