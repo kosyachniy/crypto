@@ -105,24 +105,30 @@ def monitor():
 
 				if name in res:
 					total = 0.02 #биткоинов на этой бирже
+					succ = 1 #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
+
 					if buy != 1:
 						operation = res[name]['buy']
 						delta = total * 0.03
 						count = delta / operation
 						new = total - delta
+
+						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, succ))
 					else:
 						operation = res[name]['sell']
 						count = 0 #количество этой валюты на бирже
 						delta = count * operation
 						new = total + delta
 
+						'''
+						if succ:
+							#удалить из БД
+						else:
+							#добавить минусовое поле #
+						'''
 
-					succ = True #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
 					if succ:
-						db.execute("UPDATE currencies SET count=(?) WHERE id=0", (new))
-						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, 1)", (cur, exc, count, operation, time))
-					else:
-						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, 0)", (cur, exc, count, operation, time))
+						db.execute("UPDATE currencies SET count=(?) WHERE id=0 and changer=(?)", (new, exc))
 
 #Торговля
 					#+ контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
@@ -136,6 +142,7 @@ def monitor():
 					count = -1
 					#db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
 				#db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
+				#Добавление в БД с обменщиком -1, игра на несущетвующей бирже
 
 				sign = '±+-'[buy]
 				buys = ['не определено', 'продать', 'купить'][buy]
@@ -152,13 +159,31 @@ def monitor():
 				formated = '%s (%s)\n'  % (cur1, buys)
 				if buy != 1 and exc != -1:
 					formated += exchanges[exc][0] + ' - '
-				formated += '%s\nX %.8f' % (cur2, operation)
+				formated += '%s\nX %.8fɃ (%d₽)' % (cur2, operation, operation / rub)
 				if total != -1:
 					formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 
 				#бота перенести в отдельный файл
 				bot.send_message(sendid, formated)
 				bot.forward_message(sendid, chat, id)
+
+				if total != -1:
+#Сводка
+					t = [i[0] for i in exchanges]
+					btc = [0] * len(exchanges)
+
+					for i in db.execute("SELECT * FROM currencies WHERE succ=1"):
+						pric = price(currencies[i[1]][1]) #
+						pri = i[3] * pric if i[1] != 0 else i[3]
+						btc[i[2]] += pri
+						rise = '↑ ' if i[4] - pric > 0 else '↓ ' if i[4] - pric < 0 else ''
+						t[i[2]] += '\n' + rise + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri / rub)) + '₽'
+
+					for i in range(len(exchanges)):
+						t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
+
+					formated = 'Сводка\n--------------------\n%s\n--------------------\n%s\n--------------------\n%s' % (t[0], t[1], t[2])
+					bot.send_message(sendid, formated)
 			elif buy >= 1:
 				bot.send_message(sendid, 'Не распознано')
 				bot.forward_message(sendid, chat, id)
