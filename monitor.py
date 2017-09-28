@@ -103,7 +103,9 @@ def monitor():
 				operation = stock[0].price(cur, buy)
 
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
-					total = stock[0].info()
+					total = stock[0].info() #разобраться в синхронизации БД и биржи
+					for j in db.execute("SELECT * FROM currencies WHERE currency=0 and changer=(?)", (exc,)):
+						total = j[3]
 					succ = 0
 					new = 0
 
@@ -130,7 +132,6 @@ def monitor():
 						'''
 
 					if succ == 1:
-						print('!!!!!!!!!!!!!!!!!!!!!!', new)
 						db.execute("UPDATE currencies SET count=(?) WHERE currency=0 and changer=(?)", (new, exc))
 
 #Торговля

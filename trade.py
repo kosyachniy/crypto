@@ -14,14 +14,20 @@ class YoBit():
 		if cur == 0:
 			return 1 #пока всё покупаем через биткоины
 
+		com = 1 - 0.002 #комиссия
+
 		name = currencies[cur][1].lower() + '_btc'
 		res = self.trader.ticker(name)
 
 		if name in res:
-			return res[name]['sell'] if buy != 1 else res[name]['buy']
+			return res[name]['sell'] * com if buy != 1 else res[name]['buy'] * com
+
+		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
 
 		return None
 
 	def trade(self, cur, count, price):
-		#
+		name = currencies[cur][1].lower() + '_btc'
+		buys = 'buy' if buy != 1 else 'sell'
+		#self.trader.trade(name, buys, price, count)
 		return 1 #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
