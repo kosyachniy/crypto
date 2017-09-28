@@ -14,6 +14,26 @@ on = lambda text, words: any([word in text for word in words])
 alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
 clean = lambda cont: str(''.join([i if i in alphabet else ' ' for i in cont])).split()
 
+url = 'https://ru.investing.com/crypto/currencies'
+def price(x):
+	print('!!!' + x) #
+	page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
+	soup = BeautifulSoup(page, 'lxml')
+	table = soup.find('table', id='top_crypto_tbl')
+	tr = table.find_all('tr')
+	for i in tr[1:]:
+		td = i.find_all('td')
+
+		name = td[1].text
+		index = td[2].text
+		price = td[7].text.replace('.', '').replace(',', '.')
+		
+		if index == x:
+			print(name, index, price)
+			return float(price)
+
+ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
+
 def monitor():
 	while True:
 #Список сообщений
@@ -78,21 +98,66 @@ def monitor():
 					cur = j
 			if t == 2: continue #
 
-#
 			if cur >= 1:
+#Определение основной информации
 				name = currencies[cur][1].lower() + '_btc'
 				res = trader.ticker(name)
+
 				if name in res:
-					#Покупка / продажа + контроль ошибок
+					total = 0.02 #
+					if buy != 1:
+						operation = res[name]['buy']
+						delta = total * 0.03
+						count = delta / operation
+					else:
+						operation = res[name]['sell']
+						count = 0 #
+						delta = count * operation
+
+#Торговля
+					#Покупка / продажа + контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
 					#db.execute("UPDATE operations SET count=(?), price=(?), time2=(?) WHERE id=(?)", (0, res[name]['buy'], time, i[0]))
-					bot.send_message(sendid, 'YoBit - %s: %.10f - %.10f' % (currencies[cur][1], res[name]['buy'], res[name]['sell']))
+#Сборка сообщения на Telegram-канал
+					bot.send_message(sendid, 'YoBit - %s: %.10f - %.10f' % (currencies[cur][1], ...))
 				else:
+					exc = -1
+					total = -1
+					operation = price(currencies[cur][1])
+					delta = -1
+					count = -1
 					#db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
-					bot.send_message(sendid, 'YoBit - %s: Валюта не найдена' % currencies[cur][1]) #сделать неопределённую валюту с выводом в бота
 				#db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
+
+
+				sign = '±+-'[buy]
+				buys = ['не определено', 'продать', 'купить'][buy]
+
+				if cur == -1:
+					cur1 = 'Криптовалюта не определена'
+					cur2 = 'Индекс не определён'
+				else:
+					cur1 = currencies[cur][0]
+					cur2 = currencies[cur][1]
+
+				rub = ru()
+
+				#T %d.%d %d:%d , day, month, hour, minute
+				#exchanges[exc][0] + ' - ' if exc else ''
+				formated = '%s (%s)\n'  % (cur1, buys)
+				if buy != 1 and exc != -1:
+					formated += exchanges[exc][0] + ' - '
+				formated += '%s\n--------------------\n' % (cur2,)
+				if total != -1:
+					formated += '∑ %fɃ (%d₽)\nK %f\n' % (total, total / rub, count)
+				formated += 'Δ %s%fɃ (%s%d₽)' % (sign, delta, sign, delta / rub)
+
+				#бота перенести в отдельный файл
+				bot.send_message(sendid, formated)
+				bot.forward_message(sendid, chat, id)
 			elif buy >= 1:
 				bot.send_message(sendid, 'Не распознано')
 				bot.forward_message(sendid, chat, id)
+			bot.send_message(sendid, '------------------------------')
 
 			sleep(5)
 
