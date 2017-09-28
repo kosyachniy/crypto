@@ -175,9 +175,10 @@ def monitor():
 					for i in db.execute("SELECT * FROM currencies WHERE succ=1"):
 						pric = price(currencies[i[1]][1]) #
 						pri = i[3] * pric if i[1] != 0 else i[3]
+						print(i, pri) #неправильно выводит количество и стоимость
 						btc[i[2]] += pri
 						rise = '↑ ' if i[4] - pric > 0 else '↓ ' if i[4] - pric < 0 else ''
-						t[i[2]] += '\n' + rise + currencies[i[1]][1] + '	' + str(round(i[3], 6)) + '   |   ' + str(round(pri, 6)) + 'Ƀ   |   ' + str(int(pri / rub)) + '₽'
+						t[i[2]] += '\n%s%s	%.6f   |   %.6fɃ   |   %d₽' % (rise, currencies[i[1]][1], i[3], pri, pri / rub)
 
 					for i in range(len(exchanges)):
 						t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
