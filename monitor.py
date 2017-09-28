@@ -1,10 +1,9 @@
 #Контроль сигналов
 from func import *
-from yobit import *
+from trade import info0, price0, trade0
 
 #Данные
 sendid = meid
-trader = YoBit()
 
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
@@ -100,25 +99,26 @@ def monitor():
 
 			if cur >= 1:
 #Определение основной информации
-				name = currencies[cur][1].lower() + '_btc'
-				res = trader.ticker(name)
+				operation = price0(cur, buy)
 
-				if name in res:
-					total = 0.02 #биткоинов на этой бирже
-					succ = 1 #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
+				if operation: #также решается проблема, если биржа пришлёт нулевое значение
+					total = info0()
+					succ = 0
 
 					if buy != 1:
-						operation = res[name]['buy']
 						delta = total * 0.03
 						count = delta / operation
 						new = total - delta
 
+						succ = trade0(cur, count, operation)
+
 						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, succ))
 					else:
-						operation = res[name]['sell']
 						count = 0 #количество этой валюты на бирже
 						delta = count * operation
 						new = total + delta
+
+						succ = trade0(cur, count, operation)
 
 						'''
 						if succ:
