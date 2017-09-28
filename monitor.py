@@ -1,6 +1,6 @@
 #Контроль сигналов
-from func import *
-from trade import info0, price0, trade0
+from trade import *
+stock = [YoBit()]
 
 #Данные
 sendid = meid
@@ -99,10 +99,10 @@ def monitor():
 
 			if cur >= 1:
 #Определение основной информации
-				operation = price0(cur, buy)
+				operation = stock[0].price(cur, buy)
 
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
-					total = info0()
+					total = stock[0].info()
 					succ = 0
 
 					if buy != 1:
@@ -110,7 +110,7 @@ def monitor():
 						count = delta / operation
 						new = total - delta
 
-						succ = trade0(cur, count, operation)
+						succ = stock[0].trade(cur, count, operation)
 
 						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ) VALUES (?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, succ))
 					else:
@@ -118,7 +118,7 @@ def monitor():
 						delta = count * operation
 						new = total + delta
 
-						succ = trade0(cur, count, operation)
+						succ = stock[0].trade(cur, count, operation)
 
 						'''
 						if succ:

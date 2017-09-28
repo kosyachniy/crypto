@@ -1,22 +1,24 @@
 #Торговля по сигналам
 from func import *
-from library.yobit import *
 
-trader = YoBit()
+class YoBit():
+	def __init__(self):
+		from library.yobit import YoBit as t
+		self.trader = t()
 
-def info0():
-	total = 0.02 #биткоинов на этой бирже
-	return total
+	def info(self):
+		total = 0.02 #биткоинов на этой бирже
+		return total
 
-def price0(cur, buy):
-	name = currencies[cur][1].lower() + '_btc'
-	res = trader.ticker(name)
+	def price(self, cur, buy):
+		name = currencies[cur][1].lower() + '_btc'
+		res = self.trader.ticker(name)
 
-	if name in res:
-		return res[name]['buy'] if buy != 1 else res[name]['sell']
+		if name in res:
+			return res[name]['buy'] if buy != 1 else res[name]['sell']
 
-	return None
+		return None
 
-def trade0(cur, count, price):
-	#
-	return 1 #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
+	def trade(self, cur, count, price):
+		#
+		return 1 #успешно ли прошла операция на бирже + синхронизация в конце дня / по исполнению ордеров
