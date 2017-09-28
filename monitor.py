@@ -99,6 +99,7 @@ def monitor():
 
 			if cur >= 1:
 #Определение основной информации
+				#for по вем биржам - первая, которая сработает
 				operation = stock[0].price(cur, buy)
 
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
@@ -172,18 +173,19 @@ def monitor():
 					t = [i[0] for i in exchanges]
 					btc = [0] * len(exchanges)
 
-					for i in db.execute("SELECT * FROM currencies WHERE succ=1"):
-						pric = price(currencies[i[1]][1]) #
+					for i in db.execute("SELECT * FROM currencies WHERE succ=1 and changer=0"): #последние условие, т.к. другие биржи ещё не работают
+						pric = stock[i[2]].price(i[1], 1) #
 						pri = i[3] * pric if i[1] != 0 else i[3]
-						print(i, pri) #неправильно выводит количество и стоимость
+						print('---', i[4], pric, pric - i[4]) #неправильно выводит количество и стоимость
 						btc[i[2]] += pri
-						rise = '↑ ' if i[4] - pric > 0 else '↓ ' if i[4] - pric < 0 else ''
+						rise = '↑ ' if pric - i[4] > 0 else '↓ ' if pric - i[4] < 0 else ''
 						t[i[2]] += '\n%s%s	%.6f   |   %.6fɃ   |   %d₽' % (rise, currencies[i[1]][1], i[3], pri, pri / rub)
 
 					for i in range(len(exchanges)):
 						t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
 
-					formated = 'Сводка\n--------------------\n%s\n--------------------\n%s\n--------------------\n%s' % (t[0], t[1], t[2])
+					#\n--------------------\n%s\n--------------------\n%s  t[1], t[2]
+					formated = 'Сводка\n--------------------\n%s' % (t[0],)
 					bot.send_message(sendid, formated)
 			elif buy >= 1:
 				bot.send_message(sendid, 'Не распознано')

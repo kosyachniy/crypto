@@ -4,7 +4,7 @@ from func import *
 class YoBit():
 	def __init__(self):
 		from library.yobit import YoBit as t
-		self.trader = t()
+		self.trader = t() #оптимизировать
 
 	def info(self):
 		total = 0.02 #биткоинов на этой бирже
@@ -15,7 +15,7 @@ class YoBit():
 		res = self.trader.ticker(name)
 
 		if name in res:
-			return res[name]['buy'] if buy != 1 else res[name]['sell']
+			return res[name]['sell'] if buy != 1 else res[name]['buy']
 
 		return None
 
