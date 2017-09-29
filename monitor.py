@@ -114,7 +114,6 @@ def monitor():
 					total = stock[0].info() #разобраться в синхронизации БД и биржи
 					for j in db.execute("SELECT * FROM currencies WHERE currency=0 and changer=(?)", (exc,)):
 						total = j[3]
-					succ = 0
 					new = 0
 
 					if buy != 1:
@@ -187,7 +186,6 @@ def monitor():
 #Сводка
 					t = [i[0] for i in exchanges]
 					btc = [0] * len(exchanges)
-
 					for i in db.execute("SELECT * FROM currencies WHERE succ!=0 and changer=0"): #последние условие, т.к. другие биржи ещё не работают
 						pric = stock[i[2]].price(i[1], 1) #
 						pri = i[3] * pric if i[1] != 0 else i[3]
@@ -200,6 +198,15 @@ def monitor():
 						t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
 
 					#\n--------------------\n%s\n--------------------\n%s  t[1], t[2]
+					'''
+					x = stock[0].info('')
+
+					for i in x:
+						pric = stock[0].price(i, 1)
+						pri = pric * x[i]
+						btc[0] += pri
+						t[0] += '\n%s	%.6f   |   %.6fɃ   |   %d₽' % (currencies[i[1]][1], i[3], pri, pri / rub)
+					'''
 					formated = 'Сводка\n--------------------\n%s' % (t[0],)
 					bot.send_message(sendid, formated)
 			elif buy >= 1:
