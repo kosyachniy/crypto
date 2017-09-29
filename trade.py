@@ -8,8 +8,7 @@ class YoBit():
 		self.comm = 0.002
 
 	def info(self):
-		total = 0.02 #биткоинов на этой бирже
-		return total
+		return self.trader.get_info()['return']['funds']['btc'] #биткоинов на этой бирже
 
 	def price(self, cur, buy):
 		if cur == 0:
@@ -58,13 +57,16 @@ class YoBit():
 		cur = cur.lower() + '_btc'
 		total = self.trader.get_info()['return']['funds']['btc']
 		price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
-		count = total * 0.03 / price
+		count = total * 0.05 / price
 
 		print('%.8f\n%.8f\n%.8f' % (price, count, total * 0.03))
-		
-		self.trader.trade(cur, buy, price, count)
+
+		print(self.trader.trade(cur, buy, price, count))
+		sleep(30) #ждём пока исполнится ордер -> сделать в проверке ордера
+		'''
 		if buy == 'buy':
 				self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
 				self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
 				self.trader.trade(cur, 'sell', price * 1.2, count * 0.1)
 				self.trader.trade(cur, 'sell', price * 1.25, count * 0.1)
+		'''
