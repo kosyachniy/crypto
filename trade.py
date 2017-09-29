@@ -7,25 +7,35 @@ class YoBit():
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
 
-	def info(self):
-		return self.trader.get_info()['return']['funds']['btc'] #биткоинов на этой бирже
+	#Преобразовать индекс / название валюты для биржи
+	def name(cur):
+		if type(cur) == str:
+			return cur.lower() + '_btc'
+		else:
+			return currencies[cur][1].lower() + '_btc'
+
+	#Весь баланс
+	all = lambda self: list(self.trader.get_info()['return']['funds'].items())
+
+	#Количество данной валюты у меня
+	info = lambda self, cur='btc': self.trader.get_info()['return']['funds'][cur]
 
 	def price(self, cur, buy):
 		if cur == 0:
 			return 1 #пока всё покупаем через биткоины
+		cur = name(cur)
+		res = self.trader.ticker(cur)
 
-		name = currencies[cur][1].lower() + '_btc'
-		res = self.trader.ticker(name)
-
-		if name in res:
-			return res[name]['sell'] if buy != 1 else res[name]['buy']
+		if cur in res:
+			return res[cur]['sell'] if buy != 1 else res[cur]['buy']
 
 		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
 
 		return None
 
+	#Купить / продать
 	def trade(self, cur, count, price, buy):
-		name = currencies[cur][1].lower() + '_btc'
+		name = name(cur)
 		buys = 'buy' if buy != 1 else 'sell'
 		bot.send_message(sendid, 'self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buys, price, count)) #
 		if buy != 1:
@@ -53,20 +63,31 @@ class YoBit():
 		return 1, 1, 1, 1, 1
 		#синхронизация по исполнению ордеров
 
-	def real(self, cur, buy='buy'): #sell
-		cur = cur.lower() + '_btc'
-		total = self.trader.get_info()['return']['funds']['btc']
-		price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
-		count = total * 0.05 / price
+	#Умная (быстрая) покупка / продажа
+	def real(self, cur, buy='buy', price=0): #sell
+		cur = name(cur)
 
-		print('%.8f\n%.8f\n%.8f' % (price, count, total * 0.03))
+		if price == 0:
+			price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
+		#price = self.trader.ticker(cur)[cur]['last']
 
-		print(self.trader.trade(cur, buy, price, count))
-		sleep(30) #ждём пока исполнится ордер -> сделать в проверке ордера
+		if buy == 'buy':
+			total = self.trader.get_info()['return']['funds']['btc']
+			count = total * 0.05 / price
+			delta = total * 0.03
+		else:
+			count = self.trader.get_info()['return']['funds'][cur[:-4]]
+			delta = count * price 
+
+
+		print('%.8f\n%.8f\n%.8f' % (price, count, delta))
+
+		self.trader.trade(cur, buy, price, count)
 		'''
 		if buy == 'buy':
-				self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
-				self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
-				self.trader.trade(cur, 'sell', price * 1.2, count * 0.1)
-				self.trader.trade(cur, 'sell', price * 1.25, count * 0.1)
+			sleep(30) #ждём пока исполнится ордер -> сделать в проверке ордера
+			self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
+			self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
+			self.trader.trade(cur, 'sell', price * 1.2, count * 0.1)
+			self.trader.trade(cur, 'sell', price * 1.25, count * 0.1)
 		'''
