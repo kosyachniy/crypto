@@ -72,7 +72,7 @@ def monitor():
 			cur = -1
 			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
-			loss = 0
+			loss = [0, 0.9] #
 			out = []
 			vol = 0
 			price = 0
@@ -118,6 +118,14 @@ def monitor():
 #Замены
 				if exc == -1: exc = 0 #Биржа по умолчанию
 				exc = 0 #Временная замена на одну биржу
+
+				if not len(out):
+					out = [
+						[0.5, 0, 1.1],
+						[0.3, 0, 1.15],
+						[0.1, 0, 1.2],
+						[0.1, 0, 1.25]
+					]
 
 #Отправка на обработку
 				num += 1
