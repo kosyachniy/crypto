@@ -5,29 +5,36 @@ from functrade import *
 stock = [YoBit()]
 
 def trade():
-	while True:
 #Определение последней необработанной операции
-		num = 1
-		try:
-			with open('data/history.txt', 'r') as file:
-				for i in file:
-					num = json.loads(i)['id'] + 1
-		except:
-			pass
-		print(num) #
+	#Начинает с после следующей исполненной операции
+	num = 0
+	try:
+		with open('data/history.txt', 'r') as file:
+			for i in file:
+				num = json.loads(i)[0]
+	except:
+		pass
+	print(num) #
 
+	while True:
 #Подготовка операций к исполнению
 		operation = []
 		with open('data/trade.txt', 'r') as file: #Пока что операции не удаляются
 			for i in file:
 				cont = json.loads(i)
-				if cont['id'] >= num:
+				if cont['id'] > num:
 					print('!!!', cont['id'])
 					operation.append(json.loads(i))
+		
+		if not len(operation):
+			sleep(5)
+			continue
+		num = operation[-1]['id']
 
 		for i in operation:
 #Рассчёт основных параметров для биржи
 			price = stock[i['exchanger']].price(i['currency'])
+			print(price)
 			if not price: continue #валюты нет или в малом объёме
 
 			count = stock[i['exchanger']].info() * i['volume'] / price
@@ -38,7 +45,8 @@ def trade():
 			#	succ = 1
 			print('Купить %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], count, price, count * price)) #
 
-			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], time]
+			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time]
+			print(sett)
 			with open('data/history.txt', 'a') as file:
 				print(json.dumps(sett), file=file)
 
@@ -56,7 +64,7 @@ def trade():
 					
 					print('Продать %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], coun, pric, pric * coun)) #
 
-					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], time]
+					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], pric, coun, time]
 					with open('data/history.txt', 'a') as file:
 						print(json.dumps(sett), file=file)
 

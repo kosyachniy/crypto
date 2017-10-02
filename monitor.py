@@ -79,6 +79,9 @@ def monitor():
 			if exc == -1: exc = 0 #Биржа по умолчанию
 			exc = 0 #Временная замена на одну биржу
 
+			if not vol:
+				vol = 0.03
+
 			if not len(out):
 				out = [
 					[0.5, 0, 1.1],

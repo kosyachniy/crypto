@@ -32,7 +32,7 @@ class YoBit():
 			buy = 'sell' if buy != 1 else 'buy'
 
 		#Есть ли эта валюта на бирже и достаточно ли объёма
-		if (cur in res) and (res[cur]['vol'] >= 1):
+		if (cur in res): # and (res[cur]['vol'] >= 1)
 			return res[cur][buy]
 
 		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
