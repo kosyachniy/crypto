@@ -70,7 +70,7 @@ def monitor():
 		for i in x:
 			exc = -1
 			cur = -1
-			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
 			loss = 0
 			out = []
@@ -114,29 +114,28 @@ def monitor():
 					cur = j
 			if t == 2: continue #
 
+			if cur >= 0:
 #Замены
-			if exc == -1: exc = 0 #Биржа по умолчанию
-
-			if loss == 0:
-
+				if exc == -1: exc = 0 #Биржа по умолчанию
+				exc = 0 #Временная замена на одну биржу
 
 #Отправка на обработку
-			num += 1
+				num += 1
 
-			sett = {
-				'id': num,
-				'currency': cur,
-				'exchanger': exc,
-				'price': price,
-				'volume': vol,
-				'out': out,
-				'loss': loss,
-				'term': term,
-				'time': time
-			}
+				sett = {
+					'id': num,
+					'currency': cur,
+					'exchanger': exc,
+					'price': price,
+					'volume': vol,
+					'out': out,
+					'loss': loss,
+					'term': term
+				} #, 'time': time
 
-			with open('data/trade.txt', 'a') as file:
-				print(json.dump(sett), file=file)
+				#Если без покупки, первые поля пустые
+				with open('data/trade.txt', 'a') as file:
+					print(json.dump(sett), file=file)
 
 '''
 			if cur >= 1:
