@@ -32,6 +32,12 @@ def price(x):
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
+try:
+	with open('data/trade.txt', 'r') as file:
+		num = json.loads(file.read()[-1])['id']
+except:
+	num = 0
+
 def monitor():
 	while True:
 #Список сообщений
@@ -62,11 +68,14 @@ def monitor():
 
 		print(x)
 		for i in x:
-			buy = 0
-			exc = 0
+			exc = -1
 			cur = -1
-			count = 1.0
 			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+
+			loss = 0
+			out = []
+			vol = 0
+			price = 0
 
 #Распознание сигнала
 			if on(i[2], vocabulary['buy']):
@@ -81,13 +90,14 @@ def monitor():
 					exc = j
 					break
 
-			term = ''
 			if on(i[2], vocabulary['short']):
-				term = 'краткосрочный'
+				term = 0
 			elif on(i[2], vocabulary['medium']):
-				term = 'среднесрочный'
+				term = 1
 			elif on(i[2], vocabulary['long']):
-				term = 'долгосрочный'
+				term = 2
+			else:
+				term = -1
 
 			t = 0
 			text = clean(i[2])
@@ -104,6 +114,30 @@ def monitor():
 					cur = j
 			if t == 2: continue #
 
+#Замены
+			if exc == -1: exc = 0 #Биржа по умолчанию
+
+			if loss == 0:
+
+
+#Отправка на обработку
+			num += 1
+
+			sett = {
+				'id': num,
+				'currency': cur,
+				'exchanger': exc,
+				'price': price,
+				'volume': vol,
+				'out': out,
+				'loss': loss,
+				'term': term,
+				'time': time
+			}
+
+			with open('data/trade.txt', 'a') as file:
+				print(json.dump(sett), file=file)
+
 '''
 			if cur >= 1:
 #Определение основной информации
@@ -114,10 +148,10 @@ def monitor():
 
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
 					total = stock[0].info() #разобраться в синхронизации БД и биржи
-					'''
+					'\''
 					for j in db.execute("SELECT * FROM currencies WHERE currency=0 and changer=(?)", (exc,)):
 						total = j[3]
-					'''
+					'\''
 					new = 0
 
 					if buy != 1:
