@@ -1,6 +1,5 @@
 #Контроль сигналов
-from trade import *
-stock = [YoBit()]
+from func import *
 
 #Данные
 with open('data/vocabulary.txt', 'r') as file:
@@ -11,6 +10,7 @@ on = lambda text, words: any([word in text for word in words])
 alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
 clean = lambda cont: str(''.join([i if i in alphabet else ' ' for i in cont])).split()
 
+'''
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
@@ -28,6 +28,7 @@ def price(x):
 		if index == x:
 			print(name, index, price)
 			return float(price)
+'''
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
@@ -103,17 +104,20 @@ def monitor():
 					cur = j
 			if t == 2: continue #
 
+'''
 			if cur >= 1:
 #Определение основной информации
 				#ели указана биржа - входить в неё
-				if exc != -1: exc = 0 #временная заиена биржи на используемую
+				if exc != -1: exc = 0 #временная замена биржи на используемую
 				#for по вем биржам - первая, которая сработает
 				operation = stock[0].price(cur, buy)
 
 				if operation: #также решается проблема, если биржа пришлёт нулевое значение
 					total = stock[0].info() #разобраться в синхронизации БД и биржи
+					'''
 					for j in db.execute("SELECT * FROM currencies WHERE currency=0 and changer=(?)", (exc,)):
 						total = j[3]
+					'''
 					new = 0
 
 					if buy != 1:
@@ -124,7 +128,12 @@ def monitor():
 
 						succ = stock[0].trade(cur, count, operation, buy)
 
-						db.execute("INSERT INTO currencies (currency, changer, count, price, time, succ, sell1, sell2, sell3, sell4) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, *succ))
+						t = True
+						for j in db.execute("SELECT * FROM currencies WHERE currency=(?) and changer=(?)", (cur, exc)):
+							t = False
+							db.execute("UPDATE currencies SET count=(?), price=(?) WHERE currency=(?) and changer=(?)", (j[]))
+
+						db.execute("INSERT INTO currencies (currency, changer, count, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, *succ))
 					else:
 						count = 0 #количество этой валюты на бирже
 						delta = count * operation * (1 - stock[0].comm)
@@ -132,12 +141,12 @@ def monitor():
 
 						succ = stock[0].trade(cur, count, operation, buy)
 
-						'''
+						'\''
 						if succ:
 							#удалить из БД
 						else:
 							#добавить минусовое поле #
-						'''
+						'\''
 
 					if succ[0]:
 						db.execute("UPDATE currencies SET count=(?) WHERE currency=0 and changer=(?)", (new, exc))
@@ -196,23 +205,13 @@ def monitor():
 
 					for i in range(len(exchanges)):
 						t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
-
-					#\n--------------------\n%s\n--------------------\n%s  t[1], t[2]
-					'''
-					x = stock[0].info('')
-
-					for i in x:
-						pric = stock[0].price(i, 1)
-						pri = pric * x[i]
-						btc[0] += pri
-						t[0] += '\n%s	%.6f   |   %.6fɃ   |   %d₽' % (currencies[i[1]][1], i[3], pri, pri / rub)
-					'''
 					formated = 'Сводка\n--------------------\n%s' % (t[0],)
 					bot.send_message(sendid, formated)
 			elif buy >= 1:
 				bot.send_message(sendid, 'Не распознано')
 				bot.forward_message(sendid, chat, id)
 			bot.send_message(sendid, '------------------------------')
+'''
 
 			sleep(5)
 

@@ -20,15 +20,20 @@ class YoBit():
 		x = self.trader.get_info()['return']['funds_incl_orders'] #funds
 		return x[cur] if len(cur) else x
 
-	def price(self, cur, buy):
+	def price(self, cur, buy='buy'):
 		if cur == 0:
 			return 1 #пока всё покупаем через биткоины
 		cur = self.name(cur)
 		res = self.trader.ticker(cur)
 
+		if type(buy) == str:
+			buy = 'sell' if buy == 'buy' else 'buy'
+		else:
+			buy = 'sell' if buy != 1 else 'buy'
+
 		#Есть ли эта валюта на бирже и достаточно ли объёма
 		if (cur in res) and (res[cur]['vol'] >= 1):
-			return res[cur]['sell'] if buy != 1 else res[cur]['buy']
+			return res[cur][buy]
 
 		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
 
@@ -69,7 +74,8 @@ class YoBit():
 		cur = self.name(cur)
 
 		if price == 0:
-			price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
+			#price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
+			price = self.trader.ticker(cur)[cur][buy] #попробовать продавать по такой цене
 		#price = self.trader.ticker(cur)[cur]['last']
 
 		if buy == 'buy':
@@ -90,7 +96,7 @@ class YoBit():
 			qm = [0, 0, 0, 0]
 			#Ждём 30 секунд исполнения ордера
 			for i in range(6):
-				if self.trader.order_info(x)['return'][x]['status']:
+				if self.trader.order_info(x)['return'][str(x)]['status']:
 					#Сразу выставляем на продау
 					qm[0] = self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
 					qm[1] = self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
