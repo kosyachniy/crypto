@@ -41,6 +41,7 @@ except:
 def monitor():
 	while True:
 #Список сообщений
+		'''
 		x = []
 		with db:
 			for i in db.execute("SELECT * FROM lastmessage"):
@@ -65,8 +66,13 @@ def monitor():
 					db.execute("UPDATE lastmessage SET message=(?) WHERE id=(?)", (id, chat))
 				
 				sleep(1)
+		'''
+		x = []
+		@bot.message_handler(content_types=["text"])
+		def text(message):
+			x.append(message)
 
-		print(x)
+		if len(x): print(x)
 		for i in x:
 			exc = -1
 			cur = -1
@@ -144,6 +150,8 @@ def monitor():
 				#Если без покупки, первые поля пустые
 				with open('data/trade.txt', 'a') as file:
 					print(json.dump(sett), file=file)
+			
+			sleep(5)
 
 '''
 			if cur >= 1:
@@ -253,8 +261,6 @@ def monitor():
 				bot.forward_message(sendid, chat, id)
 			bot.send_message(sendid, '------------------------------')
 '''
-
-			sleep(5)
 
 if __name__ == '__main__':
 	monitor()

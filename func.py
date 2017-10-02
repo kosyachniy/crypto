@@ -46,3 +46,6 @@ def text(message):
 
 #if __name__ == '__main__':
 #bot.polling(none_stop=True)
+
+#SQLite
+db=sqlite3.connect('data/main.db')

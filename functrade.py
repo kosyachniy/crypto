@@ -37,7 +37,7 @@ class YoBit():
 
 		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
 
-		return None
+		return 0
 
 	#Купить / продать
 	def trade(self, cur, count, price, buy):
