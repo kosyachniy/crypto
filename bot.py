@@ -1,8 +1,5 @@
 from func import *
 
-
-
-'''
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
@@ -20,9 +17,58 @@ def price(x):
 		if index == x:
 			print(name, index, price)
 			return float(price)
-'''
 
+ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
+def bot():
+	#сделать контроль последнего обработанного id
+
+	num = 0
+	with open('data/trade.txt', 'r') as file:
+		try:
+			for i in file:
+				num = json.loads(i)['id']
+		except:
+			pass
+
+	print(num)
+	num = 0 #
+
+	while True:
+		operation = []
+		with open('data/trade.txt', 'r') as file:
+			for i in file:
+				x = json.loads(i)
+				if x['id'] > num:
+					operation.append(x)
+
+		rub = 250000 #rub = ru()
+		for i in operation:
+			formated = '%s\n'  % (currencies[i['currency']][1],)
+			if i['exchanger'] != -1:
+				formated += exchanges[i['exchanger']][0] + ' - '
+			formated += currencies[i['currency']][0]
+			if i['term'] == 0:
+				formated += ' - краткосрочный'
+			elif i['term'] == 1:
+				formated += ' - среднесрочный'
+			elif i['term'] == 2:
+				formated += ' - долгорочный'
+			'''
+			formated += '\nX %.8fɃ (%d₽)' % (i['price'], i['price'] / rub)
+			if total != -1:
+				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
+			formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
+			'''
+			formated += 'Покупка:\nɃ %f\nK %d%%\n↓ %s\n' % (i['price'], i['volume'] * 100, str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%')
+			for j in i['out']:
+				formated += '\nV %d%% - %s' % (j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%')
+
+			#print(formated)
+			bot.send_message(sendid, formated)
+
+if __name__ == '__main__':
+	bot()
 
 '''
 		if cur >= 1:

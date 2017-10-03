@@ -33,16 +33,24 @@ def trade():
 
 		for i in operation:
 #Рассчёт основных параметров для биржи
+			if i['exchanger'] == -1: i['exchanger'] = 0 #Биржа по умолчанию
+			i['exchanger'] = 0 #Временная замена на одну биржу
+
 			price = stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
 
-			count = stock[i['exchanger']].info() * i['volume'] / price
+			delta = stock[i['exchanger']].info() * i['volume']
+			if delta < stock[i['exchanger']].min:
+				delta = stock[i['exchanger']].min
+			price = delta / price
+
+			#сделать проверку достаточно ли средств
+
 			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 			rub = stock[i['exchanger']].trader.ticker('btc_rur')['btc_rur']['buy']
 
-			succ = 0
-			if stock[i['exchanger']].trade(i['currency'], count, price, 2):
-				succ = 1
+#Покупка
+			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
 			bot.forward_message(meid, i['chat'], i['mess'])
 			bot.send_message(meid, 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price * rub, price * count, price * count * rub))
@@ -52,6 +60,8 @@ def trade():
 			with open('data/history.txt', 'a') as file:
 				print(json.dumps(sett), file=file)
 
+			#ждать исполнения ордеров
+
 			if succ:
 				su = 0
 
@@ -60,9 +70,7 @@ def trade():
 					coun = count * j[0]
 					su += coun * pric
 
-					succ = 0
-					if stock[i['exchanger']].trade(i['currency'], coun, pric, 1):
-						succ = 1
+					succ =  stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
 					#неправильное отображение цены в биткоинах
 					bot.send_message(meid, 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric * rub, pric * coun, pric * coun * rub))

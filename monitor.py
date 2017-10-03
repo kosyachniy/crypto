@@ -10,8 +10,6 @@ on = lambda text, words: any([word in text for word in words])
 alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
 clean = lambda cont: str(''.join([i if i in alphabet else ' ' for i in cont])).split()
 
-ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
-
 def monitor():
 	@bot.message_handler(content_types=["text"])
 	def text(message):
@@ -77,9 +75,6 @@ def monitor():
 		#Рассмотреть случай продажи валюты
 		if cur >= 0 and buy != 1:
 #Замены
-			if exc == -1: exc = 0 #Биржа по умолчанию
-			exc = 0 #Временная замена на одну биржу
-
 			if not vol:
 				vol = 0.03
 

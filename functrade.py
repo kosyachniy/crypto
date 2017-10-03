@@ -17,6 +17,7 @@ class YoBit():
 
 	#Баланс валюты
 	def info(self, cur='btc'):
+		return 0.02
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
 		try:
@@ -58,7 +59,7 @@ class YoBit():
 		except:
 			return 0
 		else:
-			return 1
+			return q['return']['order_id']
 		'''
 		return 1 #
 		#синхронизация по исполнению ордеров
