@@ -22,8 +22,6 @@ def monitor():
 		#Убирать ссылки (чтобы не путать лишними словами), VIP
 		text = message.text.lower()
 		print(text)
-		exc = -1
-		cur = -1
 		#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
 		loss = [0, 0.9] #
@@ -32,19 +30,24 @@ def monitor():
 		price = 0
 
 #Распознание сигнала
+		#Определение сигнал покупки / продажи
 		if on(text, vocabulary['buy']):
 			buy = 2
 		elif on(text, vocabulary['sell']):
 			buy = 1
 		else:
 			buy = 0
+
 		#Распознание размеров
 
+		#Определение биржи
+		exc = -1
 		for j in range(len(exchanges)):
 			if exchanges[j][0].lower() in text:
 				exc = j
 				break
 
+		#Определение срока
 		if on(text, vocabulary['short']):
 			term = 0
 		elif on(text, vocabulary['medium']):
@@ -54,21 +57,28 @@ def monitor():
 		else:
 			term = -1
 
-		#Добавить проверку есть ли одна валюта с хештегом, если нет перебирать все
-		t = 0
-		text = clean(text)
+		#Проверка названия валюты по хештегу
+		cur = -1
 		for j in range(1, len(currencies)):
-			#print(text)
-			if currencies[j][1].lower() in text or currencies[j][0].lower() in text:
-				print(j, currencies[j])
-				if t == 0:
-					t = 1
-				elif t == 1:
-					t = 2
+			if text.find('#' + currencies[j][1].lower() + ' ') >= 0:
+				print('!!!!!!!!', '#' + currencies[j][1].lower())
+				if cur == -1:
+					cur = j + 0
+				else:
+					cur = -1
 					break
 
-				cur = j
-		if t == 2: return 0 #
+		#Глубокий поиск названия валюты
+		if cur == -1:
+			text = clean(text)
+			for j in range(1, len(currencies)):
+				#print(text)
+				if currencies[j][1].lower() in text or currencies[j][0].lower() in text:
+					print(j, currencies[j])
+					if cur == -1:
+						cur = j + 0
+					else:
+						return 0 #
 
 		print(cur, exc, term, buy)
 

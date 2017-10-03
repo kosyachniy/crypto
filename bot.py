@@ -67,12 +67,14 @@ def bott():
 			'''
 			formated += '\n--------------------\nПокупка:'
 			if i['price']:
-				formated += '\nɃ %.8f (%d₽)' % (i['price'], i['price'] / rub)
-			formated += '\nK %d%%\n↓ %s' % (i['volume'] * 100, str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%')
+				price = i['price']
+				formated += '\nɃ %.8f (%d₽)' % (price, price / rub)
+			formated += '\nK %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
 			if len(i['out']):
 				formated += '\n\nПродажа:'
 			for j in i['out']:
-				formated += '\nV %d%% - %s' % (j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%')
+				formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else price * j[2], j[0] * 100) #(j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%') #
+			formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else price * i['loss'][1],)
 
 			#print(formated)
 			bot.send_message(sendid, formated)
