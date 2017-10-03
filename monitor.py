@@ -24,8 +24,6 @@ def an(text, words):
 	return cur
 
 def monitor():
-	@bot.message_handler(content_types=["text"])
-	def text(message):
 		try:
 			with open('data/trade.txt', 'r') as file:
 				num = json.loads(file.read()[-1])['id']
@@ -70,14 +68,10 @@ def monitor():
 		else:
 			term = -1
 
-		#Проверка названия валюты по хештегу
-		cur = an(text, '#')
-
-		#Глубокий поиск названия валюты
-		if cur <= 0:
-			cur = an(text, '')
-		if cur == -1:
-			return 0 #
+		#Определение валюты
+		cur = an(text, '#') #поиск по хештегу
+		if cur <= 0: cur = an(text, '')
+		if cur == -1: return 0 #если несколько валют
 
 		print(cur, exc, term, buy)
 
@@ -117,4 +111,3 @@ def monitor():
 
 if __name__ == '__main__':
 	monitor()
-	bot.polling(none_stop=True)

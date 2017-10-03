@@ -5,6 +5,14 @@
 Канал Telegram | [@cryptosovet](https://t.me/cryptosovet)
 Бот Telegram | [@CryptoSovetBot](https://t.me/CryptoSovetBot)
 
+Схема работы
+---
+Получение сигналов | Обработка | Исполнение
+---|---|---
+``` add.py ``` | ``` monitor.py ``` | ``` bot.py ```
+``` autoadd.py ``` |  | ``` trade.py ```
+ |  | ``` autotrade.py ```
+
 Сделать
 ---
 1. Торговать на бирже
