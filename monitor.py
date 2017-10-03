@@ -24,90 +24,121 @@ def an(text, words):
 	return cur
 
 def monitor():
-		try:
-			with open('data/trade.txt', 'r') as file:
-				num = json.loads(file.read()[-1])['id']
-		except:
-			num = 0
+#Первоначальные значения
+	chat, id = 0, 0
+	try:
+		with open('data/messages.txt', 'r') as file:
+			for i in file:
+				chat, id, _ = json.loads(i)
+	except:
+		pass
 
-		#Убирать ссылки (чтобы не путать лишними словами), VIP
-		text = message.text.lower()
-		print(text)
-		#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+	num = 0
+	try:
+		with open('data/trade.txt', 'r') as file:
+			for i in file:
+				num = json.loads(i)['id']
+	except:
+		pass
 
-		loss = [0, 0.9] #
-		out = []
-		vol = 0
-		price = 0
+	#print('--', num)
+
+#Список новых сигналов
+	while True:
+		t = False if chat !=0 and id != 0 else True
+		x = []
+		with open('data/messages.txt', 'r') as file:
+			for i in file:
+				y = json.loads(i)
+				if t:
+					x.append(y)
+					chat, id, _ = y
+				elif y[0] == chat and y[1] == id:
+					t = True
+
+		sleep(5)
+		print(len(x))
+
+#Обработка
+		for i in x:
+			#Убирать ссылки (чтобы не путать лишними словами), VIP
+			text = i[2]
+			print(text)
+			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+
+			loss = [0, 0.9] #
+			out = []
+			vol = 0
+			price = 0
 
 #Распознание сигнала
-		#Определение сигнал покупки / продажи
-		if on(text, vocabulary['buy']):
-			buy = 2
-		elif on(text, vocabulary['sell']):
-			buy = 1
-		else:
-			buy = 0
+			#Определение сигнал покупки / продажи
+			if on(text, vocabulary['buy']):
+				buy = 2
+			elif on(text, vocabulary['sell']):
+				buy = 1
+			else:
+				buy = 0
 
-		#Распознание размеров
+			#Распознание размеров
 
-		#Определение биржи
-		exc = -1
-		for j in range(len(exchanges)):
-			if exchanges[j][0].lower() in text:
-				exc = j
-				break
+			#Определение биржи
+			exc = -1
+			for j in range(len(exchanges)):
+				if exchanges[j][0].lower() in text:
+					exc = j
+					break
 
-		#Определение срока
-		if on(text, vocabulary['short']):
-			term = 0
-		elif on(text, vocabulary['medium']):
-			term = 1
-		elif on(text, vocabulary['long']):
-			term = 2
-		else:
-			term = -1
+			#Определение срока
+			if on(text, vocabulary['short']):
+				term = 0
+			elif on(text, vocabulary['medium']):
+				term = 1
+			elif on(text, vocabulary['long']):
+				term = 2
+			else:
+				term = -1
 
-		#Определение валюты
-		cur = an(text, '#') #поиск по хештегу
-		if cur <= 0: cur = an(text, '')
-		if cur == -1: return 0 #если несколько валют
+			#Определение валюты
+			cur = an(text, '#') #поиск по хештегу
+			if cur <= 0: cur = an(text, '')
+			if cur == -1: continue #если несколько валют
 
-		print(cur, exc, term, buy)
+			print(cur, exc, term, buy)
 
-		#Рассмотреть случай продажи валюты
-		if cur >= 1 and buy != 1:
+			#Рассмотреть случай продажи валюты
+			if cur >= 1 and buy != 1:
 #Замены
-			if not vol:
-				vol = 0.03
+				if not vol:
+					vol = 0.03
 
-			if not len(out):
-				out = [
-					[0.5, 0, 1.1],
-					[0.3, 0, 1.15],
-					[0.1, 0, 1.2],
-					[0.1, 0, 1.25]
-				]
+				if not len(out):
+					out = [
+						[0.5, 0, 1.1],
+						[0.3, 0, 1.15],
+						[0.1, 0, 1.2],
+						[0.1, 0, 1.25]
+					]
 
 #Отправка на обработку
-			num += 1
+				num += 1
 
-			sett = {
-				'id': num,
-				'currency': cur,
-				'exchanger': exc,
-				'price': price,
-				'volume': vol,
-				'out': out,
-				'loss': loss,
-				'term': term,
-				'chat': message.chat.id,
-				'mess': message.message_id
-			} #, 'time': time
+				sett = {
+					'id': num,
+					'currency': cur,
+					'exchanger': exc,
+					'price': price,
+					'volume': vol,
+					'out': out,
+					'loss': loss,
+					'term': term,
+					'chat': i[0],
+					'mess': i[1]
+				} #, 'time': time
 
-			#Если без покупки, первые поля пустые ?
-			with open('data/trade.txt', 'a') as file:
-				print(json.dumps(sett), file=file)
+				#Если без покупки, первые поля пустые ?
+				with open('data/trade.txt', 'a') as file:
+					print(json.dumps(sett), file=file)
 
 if __name__ == '__main__':
 	monitor()
