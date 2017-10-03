@@ -1,5 +1,8 @@
 from func import *
 
+from functrade import *
+stock = [YoBit()]
+
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
@@ -20,7 +23,7 @@ def price(x):
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
-def bot():
+def bott():
 	#сделать контроль последнего обработанного id
 
 	num = 0
@@ -41,26 +44,33 @@ def bot():
 				x = json.loads(i)
 				if x['id'] > num:
 					operation.append(x)
+					num = x['id']
 
 		rub = 250000 #rub = ru()
 		for i in operation:
-			formated = '%s\n'  % (currencies[i['currency']][1],)
+			formated = '%s\n'  % (currencies[i['currency']][0],)
 			if i['exchanger'] != -1:
 				formated += exchanges[i['exchanger']][0] + ' - '
-			formated += currencies[i['currency']][0]
+			formated += currencies[i['currency']][1]
 			if i['term'] == 0:
 				formated += ' - краткосрочный'
 			elif i['term'] == 1:
 				formated += ' - среднесрочный'
 			elif i['term'] == 2:
 				formated += ' - долгорочный'
+			price = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']])
+			formated += '\nX %.8fɃ (%d₽)' % (price, price / rub)
 			'''
-			formated += '\nX %.8fɃ (%d₽)' % (i['price'], i['price'] / rub)
 			if total != -1:
 				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 			formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 			'''
-			formated += 'Покупка:\nɃ %f\nK %d%%\n↓ %s\n' % (i['price'], i['volume'] * 100, str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%')
+			formated += '\n--------------------\nПокупка:'
+			if i['price']:
+				formated += '\nɃ %.8f (%d₽)' % (i['price'], i['price'] / rub)
+			formated += '\nK %d%%\n↓ %s' % (i['volume'] * 100, str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%')
+			if len(i['out']):
+				formated += '\n\nПродажа:'
 			for j in i['out']:
 				formated += '\nV %d%% - %s' % (j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%')
 
@@ -68,7 +78,7 @@ def bot():
 			bot.send_message(sendid, formated)
 
 if __name__ == '__main__':
-	bot()
+	bott()
 
 '''
 		if cur >= 1:
