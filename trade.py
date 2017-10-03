@@ -23,7 +23,7 @@ def trade():
 			for i in file:
 				cont = json.loads(i)
 				if cont['id'] > num:
-					print('!!!', cont['id'])
+					#print('!!!', currencies[cont['currency']][1])
 					operation.append(json.loads(i))
 		
 		if not len(operation):
@@ -41,9 +41,9 @@ def trade():
 			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
 			succ = 0
-			#if stock[i['exchange']].trade(i['currency'], count, price, 2):
-			#	succ = 1
-			print('Купить %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], count, price, count * price)) #
+			if stock[i['exchanger']].trade(i['currency'], count, price, 2):
+				succ = 1
+			bot.send_message(sendid, 'Купить %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], count, price, count * price)) #
 
 			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time]
 			print(sett)
@@ -62,13 +62,14 @@ def trade():
 					#if stock[i['exchange']].trade(i['currency'], coun, pric, 1):
 					#	succ = 1
 					
-					print('Продать %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], coun, pric, pric * coun)) #
+					bot.send_message(sendid, 'Продать %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], coun, pric, pric * coun)) #
 
 					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], pric, coun, time]
 					with open('data/history.txt', 'a') as file:
 						print(json.dumps(sett), file=file)
 
-				loss = (price - i['loss'][1]) * count if i['loss'][0] else price * count * (1 - i['loss'][1])
+				vol = price * count
+				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				print('Худший случай: -%fɃ\nЛучший случай: +%fɃ' % (loss, su - vol)) #
 			else:
 				print('Ошибка покупки!\n')
