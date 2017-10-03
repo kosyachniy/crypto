@@ -7,8 +7,21 @@ with open('data/vocabulary.txt', 'r') as file:
 
 on = lambda text, words: any([word in text for word in words])
 
-alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
-clean = lambda cont: str(''.join([i if i in alphabet else ' ' for i in cont])).split()
+alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю#'
+clean = lambda cont, words: str(''.join([i if i in alphabet + words else ' ' for i in cont])).split()
+
+def an(text, words):
+	cur = 0
+	text = clean(text, words)
+	for j in range(1, len(currencies)):
+		#print(text)
+		if words + currencies[j][1].lower() in text or words + currencies[j][0].lower() in text:
+			print(j, currencies[j])
+			if not cur:
+				cur = j + 0
+			else:
+				return -1
+	return cur
 
 def monitor():
 	@bot.message_handler(content_types=["text"])
@@ -58,32 +71,18 @@ def monitor():
 			term = -1
 
 		#Проверка названия валюты по хештегу
-		cur = -1
-		for j in range(1, len(currencies)):
-			if text.find('#' + currencies[j][1].lower() + ' ') >= 0:
-				print('!!!!!!!!', '#' + currencies[j][1].lower())
-				if cur == -1:
-					cur = j + 0
-				else:
-					cur = -1
-					break
+		cur = an(text, '#')
 
 		#Глубокий поиск названия валюты
+		if cur <= 0:
+			cur = an(text, '')
 		if cur == -1:
-			text = clean(text)
-			for j in range(1, len(currencies)):
-				#print(text)
-				if currencies[j][1].lower() in text or currencies[j][0].lower() in text:
-					print(j, currencies[j])
-					if cur == -1:
-						cur = j + 0
-					else:
-						return 0 #
+			return 0 #
 
 		print(cur, exc, term, buy)
 
 		#Рассмотреть случай продажи валюты
-		if cur >= 0 and buy != 1:
+		if cur >= 1 and buy != 1:
 #Замены
 			if not vol:
 				vol = 0.03
