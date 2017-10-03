@@ -34,16 +34,18 @@ def trade():
 		for i in operation:
 #Рассчёт основных параметров для биржи
 			price = stock[i['exchanger']].price(i['currency'])
-			print(price)
 			if not price: continue #валюты нет или в малом объёме
 
 			count = stock[i['exchanger']].info() * i['volume'] / price
 			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+			rub = stock[i['exchanger']].trader.ticker('btc_rur')['btc_rur']['buy']
 
 			succ = 0
 			if stock[i['exchanger']].trade(i['currency'], count, price, 2):
 				succ = 1
-			bot.send_message(sendid, 'Купить %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], count, price, count * price)) #
+
+			bot.forward_message(meid, i['chat'], i['mess'])
+			bot.send_message(meid, 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price * rub, price * count, price * count * rub))
 
 			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time]
 			print(sett)
@@ -54,15 +56,16 @@ def trade():
 				su = 0
 
 				for j in i['out']:
-					pric = price * j[2] if j[1] else j[2]
+					pric = j[2] if j[1] else price * j[2]
 					coun = count * j[0]
 					su += coun * pric
 
 					succ = 0
-					#if stock[i['exchange']].trade(i['currency'], coun, pric, 1):
-					#	succ = 1
-					
-					bot.send_message(sendid, 'Продать %s!\n-----\nК %f\nɃ %f\n∑ %f' % (currencies[i['currency']][1], coun, pric, pric * coun)) #
+					if stock[i['exchanger']].trade(i['currency'], coun, pric, 1):
+						succ = 1
+
+					#неправильное отображение цены в биткоинах
+					bot.send_message(meid, 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric * rub, pric * coun, pric * coun * rub))
 
 					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], pric, coun, time]
 					with open('data/history.txt', 'a') as file:
@@ -70,9 +73,11 @@ def trade():
 
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
-				print('Худший случай: -%fɃ\nЛучший случай: +%fɃ' % (loss, su - vol)) #
+				bot.send_message(meid, 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub))
 			else:
 				print('Ошибка покупки!\n')
+				bot.send_message(meid, 'Ошибка покупки!')
+			bot.send_message(meid, '------------------------------')
 
 if __name__ == '__main__':
 	trade()

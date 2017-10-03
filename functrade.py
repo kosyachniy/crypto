@@ -17,7 +17,13 @@ class YoBit():
 
 	#Баланс валюты
 	def info(self, cur='btc'):
-		x = self.trader.get_info()['return']['funds_incl_orders'] #funds
+		#иногда возникает баг
+		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
+		try:
+			x = self.trader.get_info()['return']['funds_incl_orders'] #funds
+		except:
+			sleep(5)
+			x = self.trader.get_info()['return']['funds_incl_orders']
 		return x[cur] if len(cur) else x
 
 	def price(self, cur, buy='buy'):
@@ -32,7 +38,7 @@ class YoBit():
 			buy = 'sell' if buy != 1 else 'buy'
 
 		#Есть ли эта валюта на бирже и достаточно ли объёма
-		if (cur in res): # and (res[cur]['vol'] >= 1)
+		if (cur in res) and (res[cur]['vol'] >= 1):
 			return res[cur][buy]
 
 		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
@@ -110,4 +116,4 @@ class YoBit():
 			print(i, '		', x[i], '		', pri, '		', suma)
 			su += suma
 
-		print('%fɃ\n%f₽' % (su, su * self.trader.ticker('btc_rur')['btc_rur']['sell'] + x['rur']))
+		print('%fɃ\n%f₽' % (su, su * self.trader.ticker('btc_rur')['btc_rur']['buy'] + x['rur']))

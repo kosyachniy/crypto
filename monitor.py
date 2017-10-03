@@ -21,7 +21,7 @@ def monitor():
 		except:
 			num = 0
 
-		#Убирать ссылки (чтобы не путать лишними словами)
+		#Убирать ссылки (чтобы не путать лишними словами), VIP
 		text = message.text.lower()
 		print(text)
 		exc = -1
@@ -40,6 +40,7 @@ def monitor():
 			buy = 1
 		else:
 			buy = 0
+		#Распознание размеров
 
 		for j in range(len(exchanges)):
 			if exchanges[j][0].lower() in text:
@@ -101,7 +102,9 @@ def monitor():
 				'volume': vol,
 				'out': out,
 				'loss': loss,
-				'term': term
+				'term': term,
+				'chat': message.chat.id,
+				'mess': message.message_id
 			} #, 'time': time
 
 			#Если без покупки, первые поля пустые ?
