@@ -18,9 +18,8 @@ with open('data/set.txt', 'r') as file:
 	token = s['token']
 	channelid = s['channelid']
 	meid = s['meid']
+	soid = s['soid']
 bot = telebot.TeleBot(token)
-
-sendid = meid
 
 '''
 @bot.message_handler(commands=['start', 'help'])

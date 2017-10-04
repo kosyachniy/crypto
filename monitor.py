@@ -7,12 +7,13 @@ with open('data/vocabulary.txt', 'r') as file:
 
 on = lambda text, words: any([word in text for word in words])
 
-alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю#'
+alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
 clean = lambda cont, words: str(''.join([i if i in alphabet + words else ' ' for i in cont])).split()
 
 def an(text, words):
 	cur = 0
 	text = clean(text, words)
+	print(text)
 	for j in range(1, len(currencies)):
 		#print(text)
 		if words + currencies[j][1].lower() in text or words + currencies[j][0].lower() in text:
@@ -56,13 +57,13 @@ def monitor():
 				elif y[0] == chat and y[1] == id:
 					t = True
 
-		sleep(5)
-		print(len(x))
+		sleep(2)
+		#print(len(x))
 
 #Обработка
 		for i in x:
 			#Убирать ссылки (чтобы не путать лишними словами), VIP
-			text = i[2]
+			text = i[2].lower()
 			print(text)
 			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 

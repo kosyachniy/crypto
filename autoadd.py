@@ -22,10 +22,10 @@ def autoadd():
 				if id:
 					if text: #изображения
 						with open('data/messages.txt', 'a') as file:
-							print(json.dumps([chat, id, text.lower()], ensure_ascii=False), file=file)
+							print(json.dumps([chat, id, text.lower()]), file=file)
 					db.execute("UPDATE lastmessage SET message=(?) WHERE id=(?)", (id, chat))
 				
-				sleep(1)
+				sleep(5)
 
 if __name__ == '__main__':
 	autoadd()

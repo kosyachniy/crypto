@@ -56,7 +56,8 @@ def bott():
 			elif i['term'] == 2:
 				formated += ' - долгорочный'
 			pric = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']][1])
-			formated += '\nX %.8fɃ (%d₽)' % (pric, pric / rub)
+			if not pric:
+				formated += '\nX %.8fɃ (%d₽)' % (pric, pric * rub)
 			'''
 			if total != -1:
 				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
@@ -65,7 +66,7 @@ def bott():
 			formated += '\n--------------------\nПокупка:'
 			if i['price']:
 				pric = i['price']
-				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
+				formated += '\nɃ %.8f (%d₽)' % (pric, pric * rub)
 			formated += '\nK %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
 			if len(i['out']):
 				formated += '\n\nПродажа:'
@@ -73,99 +74,12 @@ def bott():
 				formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100) #(j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%') #
 			formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
-			#print(formated)
-			bot.send_message(sendid, formated)
+			bot.send_message(channelid, formated)
 
 if __name__ == '__main__':
 	bott()
 
 '''
-		if cur >= 1:
-#Определение основной информации
-			#ели указана биржа - входить в неё
-			if exc != -1: exc = 0 #временная замена биржи на используемую
-			#for по вем биржам - первая, которая сработает
-			operation = stock[0].price(cur, buy)
-
-			if operation: #также решается проблема, если биржа пришлёт нулевое значение
-				total = stock[0].info() #разобраться в синхронизации БД и биржи
-				'\''
-				for j in db.execute("SELECT * FROM currencies WHERE currency=0 and changer=(?)", (exc,)):
-					total = j[3]
-				'\''
-				new = 0
-
-				if buy != 1:
-					delta = total * 0.03
-					count = delta / operation
-					delta *= 1 + stock[0].comm
-					new = total - delta
-
-					succ = stock[0].trade(cur, count, operation, buy)
-
-					t = True
-					for j in db.execute("SELECT * FROM currencies WHERE currency=(?) and changer=(?)", (cur, exc)):
-						t = False
-						db.execute("UPDATE currencies SET count=(?), price=(?) WHERE currency=(?) and changer=(?)", (j[]))
-
-					db.execute("INSERT INTO currencies (currency, changer, count, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (cur, exc, count, operation, time, *succ))
-				else:
-					count = 0 #количество этой валюты на бирже
-					delta = count * operation * (1 - stock[0].comm)
-					new = total + delta
-
-					succ = stock[0].trade(cur, count, operation, buy)
-
-					'\''
-					if succ:
-						#удалить из БД
-					else:
-						#добавить минусовое поле #
-					'\''
-
-				if succ[0]:
-					db.execute("UPDATE currencies SET count=(?) WHERE currency=0 and changer=(?)", (new, exc))
-
-#Торговля
-				#+ контроль ошибок + контроль есть что продавать + контроль есть ли смысл покупать (малые размеры)
-#Сборка сообщения на Telegram-канал
-				#bot.send_message(sendid, 'YoBit - %s: %.10f - %.10f' % (currencies[cur][1], ))
-			else:
-				exc = -1
-				total = -1
-				operation = price(currencies[cur][1])
-				delta = -1
-				count = -1
-				#db.execute("UPDATE operations SET time2=0 WHERE id=(?)", (i[0],))
-			#db.execute("INSERT INTO operations (act, currency, changer, buy, per, meschat, mesid, time1) VALUES (1, ?, ?, ?, 0.03, ?, ?, ?)", (cur, exc, buy, chat, id, time))
-			#Добавление в БД с обменщиком -1, игра на несущетвующей бирже
-
-			sign = '±+-'[buy]
-			buys = ['не определено', 'продать', 'купить'][buy]
-
-			if cur == -1:
-				cur1 = 'Криптовалюта не определена'
-				cur2 = 'Индекс не определён'
-			else:
-				cur1 = currencies[cur][0]
-				cur2 = currencies[cur][1]
-
-			rub = ru()
-
-			formated = '%s (%s)\n'  % (cur1, buys)
-			if buy != 1 and exc != -1:
-				formated += exchanges[exc][0] + ' - '
-			formated += cur2
-			if len(term):
-				formated += ' - ' + term
-			formated += '\nX %.8fɃ (%d₽)' % (operation, operation / rub)
-			if total != -1:
-				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
-
-			#бота перенести в отдельный файл
-			bot.send_message(sendid, formated)
-			bot.forward_message(sendid, chat, id)
-
 			if total != -1:
 #Сводка
 				t = [i[0] for i in exchanges]
@@ -186,6 +100,4 @@ if __name__ == '__main__':
 			bot.send_message(sendid, 'Не распознано')
 			bot.forward_message(sendid, chat, id)
 		bot.send_message(sendid, '------------------------------')
-
-		sleep(5)
 '''

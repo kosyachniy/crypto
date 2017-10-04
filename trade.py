@@ -9,12 +9,11 @@ def trade():
 	#Начинает с после следующей исполненной операции
 	num = 0
 	try:
-		with open('data/history.txt', 'r') as file:
+		with open('data/trade.txt', 'r') as file:
 			for i in file:
-				num = json.loads(i)[0]
+				num = json.loads(i)['id']
 	except:
 		pass
-	print(num) #
 
 	while True:
 #Подготовка операций к исполнению
@@ -23,13 +22,14 @@ def trade():
 			for i in file:
 				cont = json.loads(i)
 				if cont['id'] > num:
-					#print('!!!', currencies[cont['currency']][1])
-					operation.append(json.loads(i))
+					operation.append(cont)
+					num = cont['id']
+
+		#print('--!', operation)
 		
 		if not len(operation):
-			sleep(5)
+			sleep(2)
 			continue
-		num = operation[-1]['id']
 
 		for i in operation:
 #Рассчёт основных параметров для биржи
@@ -42,7 +42,7 @@ def trade():
 			delta = stock[i['exchanger']].info() * i['volume']
 			if delta < stock[i['exchanger']].min:
 				delta = stock[i['exchanger']].min
-			price = delta / price
+			count = delta / price
 
 			#сделать проверку достаточно ли средств
 
@@ -53,7 +53,10 @@ def trade():
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
 			bot.forward_message(meid, i['chat'], i['mess'])
-			bot.send_message(meid, 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price * rub, price * count, price * count * rub))
+			#bot.forward_message(soid, i['chat'], i['mess'])
+			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price * rub, price * count, price * count * rub)
+			bot.send_message(meid, formated)
+			#bot.send_message(soid, formated)
 
 			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time]
 			print(sett)
@@ -73,7 +76,9 @@ def trade():
 					succ =  stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
 					#неправильное отображение цены в биткоинах
-					bot.send_message(meid, 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric * rub, pric * coun, pric * coun * rub))
+					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric * rub, pric * coun, pric * coun * rub)
+					bot.send_message(meid, formated)
+					#bot.send_message(soid, formated)
 
 					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], pric, coun, time]
 					with open('data/history.txt', 'a') as file:
@@ -81,11 +86,15 @@ def trade():
 
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
-				bot.send_message(meid, 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub))
+				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub)
+				bot.send_message(meid, formated)
+				#bot.send_message(soid, formated)
 			else:
 				print('Ошибка покупки!\n')
 				bot.send_message(meid, 'Ошибка покупки!')
+				#bot.send_message(soid, 'Ошибка покупки!')
 			bot.send_message(meid, '------------------------------')
+			#bot.send_message(soid, '------------------------------')
 
 if __name__ == '__main__':
 	trade()
