@@ -15,6 +15,8 @@ def trade():
 	except:
 		pass
 
+	num = 0
+
 	while True:
 #Подготовка операций к исполнению
 		operation = []

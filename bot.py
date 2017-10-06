@@ -34,6 +34,8 @@ def bott():
 	except:
 		pass
 
+	#num = 0
+
 	while True:
 		operation = []
 		with open('data/trade.txt', 'r') as file:
@@ -56,8 +58,8 @@ def bott():
 			elif i['term'] == 2:
 				formated += ' - долгорочный'
 			pric = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']][1])
-			if not pric:
-				formated += '\nX %.8fɃ (%d₽)' % (pric, pric * rub)
+			if pric:
+				formated += '\n%.8fɃ (%d₽)' % (pric, pric * rub)
 			'''
 			if total != -1:
 				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
@@ -67,13 +69,14 @@ def bott():
 			if i['price']:
 				pric = i['price']
 				formated += '\nɃ %.8f (%d₽)' % (pric, pric * rub)
-			formated += '\nK %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
+			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
 			if len(i['out']):
 				formated += '\n\nПродажа:'
 			for j in i['out']:
 				formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100) #(j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%') #
 			formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
+			bot.forward_message(channelid, i['chat'], i['mess'])
 			bot.send_message(channelid, formated)
 
 if __name__ == '__main__':

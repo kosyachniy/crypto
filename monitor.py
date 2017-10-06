@@ -10,13 +10,13 @@ on = lambda text, words: any([word in text for word in words])
 alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
 clean = lambda cont, words: str(''.join([i if i in alphabet + words else ' ' for i in cont])).split()
 
-def an(text, words):
+def an(text, words, stop):
 	cur = 0
 	text = clean(text, words)
 	print(text)
 	for j in range(1, len(currencies)):
 		#print(text)
-		if words + currencies[j][1].lower() in text or words + currencies[j][0].lower() in text:
+		if words + currencies[j][1].lower() in text or (words + currencies[j][0].lower() in text and currencies[j][0].lower() not in stop):
 			print(j, currencies[j])
 			if not cur:
 				cur = j + 0
@@ -33,6 +33,8 @@ def monitor():
 				chat, id, _ = json.loads(i)
 	except:
 		pass
+
+	#chat, id = 0, 0
 
 	num = 0
 	try:
@@ -73,6 +75,11 @@ def monitor():
 			price = 0
 
 #Распознание сигнала
+			#Условия необработки
+			if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
+				bot.send_message(meid, 'stop: %s\nlen:%b' % (str(on(text, vocabulary['stop'])), len(clean(text, '')) * 1.5 > len(text) and len(text) >70))
+				continue
+
 			#Определение сигнал покупки / продажи
 			if on(text, vocabulary['buy']):
 				buy = 2
@@ -80,8 +87,6 @@ def monitor():
 				buy = 1
 			else:
 				buy = 0
-
-			#Распознание размеров
 
 			#Определение биржи
 			exc = -1
@@ -101,11 +106,22 @@ def monitor():
 				term = -1
 
 			#Определение валюты
-			cur = an(text, '#') #поиск по хештегу
-			if cur <= 0: cur = an(text, '')
+			cur = an(text, '#', ['status']) #поиск по хештегу
+			if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
 			if cur == -1: continue #если несколько валют
 
 			print(cur, exc, term, buy)
+
+			'''
+			#Распознание размеров
+			for j in text.split('\n'):
+				parse = j.split(' ')
+				if on(j, vocabulary['buy']):
+					for u in parse:
+						try:
+							float(u)
+					buys.append()
+			'''
 
 			#Рассмотреть случай продажи валюты
 			if cur >= 1 and buy != 1:
