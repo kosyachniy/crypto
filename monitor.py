@@ -1,5 +1,6 @@
 #Контроль сигналов
 from func import *
+import re, math
 
 #Данные
 with open('data/vocabulary.txt', 'r') as file:
@@ -77,7 +78,6 @@ def monitor():
 #Распознание сигнала
 			#Условия необработки
 			if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
-				bot.send_message(meid, 'stop: %s\nlen:%b' % (str(on(text, vocabulary['stop'])), len(clean(text, '')) * 1.5 > len(text) and len(text) >70))
 				continue
 
 			#Определение сигнал покупки / продажи
@@ -112,23 +112,46 @@ def monitor():
 
 			print(cur, exc, term, buy)
 
-			'''
 			#Распознание размеров
-			for j in text.split('\n'):
-				parse = j.split(' ')
-				if on(j, vocabulary['buy']):
-					for u in parse:
+			try:
+				if '\n' not in text:
+					t = True
+					for j in text.split(' '):
 						try:
-							float(u)
-					buys.append()
-			'''
+							if t:
+								price = float(j)
+								t = False
+							else:
+								if '%' in j:
+									x = (1 - (int(re.findall(r'\d+', j)[0]) / 100)) * price
+								else:
+									x = float(j)
+								out.append([0, 1, x])
+						except:
+							continue
+				else:
+					print('INDDDD1')
+					for j in text.split('\n'):
+						try:
+							if on(j, vocabulary['buy']):
+								print('INDDDD2')
+								price = float(re.search(r'-?\d+\.\d*', j).group(0))
+							elif on(j, vocabulary['sell']):
+								print('INDDDD3')
+								out.append([0, 0, float(re.search(r'-?\d+\.\d*', j).group(0))])
+						except:
+							continue
+			except:
+				pass
 
 			#Рассмотреть случай продажи валюты
 			if cur >= 1 and buy != 1:
 #Замены
+				#Если не указаны объёмы покупки
 				if not vol:
 					vol = 0.03
 
+				#Если не указаны ордеры на продажу
 				if not len(out):
 					out = [
 						[0.5, 0, 1.1],
@@ -136,6 +159,19 @@ def monitor():
 						[0.1, 0, 1.2],
 						[0.1, 0, 1.25]
 					]
+
+				#Если не указаны объёмы продажи
+				if not out[0][0]:
+					s = 0
+					for j in range(len(out)):
+						s += math.exp(j)
+					x = 1 / s
+					a = 0
+					for j in range(len(out) - 1):
+						out[-1 * (j + 1)][0] = math.exp(j) * x
+						a += out[len(out) - j - 1][0]
+					out[0][0] = 1 - a
+				#Рассмотреть случай слишком низкой суммы сделки для выставления ордера
 
 #Отправка на обработку
 				num += 1

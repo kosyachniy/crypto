@@ -45,7 +45,7 @@ def bott():
 					operation.append(x)
 					num = x['id']
 
-		rub = 250000 #rub = ru()
+		rub = ru()
 		for i in operation:
 			formated = '%s\n'  % (currencies[i['currency']][0],)
 			if i['exchanger'] != -1:
@@ -59,7 +59,7 @@ def bott():
 				formated += ' - долгорочный'
 			pric = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']][1])
 			if pric:
-				formated += '\n%.8fɃ (%d₽)' % (pric, pric * rub)
+				formated += '\n%.8fɃ (%d₽)' % (pric, pric / rub)
 			'''
 			if total != -1:
 				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
@@ -68,7 +68,7 @@ def bott():
 			formated += '\n--------------------\nПокупка:'
 			if i['price']:
 				pric = i['price']
-				formated += '\nɃ %.8f (%d₽)' % (pric, pric * rub)
+				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
 			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
 			if len(i['out']):
 				formated += '\n\nПродажа:'

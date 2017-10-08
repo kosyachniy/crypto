@@ -28,7 +28,7 @@ def text(message):
 		chat, id, text = message.chat.id, message.message_id, message.text
 
 	with open('data/messages.txt', 'a') as file:
-		print(json.dumps([chat, id, text]), file=file)
+		print(json.dumps([chat, id, text], ensure_ascii=False), file=file)
 
 if __name__ == '__main__':
 	bot.polling(none_stop=True)

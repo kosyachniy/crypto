@@ -15,7 +15,7 @@ def trade():
 	except:
 		pass
 
-	num = 0
+	#num = 0
 
 	while True:
 #Подготовка операций к исполнению
@@ -38,7 +38,7 @@ def trade():
 			if i['exchanger'] == -1: i['exchanger'] = 0 #Биржа по умолчанию
 			i['exchanger'] = 0 #Временная замена на одну биржу
 
-			price = stock[i['exchanger']].price(i['currency'])
+			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
 
 			delta = stock[i['exchanger']].info() * i['volume']
