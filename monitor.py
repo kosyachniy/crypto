@@ -14,9 +14,7 @@ clean = lambda cont, words: str(''.join([i if i in alphabet + words else ' ' for
 def an(text, words, stop):
 	cur = 0
 	text = clean(text, words)
-	print(text)
 	for j in range(1, len(currencies)):
-		#print(text)
 		if words + currencies[j][1].lower() in text or (words + currencies[j][0].lower() in text and currencies[j][0].lower() not in stop):
 			print(j, currencies[j])
 			if not cur:
