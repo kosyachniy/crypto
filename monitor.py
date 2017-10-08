@@ -113,36 +113,32 @@ def monitor():
 			print(cur, exc, term, buy)
 
 			#Распознание размеров
-			try:
-				if '\n' not in text:
-					t = True
-					for j in text.split(' '):
-						try:
-							if t:
-								price = float(j)
-								t = False
+			if '\n' not in text:
+				t = True
+				for j in text.split(' '):
+					try:
+						if t:
+							price = float(j)
+							t = False
+						else:
+							if '%' in j:
+								x = (1 - (int(re.findall(r'\d+', j)[0]) / 100)) * price
 							else:
-								if '%' in j:
-									x = (1 - (int(re.findall(r'\d+', j)[0]) / 100)) * price
-								else:
-									x = float(j)
-								out.append([0, 1, x])
-						except:
-							continue
-				else:
-					print('INDDDD1')
-					for j in text.split('\n'):
-						try:
-							if on(j, vocabulary['buy']):
-								print('INDDDD2')
-								price = float(re.search(r'-?\d+\.\d*', j).group(0))
-							elif on(j, vocabulary['sell']):
-								print('INDDDD3')
-								out.append([0, 0, float(re.search(r'-?\d+\.\d*', j).group(0))])
-						except:
-							continue
-			except:
-				pass
+								x = float(j)
+							out.append([0, 1, x])
+					except:
+						pass
+			else:
+				for j in text.split('\n'):
+					try:
+						if on(j, vocabulary['buy']):
+							price = float(re.search(r'-?\d+\.\d*', j).group(0))
+							#Добавить разделение на несколько покупок
+						elif on(j, vocabulary['sell']):
+							out.append([0, 1, float(re.search(r'-?\d+\.\d*', j).group(0))])
+					except:
+						pass
+				# Определение стоп-лосса
 
 			#Рассмотреть случай продажи валюты
 			if cur >= 1 and buy != 1:

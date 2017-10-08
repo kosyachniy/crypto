@@ -1,8 +1,5 @@
 from func import *
 
-from functrade import *
-stock = [YoBit()]
-
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #

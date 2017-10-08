@@ -48,3 +48,7 @@ def text(message):
 
 #SQLite
 db=sqlite3.connect('data/main.db')
+
+#Биржа
+from functrade import *
+stock = [YoBit()]

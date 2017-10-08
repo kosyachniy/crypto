@@ -1,9 +1,6 @@
 #Торговля по сигналам
 from func import *
 
-from functrade import *
-stock = [YoBit()]
-
 def trade():
 #Определение последней необработанной операции
 	#Начинает с после следующей исполненной операции
@@ -90,13 +87,13 @@ def trade():
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub)
 				bot.send_message(meid, formated)
-				#bot.send_message(soid, formated)
+				bot.send_message(soid, formated) #
 			else:
 				print('Ошибка покупки!\n')
 				bot.send_message(meid, 'Ошибка покупки!')
-				#bot.send_message(soid, 'Ошибка покупки!')
+				bot.send_message(soid, 'Ошибка покупки!') #
 			bot.send_message(meid, '------------------------------')
-			#bot.send_message(soid, '------------------------------')
+			bot.send_message(soid, '------------------------------') #
 
 if __name__ == '__main__':
 	trade()
