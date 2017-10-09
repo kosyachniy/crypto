@@ -51,4 +51,4 @@ db=sqlite3.connect('data/main.db')
 
 #Биржа
 from functrade import *
-stock = [YoBit()]
+stock = [Bittrex()] #YoBit(), 

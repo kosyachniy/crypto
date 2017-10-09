@@ -1,6 +1,8 @@
 #Торговля по сигналам
 from func import *
 
+import pylab #
+
 class YoBit():
 	def __init__(self):
 		from library.yobit import YoBit as t
@@ -87,9 +89,8 @@ class YoBit():
 		else:
 			count = self.trader.get_info()['return']['funds'][cur[:-4]]
 			delta = count * price
-
-		if delta < self.min:
-			price = self.min / count
+			if delta < self.min:
+				price = self.min / count
 
 		print('%.8f\n%.8f\n%.8f' % (price, count, delta))
 
@@ -99,7 +100,7 @@ class YoBit():
 			qm = [0, 0, 0, 0]
 			#Ждём 30 секунд исполнения ордера
 			for i in range(6):
-				print(self.trader.order_info(x))
+				print(self.trader.order_info(x)) #
 				if self.trader.order_info(x)['return'][str(x)]['status']:
 					#Сразу выставляем на продау
 					qm[0] = self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
@@ -128,3 +129,42 @@ class YoBit():
 			su += suma
 
 		print('--------------------\n%fɃ\n%f₽' % (su, su * self.trader.ticker('btc_rur')['btc_rur']['buy']))
+
+class Bittrex():
+	def __init__(self):
+		from library.bittrex import Bittrex as t
+		self.trader = t() #оптимизировать
+		self.comm = 0.002
+		#self.min = 0.00011
+
+	def name(self, cur):
+		if type(cur) == str:
+			return 'btc-' + cur.lower()
+		else:
+			return 'btc-' + currencies[cur][1].lower()
+
+	def price(self, cur, buy='buy'):
+		cur = cur.lower()
+		if cur in ('btc', 0):
+			return 1
+
+		cur = self.name(cur)
+		x = self.trader.get_ticker(cur)
+
+		buy = 'Bid' if buy in ('sell', 1) else 'Ask'
+
+		if x['success']:
+			return x['result'][buy]
+
+		return 0
+
+	def last(self, cur):
+		cur = self.name(cur)
+
+		y = []
+		for i in self.trader.get_market_history(cur)['result']:
+			y.append(i['Price'])
+
+		pylab.plot([i for i in range(1, len(y) + 1)], y)
+		pylab.show()
+		#pylab.savefig(cur + '.png', format='png', dpi=150)
