@@ -5,6 +5,13 @@
 Канал Telegram | [@cryptosovet](https://t.me/cryptosovet)
 Бот Telegram | [@CryptoSovetBot](https://t.me/CryptoSovetBot)
 
+Биржи
+---
+Биржа | GitHub | API
+---|---|---
+YoBit | [NanoBjorn](https://github.com/NanoBjorn/yobit) | [yobit.net](https://yobit.net/ru/api/)
+Bittrex | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittrex.com](https://bittrex.com/Home/Api)
+
 Схема работы
 ---
 Получение сигналов | Обработка | Исполнение

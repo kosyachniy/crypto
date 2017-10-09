@@ -12,10 +12,18 @@ class YoBit():
 
 	#Преобразовать индекс / название валюты для биржи
 	def name(self, cur):
-		if type(cur) == str:
-			return cur.lower() + '_btc'
-		else:
-			return currencies[cur][1].lower() + '_btc'
+		if type(cur) == int:
+			cur = currencies[cur][1]
+		cur = cur.lower()
+		if cur == 'btc':
+			return 0
+		elif cur == 'rur':
+			return 'btc_rur'
+		return cur + '_btc'
+
+	def buys(self, buy='buy', dop=0):
+		x = 0 if buy in ('sell', 1) else 1
+		return 'sbeulyl'[(x + dop) % 2::2]
 
 	#Баланс валюты
 	def info(self, cur='btc'):
@@ -29,19 +37,12 @@ class YoBit():
 		return x[cur] if len(cur) else x
 
 	def price(self, cur, buy='buy'):
-		if cur == 0 or cur == 'btc':
-			return 1 #пока всё покупаем через биткоины
+		cur = self.name(cur)
+		if not cur:
+			return 1
 
-		if cur == 'rur':
-			cur = 'btc_rur'
-		else:
-			cur = self.name(cur)
 		res = self.trader.ticker(cur)
-
-		x = 1 if buy in ('sell', 1) else 0
-		if cur == 'btc_rur':
-			x = (x + 1) % 2
-		buy = 'sbeulyl'[x::2]
+		buy = self.buys(buy, 1 if cur != 'btc_rur' else 0)
 
 		#Есть ли эта валюта на бирже и достаточно ли объёма
 		if (cur in res) and (res[cur]['vol'] >= 1):
@@ -54,10 +55,12 @@ class YoBit():
 		return 0
 
 	#Купить / продать
-	def trade(self, cur, count, price, buy):
+	def trade(self, cur, count, price=0, buy='buy'):
+		if not price: price = self.price(cur, buy)
 		name = self.name(cur)
-		buys = 'buy' if buy != 1 else 'sell'
-		print('bot.send_message(sendid, \'self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)\')' % (name, buys, price, count))
+		buy = self.buys(buy, 0 if cur != 'btc_rur' else 1)
+
+		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
 		'''
 		try:
 			q = self.trader.trade(name, buys, price, count)
@@ -138,10 +141,16 @@ class Bittrex():
 		#self.min = 0.00011
 
 	def name(self, cur):
-		if type(cur) == str:
-			return 'btc-' + cur.lower()
-		else:
-			return 'btc-' + currencies[cur][1].lower()
+		if type(cur) == int:
+			cur = currencies[cur][1]
+		cur = cur.lower()
+		if cur == 'btc':
+			return 0
+		return 'btc-' + cur
+
+	def buys(self, buy='buy', dop=0):
+		x = 0 if buy in ('sell', 1) else 1
+		return 'ABsikd'[(x + dop) % 2::2]
 
 	def price(self, cur, buy='buy'):
 		cur = cur.lower()
@@ -150,13 +159,20 @@ class Bittrex():
 
 		cur = self.name(cur)
 		x = self.trader.get_ticker(cur)
-
-		buy = 'Bid' if buy in ('sell', 1) else 'Ask'
+		buy = self.buys(buy, 1)
 
 		if x['success']:
 			return x['result'][buy]
 
 		return 0
+
+	def trade(self, cur, count, price=0, buy='buy'):
+		if not price: price = self.price(cur, buy)
+		name = self.name(cur)
+		buy = self.buys(buy)
+
+		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
+		return 1
 
 	def last(self, cur):
 		cur = self.name(cur)
@@ -166,5 +182,6 @@ class Bittrex():
 			y.append(i['Price'])
 
 		pylab.plot([i for i in range(1, len(y) + 1)], y)
+		pylab.grid(True)
 		pylab.show()
 		#pylab.savefig(cur + '.png', format='png', dpi=150)

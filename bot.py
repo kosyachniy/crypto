@@ -78,26 +78,3 @@ def bott():
 
 if __name__ == '__main__':
 	bott()
-
-'''
-			if total != -1:
-#Сводка
-				t = [i[0] for i in exchanges]
-				btc = [0] * len(exchanges)
-				for i in db.execute("SELECT * FROM currencies WHERE succ!=0 and changer=0"): #последние условие, т.к. другие биржи ещё не работают
-					pric = stock[i[2]].price(i[1], 1) #
-					pri = i[3] * pric if i[1] != 0 else i[3]
-					print('---', i[4], pric)
-					btc[i[2]] += pri
-					rise = '↑ ' if pric - i[4] > 0 else '↓ ' if pric - i[4] < 0 else ''
-					t[i[2]] += '\n%s%s	%.6f   |   %.6fɃ   |   %d₽' % (rise, currencies[i[1]][1], i[3], pri, pri / rub)
-
-				for i in range(len(exchanges)):
-					t[i] += '\n∑ %fɃ (%d₽)' % (round(btc[i], 6), int(btc[i] / rub))
-				formated = 'Сводка\n--------------------\n%s' % (t[0],)
-				bot.send_message(sendid, formated)
-		elif buy >= 1:
-			bot.send_message(sendid, 'Не распознано')
-			bot.forward_message(sendid, chat, id)
-		bot.send_message(sendid, '------------------------------')
-'''

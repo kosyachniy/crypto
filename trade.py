@@ -32,8 +32,8 @@ def trade():
 
 		for i in operation:
 #Рассчёт основных параметров для биржи
-			if i['exchanger'] == -1: i['exchanger'] = 0 #Биржа по умолчанию
-			i['exchanger'] = 0 #Временная замена на одну биржу
+			if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
+			i['exchanger'] = 1 #Временная замена на одну биржу
 
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
