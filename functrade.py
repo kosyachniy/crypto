@@ -12,6 +12,7 @@ class YoBit():
 
 	#Преобразовать индекс / название валюты для биржи
 	def name(self, cur):
+		if '_' in cur: return cur
 		if type(cur) == int:
 			cur = currencies[cur][1]
 		cur = cur.lower()
@@ -141,6 +142,7 @@ class Bittrex():
 		#self.min = 0.00011
 
 	def name(self, cur):
+		if '-' in cur: return cur
 		if type(cur) == int:
 			cur = currencies[cur][1]
 		cur = cur.lower()
@@ -169,9 +171,11 @@ class Bittrex():
 	def trade(self, cur, count, price=0, buy='buy'):
 		if not price: price = self.price(cur, buy)
 		name = self.name(cur)
-		buy = self.buys(buy)
 
-		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
+		if buy in ('sell', 1):
+			print('self.trader.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
+		else:
+			print('self.trader.buy_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
 		return 1
 
 	def last(self, cur):
