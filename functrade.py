@@ -232,3 +232,6 @@ class Bittrex():
 		if self.trader.get_order(id)['result']['Closed'] != None:
 			return True
 		return False
+
+	def cancel(self, id):
+		self.trader.cancel(id)

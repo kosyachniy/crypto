@@ -97,8 +97,12 @@ def trade():
 
 					x.append([i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time])
 				#Стоп-цена
+				'''
 				for j in range(len(x)-1):
 					x[j].append(x[j+1][6])
+				'''
+				for j in range(len(x)-1):
+					x[j].append(0)
 				loss = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
 				x[len(x)-1].append(loss)
 				
