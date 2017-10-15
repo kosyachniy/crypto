@@ -64,14 +64,27 @@ def trade():
 			with open('data/history.txt', 'a') as file:
 				print(json.dumps(sett), file=file)
 
-			#ждать исполнения ордеров
-
 			if succ:
+				#Ждать исполнения ордеров
+				t = True
+				for i in range(10):
+					if stock[i['exchanger']].order(succ):
+						t = False
+						break
+					sleep(5)
+
+				if t: continue
+
 				su = 0
 
-				for j in i['out']:
-					pric = j[2] if j[1] else price * j[2]
-					coun = count * j[0]
+				for j in range(1, len(i['out'])+1):
+					#Если слишком маленький объём продажи
+					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
+					coun = count * i['out'][-j][0]
+					if coun < stock[i['exchanger']].min:
+						i['out'][-1-j][0] += i['out'][-j][0]
+						continue
+
 					su += coun * pric
 
 					succ =  stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
@@ -81,7 +94,7 @@ def trade():
 					bot.send_message(meid, formated)
 					#bot.send_message(soid, formated)
 
-					sett = [i['id'], succ, 'sell', i['currency'], i['exchanger'], pric, coun, time]
+					sett = [i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time]
 					with open('data/history.txt', 'a') as file:
 						print(json.dumps(sett), file=file)
 

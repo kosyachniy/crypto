@@ -149,7 +149,7 @@ class Bittrex():
 		from library.bittrex import Bittrex as t
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
-		self.min = 0.00011 #
+		self.min = 0.0005 #
 		self.per = 0.03
 
 	def name(self, cur):
@@ -198,6 +198,12 @@ class Bittrex():
 			print('self.trader.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
 		else:
 			print('self.trader.buy_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
+		'''
+		if buy in ('sell', 1):
+			return self.trader.sell_limit(name, count, price)['result']['uuid']
+		else:
+			return self.trader.buy_limit(name, count, price)['result']['uuid']
+		'''
 		return 1
 
 	def last(self, cur):
@@ -220,3 +226,9 @@ class Bittrex():
 			s += sell
 		print('--------------------')
 		print('%fɃ\n%f₽' % (s, s / ru()))
+
+	#Закрыт ли ордер?
+	def order(self, id):
+		if self.trader.get_order(id)['result']['Closed'] != None:
+			return True
+		return False
