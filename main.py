@@ -1,21 +1,21 @@
 from multiprocessing import Process
 
-from autoadd import autoadd
+#from autoadd import autoadd
 from monitor import monitor
 from bot import bott
 from trade import trade
 
-p1 = Process(target=autoadd)
+#p1 = Process(target=autoadd)
 p2 = Process(target=monitor)
 p3 = Process(target=bott)
 p4 = Process(target=trade)
 
-p1.start()
+#p1.start()
 p2.start()
 p3.start()
 p4.start()
 
-#Нельзя повторять одни и те же сигналы!
+#Нельзя повторять одни и те же сигналы! - циклится
 #Управление ботом
 from func import *
 

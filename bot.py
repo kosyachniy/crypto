@@ -18,8 +18,6 @@ def price(x):
 			print(name, index, price)
 			return float(price)
 
-ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
-
 def bott():
 	#сделать контроль последнего обработанного id
 
@@ -41,6 +39,10 @@ def bott():
 				if x['id'] > num:
 					operation.append(x)
 					num = x['id']
+
+		if not len(operation):
+			sleep(5)
+			continue
 
 		rub = ru()
 		for i in operation:

@@ -24,19 +24,21 @@ def trade():
 					operation.append(cont)
 					num = cont['id']
 
-		#print('--!', operation)
-		
-		if not len(operation):
+		'''
+		if len(operation):
+			print('--!', operation)
+		else:
 			sleep(2)
 			continue
+		'''
 
 		for i in operation:
 #Рассчёт основных параметров для биржи
-			if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
+			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
 			i['exchanger'] = 1 #Временная замена на одну биржу
 
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
-			if not price: continue #валюты нет или в малом объёме
+			#if not price: continue #валюты нет или в малом объёме
 
 			delta = stock[i['exchanger']].info() * i['volume']
 			if delta < stock[i['exchanger']].min:
@@ -87,13 +89,13 @@ def trade():
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub)
 				bot.send_message(meid, formated)
-				bot.send_message(soid, formated) #
+				#bot.send_message(soid, formated) #
 			else:
 				print('Ошибка покупки!\n')
 				bot.send_message(meid, 'Ошибка покупки!')
-				bot.send_message(soid, 'Ошибка покупки!') #
+				#bot.send_message(soid, 'Ошибка покупки!') #
 			bot.send_message(meid, '------------------------------')
-			bot.send_message(soid, '------------------------------') #
+			#bot.send_message(soid, '------------------------------') #
 
 if __name__ == '__main__':
 	trade()

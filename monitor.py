@@ -58,7 +58,7 @@ def monitor():
 				elif y[0] == chat and y[1] == id:
 					t = True
 
-		sleep(2)
+		#sleep(2)
 		#print(len(x))
 
 #Обработка
