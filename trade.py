@@ -117,8 +117,8 @@ def trade():
 				x[len(x)-1].append(loss)
 				
 				with open('data/history.txt', 'a') as file:
-					print(x)
 					for j in range(1, len(x)+1):
+						print(x[-j])
 						print(json.dumps(x[-j]), file=file)
 
 				#Худший - лучший случай

@@ -64,7 +64,7 @@ def monitor():
 #Обработка
 		for i in x:
 			#Убирать ссылки (чтобы не путать лишними словами), VIP
-			text = i[2].lower()
+			text = i[2].lower().replace(',', '.') #Сделать замену запятой на точку
 			print(text)
 			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
@@ -136,7 +136,21 @@ def monitor():
 							out.append([0, 1, float(re.search(r'-?\d+\.\d*', j).group(0))])
 					except:
 						pass
-				# Определение стоп-лосса
+
+				#Определение стоп-лосса
+				for j in text.split('\n'):
+					try:
+						if on(j, vocabulary['loss']):
+							if '%' in j:
+								l = 1 - int(re.findall(r'\d+', j)[0]) / 100
+								if l < 0:
+									continue
+								loss = [0, l]
+							elif '.' in j:
+								loss = [1, float(re.search(r'-?\d+\.\d*', j).group(0))]
+					except:
+						pass
+
 
 			#Рассмотреть случай продажи валюты
 			if cur >= 1 and buy != 1:
