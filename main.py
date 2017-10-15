@@ -1,8 +1,5 @@
 from multiprocessing import Process
 
-from functrade import *
-stock = [YoBit(), Bittrex()]
-
 #from autoadd import autoadd
 from monitor import monitor
 from bot import bott
@@ -11,12 +8,12 @@ from trade import trade
 #p1 = Process(target=autoadd)
 p2 = Process(target=monitor)
 #p3 = Process(target=bott)
-p4 = Process(target=trade, args=(stock,))
+#p4 = Process(target=trade) #, args=(stock,)
 
 #p1.start()
 p2.start()
 #p3.start()
-p4.start()
+#p4.start()
 
 #Нельзя повторять одни и те же сигналы! - циклится
 #Управление ботом

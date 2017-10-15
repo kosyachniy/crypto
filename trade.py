@@ -1,7 +1,7 @@
 #Торговля по сигналам
 from func import *
 
-def trade(stock):
+def trade():
 #Определение последней необработанной операции
 	#Начинает с после следующей исполненной операции
 	num = 0
@@ -13,10 +13,6 @@ def trade(stock):
 		pass
 
 	#num = 0
-	print('Start')
-	print(stock)
-	print(stock[1].price('ltc'))
-	sleep(5)
 
 	while True:
 #Подготовка операций к исполнению
@@ -42,7 +38,7 @@ def trade(stock):
 			i['exchanger'] = 1 #Временная замена на одну биржу
 
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
-			#if not price: continue #валюты нет или в малом объёме
+			if not price: continue #валюты нет или в малом объёме
 
 			delta = stock[i['exchanger']].info() * i['volume']
 			if delta < stock[i['exchanger']].min:
@@ -52,14 +48,14 @@ def trade(stock):
 			#сделать проверку достаточно ли средств
 
 			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
-			rub = stock[i['exchanger']].trader.ticker('btc_rur')['btc_rur']['buy']
+			rub = stock[i['exchanger']].ru()
 
 #Покупка
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
 			bot.forward_message(meid, i['chat'], i['mess'])
 			#bot.forward_message(soid, i['chat'], i['mess'])
-			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price * rub, price * count, price * count * rub)
+			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price / rub, price * count, (price * count) / rub)
 			bot.send_message(meid, formated)
 			#bot.send_message(soid, formated)
 
@@ -81,7 +77,7 @@ def trade(stock):
 					succ =  stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
 					#неправильное отображение цены в биткоинах
-					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric * rub, pric * coun, pric * coun * rub)
+					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric / rub, pric * coun, (pric * coun) / rub)
 					bot.send_message(meid, formated)
 					#bot.send_message(soid, formated)
 
@@ -91,7 +87,7 @@ def trade(stock):
 
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
-				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss * rub, su - vol, (su - vol) * rub)
+				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss / rub, su - vol, (su - vol) / rub)
 				bot.send_message(meid, formated)
 				#bot.send_message(soid, formated) #
 			else:

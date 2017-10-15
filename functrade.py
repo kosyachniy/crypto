@@ -1,22 +1,22 @@
 #Торговля по сигналам
 from func import *
 
-import pylab #
+ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
-from library.bittrex import Bittrex as t1
-t11 = t1()
+import pylab #
 
 class YoBit():
 	def __init__(self):
 		from library.yobit import YoBit as t
-		t11 = t() #оптимизировать
+		self.trader = t() #оптимизировать
 		self.comm = 0.002
 		self.min = 0.00011
 		self.per = 0.03
 
 	#Преобразовать индекс / название валюты для биржи
 	def name(self, cur):
-		if '_' in cur: return cur
+		if type(cur) == str and '_' in cur:
+			return cur
 		if type(cur) == int:
 			cur = currencies[cur][1]
 		cur = cur.lower()
@@ -30,15 +30,18 @@ class YoBit():
 		x = 0 if buy in ('sell', 1) else 1
 		return 'sbeulyl'[(x + dop) % 2::2]
 
+	def ru(self):
+		return 1 / self.trader.ticker('btc_rur')['btc_rur']['buy']
+
 	#Баланс валюты
 	def info(self, cur='btc'):
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
 		try:
-			x = t11.get_info()['return']['funds_incl_orders'] #funds
+			x = self.trader.get_info()['return']['funds_incl_orders'] #funds
 		except:
 			sleep(5)
-			x = t11.get_info()['return']['funds_incl_orders']
+			x = self.trader.get_info()['return']['funds_incl_orders']
 		return x[cur] if len(cur) else x
 
 	def price(self, cur, buy='buy'):
@@ -46,7 +49,7 @@ class YoBit():
 		if not cur:
 			return 1
 
-		res = t11.ticker(cur)
+		res = self.trader.ticker(cur)
 		buy = self.buys(buy, 1 if cur != 'btc_rur' else 0)
 
 		#Есть ли эта валюта на бирже и достаточно ли объёма
@@ -66,10 +69,10 @@ class YoBit():
 		if not count: count = self.info() * self.per / price
 
 		buy = self.buys(buy, 0 if cur != 'btc_rur' else 1)
-		print('t11.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
+		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
 		'''
 		try:
-			q = t11.trade(name, buys, price, count)
+			q = self.trader.trade(name, buys, price, count)
 			if 'success' not in q:
 				return 0
 		except:
@@ -86,37 +89,37 @@ class YoBit():
 		cur = self.name(cur)
 
 		if price == 0:
-			#price = t11.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
-			price = t11.ticker(cur)[cur][buy] #попробовать продавать по такой цене
-		#price = t11.ticker(cur)[cur]['last']
+			#price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
+			price = self.trader.ticker(cur)[cur][buy] #попробовать продавать по такой цене
+		#price = self.trader.ticker(cur)[cur]['last']
 
 		if buy == 'buy':
-			total = t11.get_info()['return']['funds']['btc']
+			total = self.trader.get_info()['return']['funds']['btc']
 			delta = total * 0.03
 			if delta < self.min:
 				delta = self.min
 			count = delta / price
 		else:
-			count = t11.get_info()['return']['funds'][cur[:-4]]
+			count = self.trader.get_info()['return']['funds'][cur[:-4]]
 			delta = count * price
 			if delta < self.min:
 				price = self.min / count
 
 		print('%.8f\n%.8f\n%.8f' % (price, count, delta))
 
-		q = t11.trade(cur, buy, price, count)
+		q = self.trader.trade(cur, buy, price, count)
 		if q['success']:
 			x = q['return']['order_id']
 			qm = [0, 0, 0, 0]
 			#Ждём 30 секунд исполнения ордера
 			for i in range(6):
-				print(t11.order_info(x)) #
-				if t11.order_info(x)['return'][str(x)]['status']:
+				print(self.trader.order_info(x)) #
+				if self.trader.order_info(x)['return'][str(x)]['status']:
 					#Сразу выставляем на продау
-					qm[0] = t11.trade(cur, 'sell', price * 1.1, count * 0.5)
-					qm[1] = t11.trade(cur, 'sell', price * 1.15, count * 0.3)
-					qm[2] = t11.trade(cur, 'sell', price * 1.2, count * 0.1)
-					qm[3] = t11.trade(cur, 'sell', price * 1.25, count * 0.1)
+					qm[0] = self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
+					qm[1] = self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
+					qm[2] = self.trader.trade(cur, 'sell', price * 1.2, count * 0.1)
+					qm[3] = self.trader.trade(cur, 'sell', price * 1.25, count * 0.1)
 					return (x, *[i['return']['order_id'] for i in qm])
 				else:
 					sleep(5)
@@ -139,14 +142,14 @@ class YoBit():
 			print(i, '		', str(x[i]) + '	' if type(x[i]) == int else x[i], '	', '%.10f' % pri if type(pri) == float else '%d	' % pri, '	', '%.10f' % suma if suma else 0)
 			su += suma
 
-		print('--------------------\n%fɃ\n%f₽' % (su, su * t11.ticker('btc_rur')['btc_rur']['buy']))
+		print('--------------------\n%fɃ\n%f₽' % (su, su * self.trader.ticker('btc_rur')['btc_rur']['buy']))
 
 class Bittrex():
 	def __init__(self):
-		#from library.bittrex import Bittrex as t
-		#t11 = t() #оптимизировать
+		from library.bittrex import Bittrex as t
+		self.trader = t() #оптимизировать
 		self.comm = 0.002
-		#self.min = 0.00011
+		self.min = 0.00011 #
 		self.per = 0.03
 
 	def name(self, cur):
@@ -165,9 +168,12 @@ class Bittrex():
 	
 	def info(self, name='btc'):
 		name = name.lower()
-		for i in t11.get_balances()['result']:
+		for i in self.trader.get_balances()['result']:
 			if i['Currency'].lower() == name:
 				return i['Available']
+
+	def ru(self):
+		return ru()
 
 	def price(self, cur, buy='buy'):
 		if type(cur) == str:
@@ -176,9 +182,7 @@ class Bittrex():
 			return 1
 
 		cur = self.name(cur)
-		print(cur)
-		x = t11.get_ticker(cur)
-		print('YES')
+		x = self.trader.get_ticker(cur)
 		buy = self.buys(buy, 1)
 		if x['success']:
 			return x['result'][buy]
@@ -191,16 +195,16 @@ class Bittrex():
 		if not count: count = self.info() * self.per / price
 
 		if buy in ('sell', 1):
-			print('t11.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
+			print('self.trader.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
 		else:
-			print('t11.buy_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
+			print('self.trader.buy_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
 		return 1
 
 	def last(self, cur):
 		cur = self.name(cur)
 
 		y = []
-		for i in t11.get_market_history(cur)['result']:
+		for i in self.trader.get_market_history(cur)['result']:
 			y.append(i['Price'])
 
 		pylab.plot([i for i in range(1, len(y) + 1)], y)
@@ -210,7 +214,7 @@ class Bittrex():
 
 	def all(self):
 		s = 0
-		for i in t11.get_balances()['result']:
+		for i in self.trader.get_balances()['result']:
 			sell = self.price(i['Currency'], 1) * i['Balance']
 			print(i['Currency'].lower(), i['Balance'], sell)
 			s += sell

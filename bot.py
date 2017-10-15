@@ -44,7 +44,6 @@ def bott():
 			sleep(5)
 			continue
 
-		rub = ru()
 		for i in operation:
 			formated = '%s\n'  % (currencies[i['currency']][0],)
 			if i['exchanger'] != -1:
@@ -57,6 +56,7 @@ def bott():
 			elif i['term'] == 2:
 				formated += ' - долгорочный'
 			pric = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']][1])
+			rub = stock[i['exchanger']].ru()
 			if pric:
 				formated += '\n%.8fɃ (%d₽)' % (pric, pric / rub)
 			'''

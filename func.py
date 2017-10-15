@@ -12,8 +12,6 @@ with open('data/currencies.txt', 'r') as file:
 with open('data/exchangers.txt', 'r') as file:
 	exchanges = json.loads(file.read())
 
-ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
-
 #Telegram
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
@@ -27,3 +25,5 @@ bot = telebot.TeleBot(token)
 db=sqlite3.connect('data/main.db')
 
 #Биржа
+from functrade import *
+stock = [YoBit(), Bittrex()]
