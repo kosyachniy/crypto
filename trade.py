@@ -59,21 +59,26 @@ def trade():
 			bot.send_message(meid, formated)
 			#bot.send_message(soid, formated)
 
-			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
-			print(sett)
-			with open('data/history.txt', 'a') as file:
-				print(json.dumps(sett), file=file)
-
 			if succ:
 				#Ждать исполнения ордеров
 				t = True
-				for i in range(10):
+				for j in range(10):
 					if stock[i['exchanger']].order(succ):
 						t = False
 						break
 					sleep(5)
 
-				if t: continue
+				if t:
+					sett = [i['id'], succ, 0, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
+					print(sett)
+					with open('data/history.txt', 'a') as file:
+						print(json.dumps(sett), file=file)
+					continue
+
+				sett = [i['id'], succ, 1, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
+				print(sett)
+				with open('data/history.txt', 'a') as file:
+					print(json.dumps(sett), file=file)
 
 				su = 0
 

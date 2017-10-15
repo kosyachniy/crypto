@@ -192,19 +192,20 @@ class Bittrex():
 	def trade(self, cur, count=0, price=0, buy='buy'):
 		if not price: price = self.price(cur, buy)
 		name = self.name(cur)
-		if not count: count = self.info() * self.per / price
+		if not count: count = self.info() if buy in ('sell', 1) else self.info() * self.per / price
 
 		if buy in ('sell', 1):
 			print('self.trader.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
 		else:
 			print('self.trader.buy_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
-		'''
-		if buy in ('sell', 1):
-			return self.trader.sell_limit(name, count, price)['result']['uuid']
-		else:
-			return self.trader.buy_limit(name, count, price)['result']['uuid']
-		'''
-		return 1
+
+		try:
+			if buy in ('sell', 1):
+				return self.trader.sell_limit(name, count, price)['result']['uuid']
+			else:
+				return self.trader.buy_limit(name, count, price)['result']['uuid']
+		except:
+			return 0
 
 	def last(self, cur):
 		cur = self.name(cur)
