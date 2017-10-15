@@ -60,6 +60,7 @@ def trade():
 			#bot.send_message(soid, formated)
 
 			if succ:
+				'''
 				#Ждать исполнения ордеров
 				t = True
 				for j in range(10):
@@ -74,8 +75,9 @@ def trade():
 					with open('data/history.txt', 'a') as file:
 						print(json.dumps(sett), file=file)
 					continue
+				'''
 
-				sett = [i['id'], succ, 1, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
+				sett = [i['id'], succ, 0, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
 				print(sett)
 				with open('data/history.txt', 'a') as file:
 					print(json.dumps(sett), file=file)
@@ -87,18 +89,21 @@ def trade():
 					#Если слишком маленький объём продажи
 					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
 					coun = count * i['out'][-j][0]
-					if coun < stock[i['exchanger']].min:
+					print('!!!COUN!!!', coun * pric)
+					if coun * pric < stock[i['exchanger']].min:
 						i['out'][-1-j][0] += i['out'][-j][0]
 						continue
 
 					su += coun * pric
 
-					succ =  stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
+					succ = 0 #stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
+					'''
 					#неправильное отображение цены в биткоинах
 					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], coun, pric, pric / rub, pric * coun, (pric * coun) / rub)
 					bot.send_message(meid, formated)
 					#bot.send_message(soid, formated)
+					'''
 
 					x.append([i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time])
 				#Стоп-цена
@@ -112,6 +117,7 @@ def trade():
 				x[len(x)-1].append(loss)
 				
 				with open('data/history.txt', 'a') as file:
+					print(x)
 					for j in range(1, len(x)+1):
 						print(json.dumps(x[-j]), file=file)
 

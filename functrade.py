@@ -192,7 +192,7 @@ class Bittrex():
 	def trade(self, cur, count=0, price=0, buy='buy'):
 		if not price: price = self.price(cur, buy)
 		name = self.name(cur)
-		if not count: count = self.info() if buy in ('sell', 1) else self.info() * self.per / price
+		if not count: count = self.info(name.replace('btc-', '')) if buy in ('sell', 1) else self.info() * self.per / price
 
 		if buy in ('sell', 1):
 			print('self.trader.sell_limit(\'%s\', %.8f, %.8f)' % (name, count, price))
@@ -230,8 +230,11 @@ class Bittrex():
 
 	#Закрыт ли ордер?
 	def order(self, id):
-		if self.trader.get_order(id)['result']['Closed'] != None:
-			return True
+		try:
+			if self.trader.get_order(id)['result']['Closed'] != None:
+				return True
+		except:
+			pass
 		return False
 
 	def cancel(self, id):
