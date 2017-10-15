@@ -1,7 +1,7 @@
 #Торговля по сигналам
 from func import *
 
-def trade():
+def trade(stock):
 #Определение последней необработанной операции
 	#Начинает с после следующей исполненной операции
 	num = 0
@@ -13,6 +13,10 @@ def trade():
 		pass
 
 	#num = 0
+	print('Start')
+	print(stock)
+	print(stock[1].price('ltc'))
+	sleep(5)
 
 	while True:
 #Подготовка операций к исполнению

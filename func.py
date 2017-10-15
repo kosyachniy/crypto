@@ -27,5 +27,3 @@ bot = telebot.TeleBot(token)
 db=sqlite3.connect('data/main.db')
 
 #Биржа
-from functrade import *
-stock = [YoBit(), Bittrex()]
