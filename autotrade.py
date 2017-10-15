@@ -10,12 +10,18 @@ while True:
 	x = []
 	with open('data/history.txt', 'r') as file:
 		for i in file:
-			if not i[2]:
-				x.append(i)
+			x.append(i)
 
 	for i in range(len(x)):
-		if not x[i][1] and x[i][3] == 'sell':
-			if stock[x[i][5]].order(find(x, x[i][0])):
-				for j in x:
-					if j[0] == x[i][0]:
-						x[i][1] = stock[x[i][5]].trade(i[4], j[7], j[6], 1)
+		if not x[i][2]:
+			#Если ордеры на продажу не были выставлены
+			if not x[i][1] and x[i][3] == 'sell':
+				if stock[x[i][5]].order(find(x, x[i][0])):
+					for j in x:
+						if j[0] == x[i][0]:
+							x[i][1] = stock[x[i][5]].trade(i[4], j[7], j[6], 1)
+
+			#Если стоп-лосс
+			for j in x:
+
+			#

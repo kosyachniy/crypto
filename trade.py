@@ -59,7 +59,7 @@ def trade():
 			bot.send_message(meid, formated)
 			#bot.send_message(soid, formated)
 
-			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time]
+			sett = [i['id'], succ, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
 			print(sett)
 			with open('data/history.txt', 'a') as file:
 				print(json.dumps(sett), file=file)
@@ -77,6 +77,7 @@ def trade():
 
 				su = 0
 
+				x = []
 				for j in range(1, len(i['out'])+1):
 					#Если слишком маленький объём продажи
 					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
@@ -94,10 +95,18 @@ def trade():
 					bot.send_message(meid, formated)
 					#bot.send_message(soid, formated)
 
-					sett = [i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time]
-					with open('data/history.txt', 'a') as file:
-						print(json.dumps(sett), file=file)
+					x.append([i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time])
+				#Стоп-цена
+				for j in range(len(x)-1):
+					x[j].append(x[j+1][6])
+				loss = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
+				x[len(x)-1].append(loss)
+				
+				with open('data/history.txt', 'a') as file:
+					for j in range(1, len(x)+1):
+						print(json.dumps(x[-j]), file=file)
 
+				#Худший - лучший случай
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss / rub, su - vol, (su - vol) / rub)
