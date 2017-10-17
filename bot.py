@@ -75,7 +75,7 @@ def bott():
 				formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100) #(j[0] * 100, str(j[2]) + 'Ƀ' if j[1] else '+' + str(round((j[2] - 1) * 100)) + '%') #
 			formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
-			bot.forward_message(channelid, i['chat'], i['mess'])
+			#bot.forward_message(channelid, i['chat'], i['mess'])
 			bot.send_message(channelid, formated)
 
 if __name__ == '__main__':

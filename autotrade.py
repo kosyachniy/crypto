@@ -13,11 +13,13 @@ while True:
 			x.append(json.loads(i))
 	#print(x)
 
+	y = x + []
+
 	t = -1
 	for i in range(len(x)):
 		if not x[i][2]:
 			#Если покупка исполнена
-			if x[i][3] == 'buy' and stock[x[i][5]].order(x[i][1]) == x[i][0]:
+			if x[i][3] == 'buy' and stock[x[i][5]].order(x[i][1]):
 				x[i][2] = 1
 				t = x[i][0]
 				bot.send_message(meid, 'Покупка сработала №%d' % (x[i][0],))
@@ -26,7 +28,6 @@ while True:
 				#выставлены продажи - сообщение
 				x[i][1] = stock[x[i][5]].trade(x[i][4], x[i][7], x[i][6], 1)
 
-				#неправильное отображение цены в биткоинах
 				rub = stock[x[i][5]].ru()
 				formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[x[i][4]][1], x[i][7], x[i][6], x[i][6] / rub, x[i][6] * x[i][7], (x[i][6] * x[i][7]) / rub)
 				bot.send_message(meid, formated)
@@ -44,7 +45,6 @@ while True:
 					bot.send_message(meid, 'Сработал стоп-лосс на заказе №%d' % (x[i][0],))
 					#bot.send_message(soid, 'Сработал стоп-лосс на заказе №%d' % (x[i][0],))
 
-					#неправильное отображение цены в биткоинах
 					rub = stock[x[i][5]].ru()
 					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[x[i][4]][1], x[i][7], x[i][6], x[i][6] / rub, x[i][6] * x[i][7], (x[i][6] * x[i][7]) / rub)
 					bot.send_message(meid, formated)
@@ -64,7 +64,8 @@ while True:
 					x[i+1][9] = x[i-1][6]
 
 	#Запись + обновлённые данные
-	with open('data/history.txt', 'w') as file:
-		for i in x:
-			print(json.dumps(i), file=file)
+	if x != y:
+		with open('data/history.txt', 'w') as file:
+			for i in x:
+				print(json.dumps(i), file=file)
 	#sleep(60)
