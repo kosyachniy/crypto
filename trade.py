@@ -87,6 +87,7 @@ def trade():
 				x = []
 				for j in range(1, len(i['out'])+1):
 					#Если слишком маленький объём продажи
+					#может ли быть такое, что все кроме первого объединятся, а первый будет слишком маленький
 					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
 					coun = count * i['out'][-j][0]
 					print('!!!COUN!!!', coun * pric)
