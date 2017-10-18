@@ -15,7 +15,7 @@ while True:
 	t = -1
 	rewrite = False
 	for i in range(len(x)):
-		if x[i][2] == 0:
+		if not x[i][2]:
 			#Если покупка исполнена
 			if x[i][3] == 'buy' and stock[x[i][5]].order(x[i][1]):
 				x[i][2] = 1

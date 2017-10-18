@@ -1,4 +1,4 @@
-import json, urllib, telebot, sqlite3, requests
+import json, urllib, telebot, requests #, sqlite3
 from time import sleep
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -22,7 +22,7 @@ with open('data/set.txt', 'r') as file:
 bot = telebot.TeleBot(token)
 
 #SQLite
-db=sqlite3.connect('data/main.db')
+#db=sqlite3.connect('data/main.db')
 
 #Биржа
 from functrade import *

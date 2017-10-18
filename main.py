@@ -2,8 +2,8 @@ from multiprocessing import Process
 
 #from autoadd import autoadd
 from monitor import monitor
-from bot import bott
-from trade import trade
+#from bot import bott
+#from trade import trade
 
 #p1 = Process(target=autoadd)
 p2 = Process(target=monitor)
