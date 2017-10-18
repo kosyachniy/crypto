@@ -149,7 +149,7 @@ class Bittrex():
 		from library.bittrex import Bittrex as t
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
-		self.min = 0.00056 #0.0005 #чтобы потом можно было на loss продать
+		self.min = 0.001 #0.0005 #чтобы потом можно было на loss продать
 		self.per = 0.03
 
 	def name(self, cur):
