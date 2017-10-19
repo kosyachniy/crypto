@@ -111,7 +111,7 @@ def monitor():
 			print(cur, exc, term, buy)
 
 			#Распознание размеров
-			if '\n' not in text:
+			if ('\n' not in text) or (on(j, vocabulary['loss']) and text.count('\n') == 1):
 				t = True
 				for j in text.split(' '):
 					try:

@@ -2,9 +2,7 @@
    See https://bittrex.com/Home/Api
 """
 
-import time
-import hmac
-import hashlib
+import json, time, hmac, hashlib
 
 try:
     from urllib import urlencode
@@ -20,7 +18,6 @@ except ImportError:
 else:
     import getpass
     import ast
-    import json
 
     encrypted = True
 

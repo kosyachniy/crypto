@@ -47,7 +47,7 @@ while True:
 				#Если стоп-лосс
 				elif x[i][9]:
 					sell = stock[x[i][5]].price(x[i][4], 1)
-					if sell < x[i][9]:
+					if type(sell) in (float, int) and sell < x[i][9]:
 						stock[x[i][5]].cancel(x[i][1])
 						x[i][1] = stock[x[i][5]].trade(x[i][4], x[i][7], sell, 1)
 						x[i][6] = sell
