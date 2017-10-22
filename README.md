@@ -14,6 +14,8 @@ Bittrex | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittre
 
 Схема работы
 ---
+Одновременный запуск: ``` main.py trade.py bot.py autotrade.py info.py ```
+
 Получение сигналов | Обработка | Исполнение
 ---|---|---
 ``` autoadd.py ``` | ``` monitor.py ``` | ``` bot.py ```
