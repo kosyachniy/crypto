@@ -132,9 +132,7 @@ class YoBit():
 
 	def all(self):
 		su = 0
-		print('!') #
 		x = self.info('')
-		print('!!') #
 		print(x)
 
 		print('Валюта		Количество	Курс		Сумма')

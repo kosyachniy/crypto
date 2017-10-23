@@ -1,6 +1,6 @@
-#from func import *
+from time import sleep
 
 def monitor(stock):
 	while True:
-		stock[0].all()
+		print(stock) #stock[0].all()
 		sleep(5)
