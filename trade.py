@@ -54,11 +54,10 @@ def trade():
 #Покупка
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
-			bot.forward_message(meid, i['chat'], i['mess'])
-			bot.forward_message(soid, i['chat'], i['mess'])
+			send(i['mess'], forward=i['chat'])
+
 			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price / rub, price * count, (price * count) / rub)
-			bot.send_message(meid, formated)
-			bot.send_message(soid, formated)
+			send(formated)
 
 			if succ:
 				'''
@@ -120,14 +119,11 @@ def trade():
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss / rub, su - vol, (su - vol) / rub)
-				bot.send_message(meid, formated)
-				bot.send_message(soid, formated) #
+				send(formated)
 			else:
 				print('Ошибка покупки!\n')
-				bot.send_message(meid, 'Ошибка покупки!')
-				#bot.send_message(soid, 'Ошибка покупки!') #
-			bot.send_message(meid, '------------------------------')
-			bot.send_message(soid, '------------------------------') #
+				send('Ошибка покупки!')
+			send('------------------------------')
 
 if __name__ == '__main__':
 	trade()

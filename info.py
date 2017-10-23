@@ -1,7 +1,7 @@
 from func import *
 
 while True:
-	if gmtime().tm_hour == 21: #часовой пояс
+	if gmtime().tm_hour == 20: #часовой пояс для DigitalOcean
 		for j in range(len(stock)):
 			if j != 1: continue #Только Bittrex
 
@@ -19,7 +19,6 @@ while True:
 				formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
 
 			formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
-			bot.send_message(meid, formated)
-			bot.send_message(soid, formated)
+			send(formated)
 
 	sleep(3600)
