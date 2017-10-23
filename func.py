@@ -2,6 +2,7 @@ import json, urllib, telebot, requests #, sqlite3
 from time import sleep, gmtime
 from datetime import datetime
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
 
 #Данные
 currencies = []
@@ -37,6 +38,10 @@ def send(message, forward=0, group=0):
 
 #SQLite
 #db=sqlite3.connect('data/main.db')
+
+#MongoDB
+db = MongoClient()['crypto']
+table = db['history']
 
 #Биржа
 from functrade import *

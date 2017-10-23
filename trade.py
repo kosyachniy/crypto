@@ -24,14 +24,6 @@ def trade():
 					operation.append(cont)
 					num = cont['id']
 
-		'''
-		if len(operation):
-			print('--!', operation)
-		else:
-			sleep(2)
-			continue
-		'''
-
 		for i in operation:
 #Рассчёт основных параметров для биржи
 			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
@@ -60,27 +52,14 @@ def trade():
 			send(formated)
 
 			if succ:
-				'''
-				#Ждать исполнения ордеров
-				t = True
-				for j in range(10):
-					if stock[i['exchanger']].order(succ):
-						t = False
-						break
-					sleep(5)
-
-				if t:
-					sett = [i['id'], succ, 0, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
-					print(sett)
-					with open('data/history.txt', 'a') as file:
-						print(json.dumps(sett), file=file)
-					continue
-				'''
-
 				sett = [i['id'], succ, 0, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
 				print(sett)
+
+				table.save({'message': i['id'], 'success': 0, 'order': succ, 'type': 'buy', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': price, 'count': count, 'time': time})
+				'''
 				with open('data/history.txt', 'a') as file:
 					print(json.dumps(sett), file=file)
+				'''
 
 				su = 0
 
@@ -99,7 +78,8 @@ def trade():
 
 					succ = 0 #stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
-					x.append([i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time])
+					x.append({'message': i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time})
+
 				#Стоп-цена
 				'''
 				for j in range(len(x)-1):
@@ -110,12 +90,16 @@ def trade():
 				loss = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
 				x[len(x)-1].append(loss)
 				
+				for j in range(1, len(x)+1):
+					table.save(x[-j])
+				'''
 				with open('data/history.txt', 'a') as file:
 					for j in range(1, len(x)+1):
 						print(x[-j])
 						print(json.dumps(x[-j]), file=file)
+				'''
 
-				#Худший - лучший случай
+#Худший - лучший случай
 				vol = price * count
 				loss = (price - i['loss'][1]) * count if i['loss'][0] else vol * (1 - i['loss'][1])
 				formated = 'Худший случай: -%fɃ (-%d₽)\nЛучший случай: +%fɃ (+%d₽)' % (loss, loss / rub, su - vol, (su - vol) / rub)
