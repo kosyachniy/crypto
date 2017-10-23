@@ -52,10 +52,9 @@ def trade():
 			send(formated)
 
 			if succ:
-				sett = [i['id'], succ, 0, 'buy', i['currency'], i['exchanger'], price, count, time, 0]
+				sett = {'message': i['id'], 'success': 0, 'order': succ, 'type': 'buy', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': price, 'count': count, 'time': time}
 				print(sett)
-
-				table.save({'message': i['id'], 'success': 0, 'order': succ, 'type': 'buy', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': price, 'count': count, 'time': time})
+				table.insert(sett)
 				'''
 				with open('data/history.txt', 'a') as file:
 					print(json.dumps(sett), file=file)
@@ -78,7 +77,7 @@ def trade():
 
 					succ = 0 #stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
 
-					x.append({'message': i['id'], succ, 0, 'sell', i['currency'], i['exchanger'], pric, coun, time})
+					x.append({'message': i['id'], 'success': 0, 'order': succ, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
 
 				#Стоп-цена
 				'''
@@ -86,12 +85,12 @@ def trade():
 					x[j].append(x[j+1][6])
 				'''
 				for j in range(len(x)-1):
-					x[j].append(0)
-				loss = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
-				x[len(x)-1].append(loss)
+					x[j]['loss'] = 0
+				x[len(x)-1]['loss'] = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
 				
 				for j in range(1, len(x)+1):
-					table.save(x[-j])
+					x[-j]['numsell'] = j
+					table.insert(x[-j])
 				'''
 				with open('data/history.txt', 'a') as file:
 					for j in range(1, len(x)+1):

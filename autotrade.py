@@ -1,72 +1,57 @@
 from func import *
 
-def find(x, id):
-	for i in x:
-		if i[0] == id and i[3] == 'buy':
-			return i[2] #был ли этот ордер исполнен
-
-#Не рассмотрен случай, если ордер на покупку не исполнился вовремя
 while True:
-	x = []
+	'''
 	with open('data/history.txt', 'r') as file:
 		for i in file:
 			x.append(json.loads(i))
+	'''
 
-	t = -1
-	rewrite = False
-	for i in range(len(x)):
-		if not x[i][2]:
-			#Если покупка исполнена
-			if x[i][3] == 'buy' and stock[x[i][5]].order(x[i][1]):
-				x[i][2] = 1
-				send('Покупка сработала №%d' % (x[i][0],))
-				rewrite = True
-			
-			elif x[i][3] == 'sell':
-				#Если продажа не выставлена
-				if not x[i][1] and find(x, x[i][0]):
-					x[i][1] = stock[x[i][5]].trade(x[i][4], x[i][7], x[i][6], 1)
+	for i in table.find({'success': 0}):
+		#Если покупка исполнена
+		if i['type'] == 'buy' and stock[i['exchanger']].order(i['order']):
+			i['success'] = 1
+			send('Покупка сработала №%d' % (i['message'],))
+		
+		elif i['type'] == 'sell':
+			#Если продажа не выставлена
+			if not i['order'] and table.find_one({'message': i['message'], 'type': 'buy'})['success']:
+				i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], i['price'], 1)
 
-					rub = stock[x[i][5]].ru()
-					formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[x[i][4]][1], x[i][7], x[i][6], x[i][6] / rub, x[i][6] * x[i][7], (x[i][6] * x[i][7]) / rub)
-					send(formated)
-					rewrite = True
+				rub = stock[i['exchanger']].ru()
+				formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['exchanger']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
+				send(formated)
 
-				#Если продажа исполнена
-				elif stock[x[i][5]].order(x[i][1]):
-					x[i][2] = 1
-					send('Продажа сработала №%d' % (x[i][0],))
-					#Выставление стоп-лосса на новый уровень
-					if i + 1 < len(x) and x[i+1][0] == x[i][0]:
-						x[i+1][9] = x[i-1][6]
-					rewrite = True
+			#Если продажа исполнена
+			elif stock[i['exchanger']].order(i['order']):
+				i['success'] = 1
+				send('Продажа сработала №%d' % (i['message'],))
+				#Выставление стоп-лосса на новый уровень
+				for j in table.find({'message': i['message'], 'numsell': i['numsell']+1}):
+					x = table.find_one({'message': i['message'], 'numsell': i['numsell']-1})
+					j['loss'] = x['price'] if x else table.find_one({'message': i['message'], 'type': 'buy'})['price']
+					table.save(j)
 
-				#Если стоп-лосс
-				elif x[i][9]:
-					sell = stock[x[i][5]].price(x[i][4], 1)
-					if type(sell) in (float, int) and sell < x[i][9]:
-						stock[x[i][5]].cancel(x[i][1])
-						x[i][1] = stock[x[i][5]].trade(x[i][4], x[i][7], sell, 1)
-						x[i][6] = sell
-						send('Сработал стоп-лосс на заказе №%d' % (x[i][0],))
+			#Если стоп-лосс
+			elif i['loss']:
+				sell = stock[i['exchanger']].price(i['currency'], 1)
+				if type(sell) in (float, int) and sell < i['loss']:
+					stock[i['exchanger']].cancel(i['order'])
+					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], sell, 1)
+					i['price'] = sell
+					send('Сработал стоп-лосс на заказе №%d' % (i['message'],))
 
-						if x[i][1]:
-							rub = stock[x[i][5]].ru()
-							formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[x[i][4]][1], x[i][7], x[i][6], x[i][6] / rub, x[i][6] * x[i][7], (x[i][6] * x[i][7]) / rub)
-							send(formated)
-						else:
-							x[i][2] = 2
-							send('Ошибка продажи!')
+					if i['order']:
+						rub = stock[i['exchanger']].ru()
+						formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['exchanger']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
+						send(formated)
+					else:
+						i['success'] = 2
+						send('Ошибка продажи!')
 
-						#Остальные ордеры тоже снять
-						if i + 1 < len(x) and x[i+1][0] == x[i][0]:
-							x[i+1][9] = x[i][9]
-						
-						rewrite = True
+					#Остальные ордеры тоже снять
+					for j in table.find({'message': i['message'], 'type': 'sell'}):
+						j['loss'] = i['loss']
+						table.save(j)
 
-	#Запись + обновлённые данные
-	if rewrite:
-		with open('data/history.txt', 'w') as file:
-			for i in x:
-				print(json.dumps(i), file=file)
-	#sleep(60)
+		table.save(i)

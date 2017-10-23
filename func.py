@@ -1,7 +1,7 @@
 import json, urllib, telebot, requests #, sqlite3
 from time import sleep, gmtime
 from datetime import datetime
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
 #Данные
@@ -37,7 +37,7 @@ def send(message, forward=0, group=0):
 			bot.forward_message(soid, forward, message)
 
 #SQLite
-#db=sqlite3.connect('data/main.db')
+#db=sqlite3.connect('data/main.db', check_same_thread=False))
 
 #MongoDB
 db = MongoClient()['crypto']
