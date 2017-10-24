@@ -1,6 +1,13 @@
 #Торговля по сигналам
 from func import *
 
+'''
+from celery.decorators import task
+from celery.decorators import periodic_task
+from celery.task.schedules import crontab
+from celery import Task
+'''
+
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
 import pylab #

@@ -1,0 +1,7 @@
+mongod &
+python3 main.py &
+python3 trade.py &
+python3 bot.py &
+python3 autotrade.py &
+python3 info.py &
+jobs
