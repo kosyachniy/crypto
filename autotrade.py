@@ -43,7 +43,7 @@ while True:
 
 					if i['order']:
 						rub = stock[i['exchanger']].ru()
-						formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['exchanger']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
+						formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
 						send(formated)
 					else:
 						i['success'] = 2

@@ -77,7 +77,7 @@ class YoBit():
 
 		buy = self.buys(buy, 0 if cur != 'btc_rur' else 1)
 		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
-		'''
+
 		try:
 			q = self.trader.trade(name, buys, price, count)
 			if 'success' not in q:
@@ -86,8 +86,7 @@ class YoBit():
 			return 0
 		else:
 			return q['return']['order_id']
-		'''
-		return 1 #
+		#return 1
 		#синхронизация по исполнению ордеров
 
 	'''
@@ -136,6 +135,18 @@ class YoBit():
 			print(q)
 			return 0, 0, 0, 0, 0
 	'''
+
+	#Закрыт ли ордер?
+	def order(self, id):
+		try:
+			if self.trader.order_info(id)['return'][str(id)]['status'] != 0:
+				return True
+		except:
+			pass
+		return False
+
+	def cancel(self, id):
+		self.trader.cancel_order(id)
 
 	def all(self):
 		su = 0

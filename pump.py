@@ -15,7 +15,7 @@ def text(message):
 	start = gmtime().tm_min
 
 	price = stock[exc].price(text) * 1.15
-	volume = stock[exc].min / price #stock[1].info() * 0.95
+	volume = stock[exc].min / price #stock[exc].info() * 0.95
 	order = stock[exc].trade(text, volume, price)
 
 	t = False
