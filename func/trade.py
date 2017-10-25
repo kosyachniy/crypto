@@ -61,8 +61,8 @@ class YoBit():
 		res = self.trader.ticker(cur)
 		buy = self.buys(buy, 1 if cur != 'btc_rur' else 0)
 
-		#Есть ли эта валюта на бирже и достаточно ли объёма
-		if (cur in res) and (res[cur]['vol'] >= 1):
+		#Есть ли эта валюта на бирже
+		if cur in res: # and (res[cur]['vol'] >= 1) #и достаточно ли объёма
 			if cur == 'btc_rur':
 				return 1 / res[cur][buy]
 			return res[cur][buy]
