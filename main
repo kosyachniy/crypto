@@ -1,4 +1,3 @@
-mongod &
 python3 main.py &
 python3 trade.py &
 python3 bot.py &

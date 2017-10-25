@@ -1,4 +1,4 @@
-from func import *
+from func.main import *
 
 while True:
 	if gmtime().tm_hour == 20: #часовой пояс для DigitalOcean

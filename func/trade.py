@@ -1,5 +1,5 @@
 #Торговля по сигналам
-from mainfunc import *
+from func.data import *
 
 '''
 from celery.decorators import task
@@ -14,7 +14,7 @@ import pylab #
 
 class YoBit():
 	def __init__(self):
-		from library.yobit import YoBit as t
+		from func.library.yobit import YoBit as t
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
 		self.min = 0.00011
@@ -164,7 +164,7 @@ class YoBit():
 
 class Bittrex():
 	def __init__(self):
-		from library.bittrex import Bittrex as t
+		from func.library.bittrex import Bittrex as t
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
 		self.min = 0.001 #0.0005 #чтобы потом можно было на loss продать
@@ -257,3 +257,5 @@ class Bittrex():
 
 	def cancel(self, id):
 		self.trader.cancel(id)
+
+stock = [YoBit(), Bittrex()]

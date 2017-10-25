@@ -1,7 +1,5 @@
-from mainfunc import *
-
 #Telegram
-import telebot
+import json, telebot
 
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
@@ -24,19 +22,3 @@ def send(message, forward=0, group=0):
 		else:
 			bot.forward_message(meid, forward, message)
 			bot.forward_message(soid, forward, message)
-
-'''
-#SQLite
-import sqlite3
-
-db=sqlite3.connect('data/main.db', check_same_thread=False))
-'''
-
-#MongoDB
-from pymongo import MongoClient
-db = MongoClient()['crypto']
-table = db['history']
-
-#Биржа
-from functrade import *
-stock = [YoBit(), Bittrex()]

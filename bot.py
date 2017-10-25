@@ -1,4 +1,4 @@
-from func import *
+from func.main import *
 
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):

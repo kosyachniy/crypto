@@ -1,4 +1,4 @@
-from func import *
+from func.main import *
 
 currencies = []
 with open('data/currencies.txt', 'r') as file:

@@ -17,7 +17,7 @@ p2.start()
 
 #Нельзя повторять одни и те же сигналы! - циклится
 #Управление ботом
-from func import *
+from func.telegram import *
 
 @bot.message_handler(content_types=["text"])
 def text(message):

@@ -1,5 +1,5 @@
 #Торговля по сигналам
-from func import *
+from func.main import *
 
 def trade():
 #Определение последней необработанной операции

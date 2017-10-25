@@ -1,4 +1,4 @@
-from func import *
+from func.main import *
 
 while True:
 	'''
