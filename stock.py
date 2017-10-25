@@ -1,12 +1,6 @@
 from func.main import *
 
 while True:
-	'''
-	with open('data/history.txt', 'r') as file:
-		for i in file:
-			x.append(json.loads(i))
-	'''
-
 	for i in table.find({'success': 0}):
 		#Если покупка исполнена
 		if i['type'] == 'buy' and stock[i['exchanger']].order(i['order']):

@@ -1,13 +1,19 @@
 #Telegram
 import json, telebot
 
+from func.data import exchangers
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
-	token = s['token']
-	channelid = s['channelid']
-	meid = s['meid']
-	soid = s['soid']
+	token = s['telegram']
+	channelid = s['channel']
+	admin = s['admin']
+
 bot = telebot.TeleBot(token)
+
+def keyboard():
+	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+	keyboard.add(*[types.KeyboardButton(i) for i in exchangers])
+	keyboard.add(*[types.KeyboardButton(i) for i in ['PUMP', 'Информация']])
 
 def send(message, forward=0, group=0):
 	if group:
@@ -17,8 +23,9 @@ def send(message, forward=0, group=0):
 			bot.forward_message(group, forward, message)
 	else:
 		if not forward:
-			bot.send_message(meid, message)
-			bot.send_message(soid, message)
+			for i in admin:
+#Меню
+				bot.send_message(id, message, reply_markup=keyboard())
 		else:
-			bot.forward_message(meid, forward, message)
-			bot.forward_message(soid, forward, message)
+			for i in admin:
+				bot.forward_message(i, forward, message)

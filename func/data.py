@@ -9,7 +9,7 @@ with open('data/currencies.txt', 'r') as file:
 		currencies.append(json.loads(i[:-1]))
 
 with open('data/exchangers.txt', 'r') as file:
-	exchanges = json.loads(file.read())
+	exchangers = json.loads(file.read())
 
 with open('data/set.txt', 'r') as file:
 	utc = json.loads(file.read())['utc']

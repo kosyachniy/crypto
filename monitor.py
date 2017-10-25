@@ -88,8 +88,8 @@ def monitor():
 
 			#Определение биржи
 			exc = -1
-			for j in range(len(exchanges)):
-				if exchanges[j][0].lower() in text:
+			for j in range(len(exchangers)):
+				if exchangers[j][0].lower() in text:
 					exc = j
 					break
 
