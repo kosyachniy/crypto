@@ -37,6 +37,7 @@ class YoBit():
 		x = 0 if buy in ('sell', 1) else 1
 		return 'sbeulyl'[(x + dop) % 2::2]
 
+	#Перевод в рубли
 	def ru(self):
 		return 1 / self.trader.ticker('btc_rur')['btc_rur']['buy']
 
@@ -51,6 +52,7 @@ class YoBit():
 			x = self.trader.get_info()['return']['funds_incl_orders']
 		return x[cur] if len(cur) else x
 
+	#Курс
 	def price(self, cur, buy='buy'):
 		cur = self.name(cur)
 		if not cur:
@@ -65,8 +67,6 @@ class YoBit():
 				return 1 / res[cur][buy]
 			return res[cur][buy]
 
-		#сразу выставлять на продажу по ключевым ценам + снимать если падает оредры и продавать по низкой
-
 		return 0
 
 	#Купить / продать
@@ -79,62 +79,17 @@ class YoBit():
 		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, price, count))
 
 		try:
-			q = self.trader.trade(name, buys, price, count)
+			q = self.trader.trade(name, buy, price, count)
 			if 'success' not in q:
 				return 0
 		except:
 			return 0
 		else:
-			return q['return']['order_id']
+			try:
+				return q['return']['order_id']
+			except:
+				return 0
 		#return 1
-		#синхронизация по исполнению ордеров
-
-	'''
-	#Умная (быстрая) покупка / продажа
-	def real(self, cur, buy='buy', price=0): #sell
-		cur = self.name(cur)
-
-		if price == 0:
-			#price = self.trader.ticker(cur)[cur]['sell' if buy == 'buy' else 'buy']
-			price = self.trader.ticker(cur)[cur][buy] #попробовать продавать по такой цене
-		#price = self.trader.ticker(cur)[cur]['last']
-
-		if buy == 'buy':
-			total = self.trader.get_info()['return']['funds']['btc']
-			delta = total * 0.03
-			if delta < self.min:
-				delta = self.min
-			count = delta / price
-		else:
-			count = self.trader.get_info()['return']['funds'][cur[:-4]]
-			delta = count * price
-			if delta < self.min:
-				price = self.min / count
-
-		print('%.8f\n%.8f\n%.8f' % (price, count, delta))
-
-		q = self.trader.trade(cur, buy, price, count)
-		if q['success']:
-			x = q['return']['order_id']
-			qm = [0, 0, 0, 0]
-			#Ждём 30 секунд исполнения ордера
-			for i in range(6):
-				print(self.trader.order_info(x)) #
-				if self.trader.order_info(x)['return'][str(x)]['status']:
-					#Сразу выставляем на продау
-					qm[0] = self.trader.trade(cur, 'sell', price * 1.1, count * 0.5)
-					qm[1] = self.trader.trade(cur, 'sell', price * 1.15, count * 0.3)
-					qm[2] = self.trader.trade(cur, 'sell', price * 1.2, count * 0.1)
-					qm[3] = self.trader.trade(cur, 'sell', price * 1.25, count * 0.1)
-					return (x, *[i['return']['order_id'] for i in qm])
-				else:
-					sleep(5)
-			return (x, *qm)
-		else:
-			print('Error!')
-			print(q)
-			return 0, 0, 0, 0, 0
-	'''
 
 	#Закрыт ли ордер?
 	def order(self, id):
@@ -246,7 +201,6 @@ class Bittrex():
 		print('--------------------')
 		print('%fɃ\n%f₽' % (s, s / ru()))
 
-	#Закрыт ли ордер?
 	def order(self, id):
 		try:
 			if self.trader.get_order(id)['result']['Closed'] != None:

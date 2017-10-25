@@ -1,22 +1,18 @@
-from func.data import *
-from func.trade import stock
-from func.telegram import bot #
+from time import sleep, gmtime
 
 texted = lambda x: ''.join([i for i in x.lower() if i in 'qwertyuiopasdfghjklzxcvbnm.'])
 
+#Биржи
+from func.trade import stock
 exc = 0
 
-'''
+#Telegram
 import telebot
 
-with open('data/set.txt', 'r') as file:
-	s = json.loads(file.read())
-	token = s['token']
-	channelid = s['channelid']
-	meid = s['meid']
-	soid = s['soid']
+token = '417063852:AAFvfJdVGgLv9odlnY_gaiMmV4NIBMlgvOQ'
+meid = 136563129
+
 bot = telebot.TeleBot(token)
-'''
 
 @bot.message_handler(content_types=["text"])
 def text(message):
@@ -24,8 +20,10 @@ def text(message):
 	start = gmtime().tm_min
 
 	price = stock[exc].price(text) * 1.15
-	volume = stock[exc].min / price #stock[exc].info() * 0.95
+	volume = stock[exc].min / price #stock[exc].min #stock[exc].info() * 0.95
 	order = stock[exc].trade(text, volume, price)
+
+	bot.send_message(meid, order)
 
 	t = False
 	while not t:
@@ -37,7 +35,7 @@ def text(message):
 
 	if t:
 		bot.send_message(meid, 'Успешно куплено!')
-		order = stock[exc].trade(text, volume, price * 1.5, 'sell')
+		order = stock[exc].trade(text, volume * 0.999999, price * 1.5, 'sell')
 
 		while True:
 			if stock.order(order):

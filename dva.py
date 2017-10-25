@@ -1,4 +1,4 @@
-from func import *
+from func.trade import *
 
 def monitor():
 	while True:
