@@ -18,8 +18,8 @@
 
 Операция | Mac | Linux | Windows
 ---|---|---|---
-Подготовка | ```  ``` | ``` wget https://bootstrap.pypa.io/get-pip.py \n sudo python3 get-pip.py<br>pip install vk_api bs4 matplotlib pymongo<br>sudo apt-get install python3-tk python-tk -y<br>pip install PyTelegramBotAPI==2.2.3<br>lsof -i:27017<br>sudo apt-get install mongodb<br>sudo service mongodb start<br>tail -n200 /var/log/mongodb/mongodb.log<br>git clone https://github.com/kosyachniy/crypto<br>...<br>...<br>tmux<br>cd crypto ``` | ```  ```
-Запуск | ``` mongod <br> ./main ``` | ``` ./main ``` | ```  ```
+Настройка | ```  ``` | ``` wget https://bootstrap.pypa.io/get-pip.py ``` <br> ``` sudo python3 get-pip.py ``` <br> ``` pip install vk_api bs4 matplotlib pymongo ``` <br> ``` sudo apt-get install python3-tk python-tk -y ``` <br> ``` pip install PyTelegramBotAPI==2.2.3 ``` <br> ``` lsof -i:27017 ``` <br> ``` sudo apt-get install mongodb ``` <br> ``` sudo service mongodb start ``` <br> ``` tail -n200 /var/log/mongodb/mongodb.log ``` <br> ``` git clone https://github.com/kosyachniy/crypto ``` <br> ``` ... ``` <br> ``` ... ``` <br> ``` tmux ``` <br> ``` cd crypto ``` | ```  ```
+Запуск | ``` mongod ``` <br> ``` ./main ``` | ``` ./main ``` | ```  ```
 
 Получение сигналов | Обработка | Исполнение
 ---|---|---

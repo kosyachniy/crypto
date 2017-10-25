@@ -1,7 +1,7 @@
-import sys
-sys.path.append('../')
+from pymongo import MongoClient
 
-from crypto.func import *
+db = MongoClient()['crypto']
+table = db['history']
 
-with db:
-	for i in db.execute("SELECT * FROM lastmessage"): print(i)
+for i in table.find():
+	print(i)

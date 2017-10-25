@@ -1,7 +1,7 @@
 from func.main import *
 
 while True:
-	if gmtime().tm_hour == 20: #часовой пояс для DigitalOcean
+	if gmtime().tm_hour == 20 + utc:
 		for j in range(len(stock)):
 			if j != 1: continue #Только Bittrex
 
