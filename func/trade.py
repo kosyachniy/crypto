@@ -80,6 +80,7 @@ class YoBit():
 
 		try:
 			q = self.trader.trade(name, buy, price, count)
+			#print(q)
 			if 'success' not in q:
 				return 0
 		except:
@@ -89,7 +90,6 @@ class YoBit():
 				return q['return']['order_id']
 			except:
 				return 0
-		#return 1
 
 	#Закрыт ли ордер?
 	def order(self, id):
