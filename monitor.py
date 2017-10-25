@@ -1,5 +1,5 @@
 #Контроль сигналов
-from func import *
+from mainfunc import *
 import re, math
 
 #Данные

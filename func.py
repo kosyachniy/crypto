@@ -1,19 +1,8 @@
-import json, urllib, telebot, requests #, sqlite3
-from time import sleep, gmtime
-from datetime import datetime
-#from bs4 import BeautifulSoup
-from pymongo import MongoClient
-
-#Данные
-currencies = []
-with open('data/currencies.txt', 'r') as file:
-	for i in file:
-		currencies.append(json.loads(i[:-1]))
-
-with open('data/exchangers.txt', 'r') as file:
-	exchanges = json.loads(file.read())
+from mainfunc import *
 
 #Telegram
+import telebot
+
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
 	token = s['token']
@@ -36,10 +25,15 @@ def send(message, forward=0, group=0):
 			bot.forward_message(meid, forward, message)
 			bot.forward_message(soid, forward, message)
 
+'''
 #SQLite
-#db=sqlite3.connect('data/main.db', check_same_thread=False))
+import sqlite3
+
+db=sqlite3.connect('data/main.db', check_same_thread=False))
+'''
 
 #MongoDB
+from pymongo import MongoClient
 db = MongoClient()['crypto']
 table = db['history']
 

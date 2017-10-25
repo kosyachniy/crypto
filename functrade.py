@@ -1,5 +1,5 @@
 #Торговля по сигналам
-from func import *
+from mainfunc import *
 
 '''
 from celery.decorators import task

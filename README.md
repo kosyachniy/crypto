@@ -1,4 +1,4 @@
-# КриптоАнализ
+# Анализ биржи криптовалюты (CryptoAnalysis)
 
 Источник | Ссылка
 ---|---
@@ -7,14 +7,17 @@
 
 Биржи
 ---
-Биржа | GitHub | API
+№ | Биржа | GitHub | API
 ---|---|---
-YoBit | [NanoBjorn](https://github.com/NanoBjorn/yobit) | [yobit.net](https://yobit.net/ru/api/)
-Bittrex | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittrex.com](https://bittrex.com/Home/Api)
+0 | [YoBit](https://yobit.net/ru/wallets/) | [NanoBjorn](https://github.com/NanoBjorn/yobit) | [yobit.net](https://yobit.net/ru/api/)
+1 | [Bittrex](https://bittrex.com/Balance) | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittrex.com](https://bittrex.com/Home/Api)
 
 Схема работы
 ---
-Одновременный запуск: ``` main.py trade.py bot.py autotrade.py info.py ```
+Операция | Mac | Linux | Windows
+---|---|---|---
+Подготовка | ```  ``` | ``` wget https://bootstrap.pypa.io/get-pip.py<br>sudo python3 get-pip.py<br>pip install vk_api bs4 matplotlib pymongo<br>sudo apt-get install python3-tk python-tk -y<br>pip install PyTelegramBotAPI==2.2.3<br>lsof -i:27017<br>sudo apt-get install mongodb<br>sudo service mongodb start<br>tail -n200 /var/log/mongodb/mongodb.log<br>git clone https://github.com/kosyachniy/crypto<br>...<br>...<br>tmux<br>cd crypto ``` | ```  ```
+Запуск | ``` mongod<br>./main ``` | ``` ./main ``` | ```  ```
 
 Получение сигналов | Обработка | Исполнение
 ---|---|---
@@ -28,12 +31,15 @@ Bittrex | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittre
 2. Определние объёма
 3. Проверить процентное и статические значения распознания ботом ключевой информации
 4. Только продажа без покупки
-5. Вывод чистой информации - балансы бирж
+5. Оформить бота с кнопками и ключевыми командами для удобного управления
 6. ??? Временной промежуток между ордерами одной валюты
 7. Сделать очереди в мультипроцессинге чтобы библиотеки могли работать
-8. Первая операция не записывается в history.txt
+8. ??? Первая операция не записывается в MongoDB
 9. Понижать ордеры на долгосроках
-10. Итоги дня
+10. Запуск из одного файла - multiprocessing
+11. Синхронизация и бэкап данных
+12. Пампы
+13. ICO
 
 Временные фиксы
 ---
