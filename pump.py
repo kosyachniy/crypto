@@ -1,14 +1,15 @@
 from time import sleep, gmtime
+import sys
 
 #Биржи
 from func.trade import stock
 exc = 0
 
-from telegram import *
+from func.telegram import *
 
 texted = lambda x: ''.join([i for i in x.lower() if i in 'qwertyuiopasdfghjklzxcvbnm.'])
 
-def pump(text)
+def pump(text):
 	text = texted(text)
 	start = gmtime().tm_min
 
@@ -38,3 +39,6 @@ def pump(text)
 		if stock[exc].order(order):
 			send('Успешно продано!')
 			sleep(5)
+
+if __name__ == '__main__':
+	pump(sys.argv[1])

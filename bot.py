@@ -1,8 +1,6 @@
 #Нельзя повторять одни и те же сигналы! - циклится
 from func.data import exchangers
-from func.telegram import keyboard, bot
-from info import info
-from pump import pump
+from func.telegram import *
 
 @bot.message_handler(content_types=["text"])
 def text(message):
@@ -13,14 +11,20 @@ def text(message):
 		chat, id, text = message.chat.id, message.message_id, message.text
 
 	if chat in admin:
+'''
 #Команда
 		if text in [*exchangers, 'PUMP', 'Информация']:
 			smart(chat, text)
+'''
 #Дальнейшая обработка
 		with open('data/messages.txt', 'a') as file:
 			print(json.dumps([chat, id, text], ensure_ascii=False), file=file)
 	else:
 		bot.send_message(chat, 'У вас нет доступа!')
+
+'''
+from info import info
+from pump import pump
 
 #Управление
 def smart(chat, text):
@@ -40,6 +44,7 @@ def pumpit(message):
 		bot.send_message(chat, reply_markup=keyboard())
 	else:
 		pump(message.text)
+'''
 
 if __name__ == '__main__':
 	bot.polling(none_stop=True)

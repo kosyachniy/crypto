@@ -18,7 +18,7 @@ def info():
 			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
-			send(formated)
+		send(formated)
 
 if __name__ == '__main__':
 	while True:

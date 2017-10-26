@@ -1,4 +1,5 @@
 from func.main import *
+from bs4 import BeautifulSoup
 
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
@@ -18,7 +19,7 @@ def price(x):
 			print(name, index, price)
 			return float(price)
 
-def bott():
+def channel():
 	#сделать контроль последнего обработанного id
 
 	num = 0
@@ -79,4 +80,4 @@ def bott():
 			send(formated, group=channelid)
 
 if __name__ == '__main__':
-	bott()
+	channel()
