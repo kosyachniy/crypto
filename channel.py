@@ -1,6 +1,8 @@
 from func.main import *
 from bs4 import BeautifulSoup
 
+trades = db['trade']
+
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
@@ -20,32 +22,20 @@ def price(x):
 			return float(price)
 
 def channel():
-	#сделать контроль последнего обработанного id
-
-	num = 0
+#Первоначальные значения
 	try:
-		with open('data/trade.txt', 'r') as file:
-			for i in file:
-				num = json.loads(i)['id']
+		num = trades.find_one({$query: {}, $orderby: {_id: -1}})['id']
 	except:
-		pass
-
-	#num = 0
+		num = 0
 
 	while True:
-		operation = []
-		with open('data/trade.txt', 'r') as file:
-			for i in file:
-				x = json.loads(i)
-				if x['id'] > num:
-					operation.append(x)
-					num = x['id']
+		x = [i for i in trades.find({'id': {$gte: num}})]
 
-		if not len(operation):
+		if not len(x):
 			sleep(5)
 			continue
 
-		for i in operation:
+		for i in x:
 			formated = '%s\n'  % (currencies[i['currency']][0],)
 			if i['exchanger'] != -1:
 				formated += exchangers[i['exchanger']][0] + ' - '

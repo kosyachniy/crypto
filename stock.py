@@ -1,5 +1,7 @@
 from func.main import *
 
+table = db['history']
+
 while True:
 	for i in table.find({'success': 0}):
 		#Если покупка исполнена

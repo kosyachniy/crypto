@@ -23,48 +23,25 @@ def an(text, words, stop):
 				return -1
 	return cur
 
+messages = db['messages']
+trades = db['trade']
+
 def monitor():
 #Первоначальные значения
-	chat, id = 0, 0
 	try:
-		with open('data/messages.txt', 'r') as file:
-			for i in file:
-				chat, id, _ = json.loads(i)
+		num = messages.find_one({$query: {}, $orderby: {_id: -1}})['id']
 	except:
-		pass
-
-	#chat, id = 0, 0
-
-	num = 0
-	try:
-		with open('data/trade.txt', 'r') as file:
-			for i in file:
-				num = json.loads(i)['id']
-	except:
-		pass
-
-	#print('--', num)
+		num = 0
 
 #Список новых сигналов
 	while True:
-		t = False if chat !=0 and id != 0 else True
-		x = []
-		with open('data/messages.txt', 'r') as file:
-			for i in file:
-				y = json.loads(i)
-				if t:
-					x.append(y)
-					chat, id, _ = y
-				elif y[0] == chat and y[1] == id:
-					t = True
-
-		#sleep(2)
-		#print(len(x))
+		x = [i for i in messages.find({'id': {$gte: num}})]
 
 #Обработка
 		for i in x:
+			num = max(num, i['id'])
 			#Убирать ссылки (чтобы не путать лишними словами), VIP
-			text = i[2].lower().replace(',', '.') #Сделать замену запятой на точку
+			text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
 			print(text)
 			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
 
@@ -111,9 +88,12 @@ def monitor():
 			print(cur, exc, term, buy)
 
 			#Распознание размеров
-			if ('\n' not in text) or (on(j, vocabulary['loss']) and text.count('\n') == 1):
+			print('-!!-', on(text, vocabulary['loss'])) #
+			print('!--!', text.count('\n')) #
+			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
 				t = True
-				for j in text.split(' '):
+				text = text.split('\n')
+				for j in text[0].split():
 					try:
 						if t:
 							price = float(j)
@@ -126,6 +106,15 @@ def monitor():
 							out.append([0, 1, x])
 					except:
 						pass
+				try:
+					if '%' in text[1]:
+						l = 1 - int(re.findall(r'\d+', text[1])[0]) / 100
+						if l >= 0:
+							loss = [0, l]
+					elif '.' in text[1]:
+						loss = [1, float(re.search(r'-?\d+\.\d*', text[1]).group(0))]
+				except:
+					pass
 			else:
 				for j in text.split('\n'):
 					try:
@@ -184,7 +173,7 @@ def monitor():
 				num += 1
 
 				sett = {
-					'id': num,
+					'id': i['id'],
 					'currency': cur,
 					'exchanger': exc,
 					'price': price,
@@ -192,13 +181,12 @@ def monitor():
 					'out': out,
 					'loss': loss,
 					'term': term,
-					'chat': i[0],
-					'mess': i[1]
+					'chat': i['chat'],
+					'mess': i['message']
 				} #, 'time': time
 
 				#Если без покупки, первые поля пустые ?
-				with open('data/trade.txt', 'a') as file:
-					print(json.dumps(sett), file=file)
+				trades.insert(sett)
 
 if __name__ == '__main__':
 	monitor()

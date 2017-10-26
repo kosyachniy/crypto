@@ -29,7 +29,7 @@ def send(message, forward=0, group=0):
 	else:
 		if not forward:
 			for i in admin:
-				bot.send_message(id, message) #, reply_markup=keyboard()
+				bot.send_message(i, message) #, reply_markup=keyboard()
 		else:
 			for i in admin:
 				bot.forward_message(i, forward, message)

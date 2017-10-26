@@ -1,6 +1,10 @@
 #Нельзя повторять одни и те же сигналы! - циклится
-from func.data import exchangers
-from func.telegram import *
+from func.main import *
+
+try:
+	num = messages.find_one({$query: {}, $orderby: {_id: -1}})['id']
+except:
+	num = 0
 
 @bot.message_handler(content_types=["text"])
 def text(message):
@@ -11,14 +15,15 @@ def text(message):
 		chat, id, text = message.chat.id, message.message_id, message.text
 
 	if chat in admin:
-'''
+		'''
 #Команда
 		if text in [*exchangers, 'PUMP', 'Информация']:
 			smart(chat, text)
-'''
+		'''
 #Дальнейшая обработка
-		with open('data/messages.txt', 'a') as file:
-			print(json.dumps([chat, id, text], ensure_ascii=False), file=file)
+		num += 1
+		doc = {'id': num, 'chat': chat, 'message': id, 'text': text}
+		table.insert(doc)
 	else:
 		bot.send_message(chat, 'У вас нет доступа!')
 

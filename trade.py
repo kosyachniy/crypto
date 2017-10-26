@@ -1,30 +1,20 @@
 #Торговля по сигналам
 from func.main import *
 
-def trade():
-#Определение последней необработанной операции
-	#Начинает с после следующей исполненной операции
-	num = 0
-	try:
-		with open('data/trade.txt', 'r') as file:
-			for i in file:
-				num = json.loads(i)['id']
-	except:
-		pass
+trades = db['trade']
+table = db['history']
 
-	#num = 0
+def trade():
+#Первоначальные значения
+	try:
+		num = trades.find_one({$query: {}, $orderby: {_id: -1}})['id']
+	except:
+		num = 0
 
 	while True:
-#Подготовка операций к исполнению
-		operation = []
-		with open('data/trade.txt', 'r') as file: #Пока что операции не удаляются
-			for i in file:
-				cont = json.loads(i)
-				if cont['id'] > num:
-					operation.append(cont)
-					num = cont['id']
+		x = [i for i in trades.find({'id': {$gte: num}})]
 
-		for i in operation:
+		for i in x:
 #Рассчёт основных параметров для биржи
 			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
 			i['exchanger'] = 1 #Временная замена на одну биржу
