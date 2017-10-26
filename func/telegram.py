@@ -1,6 +1,5 @@
 #Telegram
 import json, telebot
-from telebot import types
 
 from func.data import exchangers
 with open('data/set.txt', 'r') as file:
@@ -13,6 +12,8 @@ bot = telebot.TeleBot(token)
 
 '''
 #Меню
+from telebot import types
+
 def keyboard():
 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 	keyboard.add(*[types.KeyboardButton(i) for i in exchangers])
