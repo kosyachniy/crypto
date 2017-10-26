@@ -2,15 +2,24 @@ from func.main import *
 
 table = db['history']
 
+'''
+		if i['type'] == 'buy':
+#Выставить покупку
+			if not i['order']:
+
+#Если покупка исполнена
+			elif stock[i['exchanger']].order(i['order']):
+'''
+
 while True:
 	for i in table.find({'success': 0}):
-		#Если покупка исполнена
+#Если покупка исполнена
 		if i['type'] == 'buy' and stock[i['exchanger']].order(i['order']):
-			i['success'] = 1
-			send('Покупка сработала №%d' % (i['message'],))
+				i['success'] = 1
+				send('Покупка сработала №%d' % (i['message'],))
 		
 		elif i['type'] == 'sell':
-			#Если продажа не выставлена
+#Если продажа не выставлена
 			if not i['order'] and table.find_one({'message': i['message'], 'type': 'buy'})['success']:
 				i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], i['price'], 1)
 
@@ -18,7 +27,7 @@ while True:
 				formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
 				send(formated)
 
-			#Если продажа исполнена
+#Если продажа исполнена
 			elif stock[i['exchanger']].order(i['order']):
 				i['success'] = 1
 				send('Продажа сработала №%d' % (i['message'],))
@@ -28,7 +37,7 @@ while True:
 					j['loss'] = x['price'] if x else table.find_one({'message': i['message'], 'type': 'buy'})['price']
 					table.save(j)
 
-			#Если стоп-лосс
+#Если стоп-лосс
 			elif i['loss']:
 				sell = stock[i['exchanger']].price(i['currency'], 1)
 				if type(sell) in (float, int) and sell < i['loss']:

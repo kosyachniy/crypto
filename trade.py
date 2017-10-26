@@ -45,11 +45,8 @@ def trade():
 				sett = {'message': i['id'], 'success': 0, 'order': succ, 'type': 'buy', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': price, 'count': count, 'time': time}
 				print(sett)
 				table.insert(sett)
-				'''
-				with open('data/history.txt', 'a') as file:
-					print(json.dumps(sett), file=file)
-				'''
 
+#Продажа
 				su = 0
 
 				x = []
@@ -69,11 +66,6 @@ def trade():
 
 					x.append({'message': i['id'], 'success': 0, 'order': succ, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
 
-				#Стоп-цена
-				'''
-				for j in range(len(x)-1):
-					x[j].append(x[j+1][6])
-				'''
 				for j in range(len(x)-1):
 					x[j]['loss'] = 0
 				x[len(x)-1]['loss'] = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
@@ -81,12 +73,6 @@ def trade():
 				for j in range(1, len(x)+1):
 					x[-j]['numsell'] = j
 					table.insert(x[-j])
-				'''
-				with open('data/history.txt', 'a') as file:
-					for j in range(1, len(x)+1):
-						print(x[-j])
-						print(json.dumps(x[-j]), file=file)
-				'''
 
 #Худший - лучший случай
 				vol = price * count
