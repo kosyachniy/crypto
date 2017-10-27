@@ -8,14 +8,15 @@ from celery.task.schedules import crontab
 from celery import Task
 '''
 
-ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
+#import pylab
 
-import pylab #
+ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
 class YoBit():
 	def __init__(self):
 		from func.library.yobit import YoBit as t
 		self.trader = t() #оптимизировать
+		self.num = 0
 		self.comm = 0.002
 		self.min = 0.00011
 		self.per = 0.03
@@ -104,22 +105,27 @@ class YoBit():
 		self.trader.cancel_order(id)
 
 	def all(self):
-		su = 0
-		x = self.info('')
-		print(x)
+		formated = exchangers[self.num][0] + '\n--------------------\n'
+		s = 0
+		x = []
+		rub = self.ru()
+		y = self.info('')
 
-		print('Валюта		Количество	Курс		Сумма')
-		for i in x:
-			pri = self.price(i, 1)
-			suma = x[i] * pri
-			print(i, '		', str(x[i]) + '	' if type(x[i]) == int else x[i], '	', '%.10f' % pri if type(pri) == float else '%d	' % pri, '	', '%.10f' % suma if suma else 0)
-			su += suma
+		for i in y:
+			sell = self.price(i, 1) * y[i]
+			if sell:
+				x.append([sell, i])
+				s += sell
+		for i in sorted(x)[::-1]:
+			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
 
-		print('--------------------\n%fɃ\n%f₽' % (su, su * self.trader.ticker('btc_rur')['btc_rur']['buy']))
+		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
+		return formated
 
 class Bittrex():
 	def __init__(self):
 		from func.library.bittrex import Bittrex as t
+		self.num = 1
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
 		self.min = 0.001 #0.0005 #чтобы потом можно было на loss продать
@@ -179,7 +185,7 @@ class Bittrex():
 				return self.trader.buy_limit(name, count, price)['result']['uuid']
 		except:
 			return 0
-
+	'''
 	def last(self, cur):
 		cur = self.name(cur)
 
@@ -191,15 +197,7 @@ class Bittrex():
 		pylab.grid(True)
 		pylab.show()
 		#pylab.savefig(cur + '.png', format='png', dpi=150)
-
-	def all(self):
-		s = 0
-		for i in self.trader.get_balances()['result']:
-			sell = self.price(i['Currency'], 1) * i['Balance']
-			print(i['Currency'].lower(), i['Balance'], sell)
-			s += sell
-		print('--------------------')
-		print('%fɃ\n%f₽' % (s, s / ru()))
+	'''
 
 	def order(self, id):
 		try:
@@ -211,5 +209,22 @@ class Bittrex():
 
 	def cancel(self, id):
 		self.trader.cancel(id)
+
+	def all(self):
+		formated = exchangers[self.num][0] + '\n--------------------\n'
+		s = 0
+		x = []
+		rub = self.ru()
+
+		for i in self.trader.get_balances()['result']:
+			sell = self.price(i['Currency'], 1) * i['Balance']
+			if sell:
+				x.append([sell, i['Currency']])
+				s += sell
+		for i in sorted(x)[::-1]:
+			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
+
+		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
+		return formated
 
 stock = [YoBit(), Bittrex()]

@@ -1,6 +1,6 @@
 #Контроль сигналов
 from func.data import *
-import re, math
+import math
 
 #Данные
 with open('data/vocabulary.txt', 'r') as file:
@@ -23,6 +23,9 @@ def an(text, words, stop):
 				return -1
 	return cur
 
+#БД
+from pymongo import MongoClient
+db = MongoClient()
 messages = db['messages']
 trades = db['trade']
 
