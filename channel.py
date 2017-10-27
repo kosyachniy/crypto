@@ -24,12 +24,12 @@ def price(x):
 def channel():
 #Первоначальные значения
 	try:
-		num = trades.find_one({$query: {}, $orderby: {_id: -1}})['id']
+		num = trades.find_one({'$orderby': {'_id': -1}})['id']
 	except:
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {$gte: num}})]
+		x = [i for i in trades.find({'id': {'$gte': num}})]
 
 		if not len(x):
 			sleep(5)

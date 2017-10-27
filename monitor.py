@@ -29,13 +29,13 @@ trades = db['trade']
 def monitor():
 #Первоначальные значения
 	try:
-		num = messages.find_one({$query: {}, $orderby: {_id: -1}})['id']
+		num = messages.find_one({'$orderby': {'_id': -1}})['id']
 	except:
 		num = 0
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {$gte: num}})]
+		x = [i for i in messages.find({'id': {'$gte': num}})]
 
 #Обработка
 		for i in x:
