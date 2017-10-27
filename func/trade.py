@@ -81,7 +81,7 @@ class YoBit():
 
 		try:
 			q = self.trader.trade(name, buy, price, count)
-			#print(q)
+			print(q)
 			if 'success' not in q:
 				return 0
 		except:
@@ -180,9 +180,13 @@ class Bittrex():
 
 		try:
 			if buy in ('sell', 1):
-				return self.trader.sell_limit(name, count, price)['result']['uuid']
+				x = self.trader.sell_limit(name, count, price)
+				print(x)
+				return x['result']['uuid']
 			else:
-				return self.trader.buy_limit(name, count, price)['result']['uuid']
+				x = self.trader.buy_limit(name, count, price)
+				print(x)
+				return x['result']['uuid']
 		except:
 			return 0
 	'''
