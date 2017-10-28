@@ -7,7 +7,7 @@ exc = 0
 
 from func.telegram import *
 
-texted = lambda x: ''.join([i for i in x.lower() if i in 'qwertyuiopasdfghjklzxcvbnm.'])
+texted = lambda x: ''.join(re.findall('[a-z]', x))
 
 def pump(text):
 	text = texted(text)
@@ -33,7 +33,7 @@ def pump(text):
 	sleep(1)
 	send('Успешно куплено!')
 
-	price *= 1.2
+	price *= 1.4
 	order = stock[exc].trade(text, volume * 0.999999, price, 'sell')
 	send('%s\n%fɃ' % (order, price))
 
