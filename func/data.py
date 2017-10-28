@@ -3,10 +3,8 @@ from time import sleep, gmtime
 from datetime import datetime
 
 #Данные
-currencies = []
 with open('data/currencies.txt', 'r') as file:
-	for i in file:
-		currencies.append(json.loads(i[:-1]))
+	currencies = [json.loads(i) for i in file]
 
 with open('data/exchangers.txt', 'r') as file:
 	exchangers = json.loads(file.read())
