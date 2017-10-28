@@ -1,15 +1,13 @@
 from time import sleep, gmtime
 import sys
 
-#Биржи
-from func.trade import stock
-exc = 0
-
 from func.telegram import *
+from func.trade import stock
 
-texted = lambda x: ''.join(re.findall('[a-z]', x))
+texted = lambda x: re.sub('[^a-z]', '', x)
 
-def pump(text):
+def pump(text, exc=0):
+	exc = int(exc) #
 	text = texted(text)
 	start = gmtime().tm_min
 
@@ -47,4 +45,4 @@ def pump(text):
 			sleep(5)
 
 if __name__ == '__main__':
-	pump(sys.argv[1])
+	pump([i for i in sys.argv[1:]])

@@ -7,7 +7,7 @@ table = db['history']
 def trade():
 #Первоначальные значения
 	try:
-		num = trades.find_one({'$orderby': {'_id': -1}})['id']
+		num = trades.find().sort('id', -1)[0]
 	except:
 		num = 0
 

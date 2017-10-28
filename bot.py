@@ -1,13 +1,13 @@
 from func.main import *
 #from pump import pump
 
-try:
-	num = messages.find_one({'$orderby': {'_id': -1}})['id']
-except:
-	num = 0
-
 messages = db['messages']
 exchangers = [i[0] for i in exchangers]
+
+try:
+	num = messages.find().sort('id', -1)[0]
+except:
+	num = 0
 
 #Меню
 from telebot import types
@@ -42,7 +42,7 @@ def pumps(message):
 
 def pumpss(message):
 	if message.chat.id in admin:
-		pass #pump(message.text)
+		bot.send_message(message.chat.id, '@zodzubot') #pump(message.text)
 
 @bot.message_handler(commands=['Информация', 'Инфо', 'info'])
 def info(message):

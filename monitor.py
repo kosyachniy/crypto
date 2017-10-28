@@ -6,10 +6,8 @@ import math
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
-on = lambda text, words: any([word in text for word in words])
-
-alphabet = 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъёфывапролджэячсмитьбю'
-clean = lambda cont, words: str(''.join([i if i in alphabet + words else ' ' for i in cont])).split()
+on = lambda a, b: len(set(a) & set(b))
+clean = lambda cont, words: re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 
 def an(text, words, stop):
 	cur = 0
@@ -24,21 +22,19 @@ def an(text, words, stop):
 	return cur
 
 #БД
-from pymongo import MongoClient
-db = MongoClient()
 messages = db['messages']
 trades = db['trade']
 
 def monitor():
 #Первоначальные значения
 	try:
-		num = messages.find_one({'$orderby': {'_id': -1}})['id']
+		num = messages.find().sort('id', -1)[0]
 	except:
 		num = 0
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'$orderby': {'id': -1}})]
+		x = [i for i in messages.find({'id': {'$gt': num}})]
 
 #Обработка
 		for i in x:

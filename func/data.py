@@ -13,3 +13,7 @@ with open('data/exchangers.txt', 'r') as file:
 
 with open('data/set.txt', 'r') as file:
 	utc = json.loads(file.read())['utc']
+
+#MongoDB
+from pymongo import MongoClient
+db = MongoClient()['crypto']
