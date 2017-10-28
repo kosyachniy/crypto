@@ -47,7 +47,8 @@ def pumpss(message):
 @bot.message_handler(commands=['Информация', 'Инфо', 'info'])
 def info(message):
 	if message.chat.id in admin:
-		bot.send_message(message.chat.id, 'Информация с бирж')
+		for i in stock:
+			bot.send_message(message.chat.id, i.all())
 		#main(message)
 
 @bot.message_handler(commands=exchangers)

@@ -20,6 +20,7 @@ class YoBit():
 		self.comm = 0.002
 		self.min = 0.00011
 		self.per = 0.03
+		self.limit = 0.0001
 
 	#Преобразовать индекс / название валюты для биржи
 	def name(self, cur):
@@ -63,7 +64,7 @@ class YoBit():
 		buy = self.buys(buy, 1 if cur != 'btc_rur' else 0)
 
 		#Есть ли эта валюта на бирже
-		if cur in res: # and (res[cur]['vol'] >= 1) #и достаточно ли объёма
+		if cur in res and res[cur][buy] >= self.limit: #проходит ли минимальный курс покупки # and (res[cur]['vol'] >= 1) #и достаточно ли объёма
 			if cur == 'btc_rur':
 				return 1 / res[cur][buy]
 			return res[cur][buy]

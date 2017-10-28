@@ -1,10 +1,15 @@
-from func.telegram import *
-from pump import pump
-from recognize import recognize
+#from func.telegram import *
+from pump import *
+#from recognize import recognize
 
-chat, id = -1001133674353, 883
-meid = 136563129
+@bot.message_handler(content_types=["text"])
+def text(message):
+	pump(message.chat.id, message.text)
 
+if __name__ == '__main__':
+	bot.polling(none_stop=True)
+
+'''
 def autoadd():
 	while True:
 		t = False
@@ -20,11 +25,12 @@ def autoadd():
 
 		if t:
 			print(text)
-			'''
+			\'\'\'
 			file_info = bot.get_file(message.document.file_id)
 			downloaded_file = bot.download_file(file_info.file_path)
 			pump(recognize())
-			'''
+			\'\'\'
 
 if __name__ == '__main__':
 	autoadd()
+'''
