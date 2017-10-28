@@ -1,5 +1,5 @@
 from func.main import *
-from pump import pump
+#from pump import pump
 
 try:
 	num = messages.find_one({'$orderby': {'_id': -1}})['id']
@@ -42,7 +42,7 @@ def pumps(message):
 
 def pumpss(message):
 	if message.chat.id in admin:
-		pump(message.text)
+		pass #pump(message.text)
 
 @bot.message_handler(commands=['Информация', 'Инфо', 'info'])
 def info(message):

@@ -117,7 +117,7 @@ class YoBit():
 				x.append([sell, i])
 				s += sell
 		for i in sorted(x)[::-1]:
-			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
+			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1].upper(), i[0], i[0] / rub)
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated

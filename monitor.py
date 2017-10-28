@@ -38,7 +38,7 @@ def monitor():
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gte': num}})]
+		x = [i for i in messages.find({'$orderby': {'id': -1}})]
 
 #Обработка
 		for i in x:
