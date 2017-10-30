@@ -5,3 +5,5 @@ python3 channel.py &
 python3 stock.py &
 python3 info.py &
 jobs
+sleep 10
+python3 main.py
