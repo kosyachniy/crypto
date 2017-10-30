@@ -19,7 +19,7 @@ def trade():
 			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
 			i['exchanger'] = 1 #Временная замена на одну биржу
 
-			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку
+			#i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
 
@@ -30,7 +30,7 @@ def trade():
 
 			#сделать проверку достаточно ли средств
 
-			time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+			time = strftime('%d.%m.%Y %H:%M:%S')
 			rub = stock[i['exchanger']].ru()
 
 #Покупка
@@ -50,7 +50,7 @@ def trade():
 				su = 0
 
 				x = []
-				for j in range(1, len(i['out'])+1):
+				for j in range(1, len(i['out']) + 1):
 					#Если слишком маленький объём продажи
 					#может ли быть такое, что все кроме первого объединятся, а первый будет слишком маленький
 					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]

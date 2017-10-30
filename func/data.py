@@ -1,6 +1,5 @@
 import json, requests, re
-from time import sleep, gmtime
-from datetime import datetime
+from time import sleep, gmtime, strftime
 
 #Данные
 with open('data/currencies.txt', 'r') as file:

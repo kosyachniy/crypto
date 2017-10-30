@@ -7,7 +7,7 @@ with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
 on = lambda a, b: len(set(a) & set(b))
-clean = lambda cont, words: re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
+clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 
 def an(text, words, stop):
 	cur = 0
@@ -20,6 +20,23 @@ def an(text, words, stop):
 			else:
 				return -1
 	return cur
+
+ def stoploss(text, catch):
+ 	try:
+		if '%' in text:
+			l = 1 - int(re.findall(r'\d+', text)[0]) / 100
+			if l < 0: return catch
+			return [0, l]
+		elif '.' in j:
+			return [1, float(re.search(r'-?\d+\.\d*', j).group(0))]
+	except:
+		return catch
+
+def seller(text):
+	if '%' in text:
+		return [0, 0, int(re.findall(r'\d+', text)[0]) / 100]
+	else:
+		return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
 
 #БД
 messages = db['messages']
@@ -42,7 +59,7 @@ def monitor():
 			#Убирать ссылки (чтобы не путать лишними словами), VIP
 			text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
 			print(text)
-			#time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
+			#time = strftime('%d.%m.%Y %H:%M:%S')
 
 			loss = [0, 0.9] #
 			out = []
@@ -92,28 +109,17 @@ def monitor():
 			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
 				t = True
 				text = text.split('\n')
-				for j in text[0].split():
+				for j in clean(text[0], '%').split():
 					try:
 						if t:
 							price = float(j)
 							t = False
 						else:
-							if '%' in j:
-								x = (1 - (int(re.findall(r'\d+', j)[0]) / 100)) * price
-							else:
-								x = float(j)
-							out.append([0, 1, x])
+							out.append(seller(j))
+							
 					except:
 						pass
-				try:
-					if '%' in text[1]:
-						l = 1 - int(re.findall(r'\d+', text[1])[0]) / 100
-						if l >= 0:
-							loss = [0, l]
-					elif '.' in text[1]:
-						loss = [1, float(re.search(r'-?\d+\.\d*', text[1]).group(0))]
-				except:
-					pass
+				loss = stoploss(j, loss)
 			else:
 				for j in text.split('\n'):
 					try:
@@ -121,23 +127,14 @@ def monitor():
 							price = float(re.search(r'-?\d+\.\d*', j).group(0))
 							#Добавить разделение на несколько покупок
 						elif on(j, vocabulary['sell']):
-							out.append([0, 1, float(re.search(r'-?\d+\.\d*', j).group(0))])
+							out.append(seller(j))
 					except:
 						pass
 
 				#Определение стоп-лосса
 				for j in text.split('\n'):
-					try:
-						if on(j, vocabulary['loss']):
-							if '%' in j:
-								l = 1 - int(re.findall(r'\d+', j)[0]) / 100
-								if l < 0:
-									continue
-								loss = [0, l]
-							elif '.' in j:
-								loss = [1, float(re.search(r'-?\d+\.\d*', j).group(0))]
-					except:
-						pass
+					if on(j, vocabulary['loss']):
+						loss = stoploss(j, loss)
 
 
 			#Рассмотреть случай продажи валюты
