@@ -21,8 +21,8 @@ def an(text, words, stop):
 				return -1
 	return cur
 
- def stoploss(text, catch):
- 	try:
+def stoploss(text, catch):
+	try:
 		if '%' in text:
 			l = 1 - int(re.findall(r'\d+', text)[0]) / 100
 			if l < 0: return catch

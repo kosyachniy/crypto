@@ -8,7 +8,7 @@ from celery.task.schedules import crontab
 from celery import Task
 '''
 
-#import pylab
+import pylab
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
@@ -48,10 +48,10 @@ class YoBit():
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
 		try:
-			x = self.trader.get_info()['return']['funds_incl_orders'] #funds
+			x = self.trader.get_info()['return']['funds' if cur == 'btc' else 'funds_incl_orders'] #funds
 		except:
 			sleep(5)
-			x = self.trader.get_info()['return']['funds_incl_orders']
+			x = self.trader.get_info()['return']['funds' if cur == 'btc' else 'funds_incl_orders']
 		return x[cur] if len(cur) else x
 
 	#Курс
@@ -123,13 +123,35 @@ class YoBit():
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
 
+	def last(self, cur, limit=200):
+		cur = self.name(cur)
+
+		y = [i['price'] for i in self.trader.trades(cur, limit)[cur]]
+
+		pylab.plot([i for i in range(1, len(y) + 1)], y)
+		pylab.grid(True)
+		pylab.show()
+		#pylab.savefig(cur + '.png', format='png', dpi=150)
+
+	#Размеры волны пампа
+	def bar(self, cur):
+		cur = self.name(cur)
+		x = self.trader.trades(cur)[cur]
+		min = max = x[0]['price']
+		for i in x:
+			if i['price'] < min:
+				min = i['price']
+			elif i['price'] > max:
+				max = i['price']
+		return min, max
+
 class Bittrex():
 	def __init__(self):
 		from func.library.bittrex import Bittrex as t
 		self.num = 1
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
-		self.min = 0.001 #0.0005 #чтобы потом можно было на loss продать
+		self.min = 0.00051 #0.005
 		self.per = 0.03
 
 	def name(self, cur):
@@ -190,19 +212,16 @@ class Bittrex():
 				return x['result']['uuid']
 		except:
 			return 0
-	'''
+
 	def last(self, cur):
 		cur = self.name(cur)
 
-		y = []
-		for i in self.trader.get_market_history(cur)['result']:
-			y.append(i['Price'])
+		y = [i['Price'] for i in self.trader.get_market_history(cur)['result']]
 
 		pylab.plot([i for i in range(1, len(y) + 1)], y)
 		pylab.grid(True)
 		pylab.show()
 		#pylab.savefig(cur + '.png', format='png', dpi=150)
-	'''
 
 	def order(self, id):
 		try:
