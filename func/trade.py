@@ -48,11 +48,10 @@ class YoBit():
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
 		try:
-			x = self.trader.get_info()['return']['funds' if cur == 'btc' else 'funds_incl_orders'] #funds
+			return self.trader.get_info()['return']['funds_incl_orders'][cur]
 		except:
 			sleep(5)
-			x = self.trader.get_info()['return']['funds' if cur == 'btc' else 'funds_incl_orders']
-		return x[cur] if len(cur) else x
+			return self.trader.get_info()['return']['funds_incl_orders'][cur]
 
 	#Курс
 	def price(self, cur, buy='buy'):
@@ -110,11 +109,11 @@ class YoBit():
 		s = 0
 		x = []
 		rub = self.ru()
-		y = self.info('')
+		y = self.trader.get_info()['return']['funds']
 
 		for i in y:
 			sell = self.price(i, 1) * y[i]
-			if sell:
+			if sell > self.min:
 				x.append([sell, i])
 				s += sell
 		for i in sorted(x)[::-1]:
@@ -242,7 +241,7 @@ class Bittrex():
 
 		for i in self.trader.get_balances()['result']:
 			sell = self.price(i['Currency'], 1) * i['Balance']
-			if sell:
+			if sell > self.min:
 				x.append([sell, i['Currency']])
 				s += sell
 		for i in sorted(x)[::-1]:

@@ -1,5 +1,5 @@
 from time import sleep, gmtime
-import sys
+import sys, re
 
 #from func.telegram import *
 from func.trade import stock
