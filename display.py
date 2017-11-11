@@ -1,12 +1,12 @@
 from func.trade import *
-from datetime import *
+import numpy as np
 
 cur, limit = 'dash', 5
 cur = stock[0].name(cur)
 
-tim = lambda x: x // 60 #datetime.fromtimestamp(x).strftime('%M')
+tim = lambda x: x // 60
 
-y = stock[0].trader.trades(cur, limit)[cur] #[i['price'] for i in ]
+y = stock[0].trader.trades(cur, limit)[cur]
 
 #Разбиение на минуты
 al = []
@@ -39,15 +39,20 @@ for i in y[::-1]:
 al = al[1:] #первый - не полный, последний - не вносится
 #print(al)
 
-'''
-y = stock[0].trader.depth(cur, limit)
-print(y)
-'''
-
 #График
-y = [i[1] for i in al]
+y = [i[1:] for i in al]
 x = [i[0] for i in al]
 
-pylab.plot(x, y) #[i for i in range(1, len(y) + 1)]
+spread = np.random.rand(2) * 100
+center = np.ones(2) * 50
+flier_high = np.random.rand(2) * 100 + 100
+flier_low = np.random.rand(2) * -100
+data = np.concatenate((spread, center, flier_high, flier_low), 0)
+print(spread, center, flier_high, flier_low, sep='\n')
+#data = np.concatenate((30, 50, 100, 10), 0)
+pylab.boxplot(data, 0, '')
+#pylab.plot(x, y)
+#pylab.boxplot(al)
+#pylab.xticks(range(1, len(x)+1), x)
 pylab.grid(True)
 pylab.show()
