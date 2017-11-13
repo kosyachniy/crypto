@@ -65,6 +65,11 @@ def text(message):
 		chat, id, text = message.chat.id, message.message_id, message.text
 
 	if message.chat.id in admin:
+		try:
+			num = messages.find().sort('id', -1)[0]
+		except:
+			num = 0
+	
 		num += 1
 		doc = {'id': num, 'chat': chat, 'message': id, 'text': text}
 		messages.insert(doc)

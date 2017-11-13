@@ -109,7 +109,7 @@ def monitor():
 			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
 				t = True
 				text = text.split('\n')
-				for j in clean(text[0], '%').split():
+				for j in clean(text[0], '%'):
 					try:
 						if t:
 							price = float(j)
