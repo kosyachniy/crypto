@@ -23,8 +23,8 @@ def trade():
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
 
-			i['volume'] = 0.5 #
-			delta = stock[i['exchanger']].info() * i['volume']
+			#i['volume'] = 0.5 #
+			delta = 0.001 #stock[i['exchanger']].info() * i['volume']
 			if delta < stock[i['exchanger']].min:
 				delta = stock[i['exchanger']].min
 			count = delta / price
