@@ -24,16 +24,18 @@ def price(x):
 def channel():
 #Первоначальные значения
 	try:
-		num = trades.find().sort('id', -1)[0]['id'] + 1
+		num = trades.find().sort('id', -1)[0]['id']
 	except:
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {'$gte': num-1}})]
+		x = [i for i in trades.find({'id': {'$gte': num+1}})]
 
 		if not len(x):
 			sleep(5)
 			continue
+
+		num = x[-1]['id']
 
 		for i in x:
 			formated = '%s\n'  % (currencies[i['currency']][0],)

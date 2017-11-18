@@ -104,12 +104,7 @@ def monitor():
 			print(cur, exc, term, buy)
 
 			#Распознание размеров
-			#print('-!!-', on(text, vocabulary['loss']))
-			#print('!--!', text.count('\n'))
-			#print('OKK1', text.count('\n'))
-			#print(on(text, vocabulary['loss']))
 			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
-				#print('OKK2')
 				t = True
 				text = text.split('\n')
 				for j in clean(text[0], '.%0123456789'):
