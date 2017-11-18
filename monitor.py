@@ -6,8 +6,8 @@ import math
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
-on = lambda a, b: len(set(a) & set(b))
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
+on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
 
 def an(text, words, stop):
 	cur = 0
@@ -27,14 +27,14 @@ def stoploss(text, catch):
 			l = 1 - int(re.findall(r'\d+', text)[0]) / 100
 			if l < 0: return catch
 			return [0, l]
-		elif '.' in j:
-			return [1, float(re.search(r'-?\d+\.\d*', j).group(0))]
+		elif '.' in text:
+			return [1, float(re.search(r'-?\d+\.\d*', text).group(0))]
 	except:
 		return catch
 
 def seller(text):
 	if '%' in text:
-		return [0, 0, int(re.findall(r'\d+', text)[0]) / 100]
+		return [0, 0, 1 + int(re.findall(r'\d+', text)[0]) / 100]
 	else:
 		return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
 
@@ -104,9 +104,12 @@ def monitor():
 			print(cur, exc, term, buy)
 
 			#Распознание размеров
-			print('-!!-', on(text, vocabulary['loss'])) #
-			print('!--!', text.count('\n')) #
+			#print('-!!-', on(text, vocabulary['loss']))
+			#print('!--!', text.count('\n'))
+			#print('OKK1', text.count('\n'))
+			#print(on(text, vocabulary['loss']))
 			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
+				#print('OKK2')
 				t = True
 				text = text.split('\n')
 				for j in clean(text[0], '.%0123456789'):
@@ -118,7 +121,8 @@ def monitor():
 							out.append(seller(j))
 					except:
 						pass
-				loss = stoploss(j, loss)
+				if len(text) >= 2 and on(text[1], vocabulary['loss']):
+					loss = stoploss(text[1], loss)
 			else:
 				for j in text.split('\n'):
 					try:
