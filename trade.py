@@ -7,12 +7,12 @@ table = db['history']
 def trade():
 #Первоначальные значения
 	try:
-		num = trades.find().sort('id', -1)[0]
+		num = trades.find().sort('id', -1)[0]['id'] + 1
 	except:
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {'$gte': num+1}})]
+		x = [i for i in trades.find({'id': {'$gte': num-1}})]
 
 		for i in x:
 #Рассчёт основных параметров для биржи

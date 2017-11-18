@@ -17,7 +17,7 @@ while True:
 		if i['type'] == 'buy' and stock[i['exchanger']].order(i['order']):
 				i['success'] = 1
 				send('Покупка сработала №%d' % (i['message'],))
-		
+
 		elif i['type'] == 'sell':
 #Если продажа не выставлена
 			if not i['order'] and table.find_one({'message': i['message'], 'type': 'buy'})['success']:
@@ -45,6 +45,7 @@ while True:
 					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], sell, 1)
 					i['price'] = sell
 					send('Сработал стоп-лосс на заказе №%d' % (i['message'],))
+					#изменить тип на loss и отдельно отслеживать
 
 					if i['order']:
 						rub = stock[i['exchanger']].ru()

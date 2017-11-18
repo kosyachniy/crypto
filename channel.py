@@ -16,7 +16,7 @@ def price(x):
 		name = td[1].text
 		index = td[2].text
 		price = td[7].text.replace('.', '').replace(',', '.')
-		
+
 		if index == x:
 			print(name, index, price)
 			return float(price)
@@ -24,12 +24,12 @@ def price(x):
 def channel():
 #Первоначальные значения
 	try:
-		num = trades.find().sort('id', -1)[0]
+		num = trades.find().sort('id', -1)[0]['id'] + 1
 	except:
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {'$gte': num+1}})]
+		x = [i for i in trades.find({'id': {'$gte': num-1}})]
 
 		if not len(x):
 			sleep(5)

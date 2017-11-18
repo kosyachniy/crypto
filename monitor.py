@@ -45,13 +45,13 @@ trades = db['trade']
 def monitor():
 #Первоначальные значения
 	try:
-		num = messages.find().sort('id', -1)[0]
+		num = messages.find().sort('id', -1)[0]['id'] + 1
 	except:
 		num = 0
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gt': num+1}})]
+		x = [i for i in messages.find({'id': {'$gt': num-1}})]
 
 #Обработка
 		for i in x:
@@ -109,14 +109,13 @@ def monitor():
 			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
 				t = True
 				text = text.split('\n')
-				for j in clean(text[0], '%'):
+				for j in clean(text[0], '.%0123456789'):
 					try:
 						if t:
 							price = float(j)
 							t = False
 						else:
 							out.append(seller(j))
-							
 					except:
 						pass
 				loss = stoploss(j, loss)

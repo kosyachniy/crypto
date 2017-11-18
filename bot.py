@@ -65,8 +65,9 @@ def text(message):
 		chat, id, text = message.chat.id, message.message_id, message.text
 
 	if message.chat.id in admin:
+		#оптимизировать
 		try:
-			num = messages.find().sort('id', -1)[0]
+			num = messages.find().sort('id', -1)[0]['id']
 		except:
 			num = 0
 	

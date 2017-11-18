@@ -25,7 +25,7 @@ def pump(chat, text, exc=0):
 	price = stock[exc].price(text)
 
 	try:
-		volume = 0.002 / price #stock[exc].info() * 0.95
+		volume = 0.0006 / price #stock[exc].info() * 0.95
 	except:
 		send('Ошибка!')
 		return 0
