@@ -185,8 +185,11 @@ class Bittrex():
 		cur = self.name(cur)
 		x = self.trader.get_ticker(cur)
 		buy = self.buys(buy, 1)
-		if x['success']:
-			return x['result'][buy]
+		try:
+			if x['success']:
+				return x['result'][buy]
+		except:
+			pass
 
 		return 0
 
@@ -241,6 +244,8 @@ class Bittrex():
 
 		for i in self.trader.get_balances()['result']:
 			sell = self.price(i['Currency'], 1) * i['Balance']
+			if not sell:
+				continue
 			if sell > self.min:
 				x.append([sell, i['Currency']])
 				s += sell

@@ -12,7 +12,7 @@ def trade():
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {'$gte': num}})]
+		x = [i for i in trades.find({'id': {'$gte': num+1}})]
 
 		for i in x:
 #Рассчёт основных параметров для биржи

@@ -29,7 +29,7 @@ def channel():
 		num = 0
 
 	while True:
-		x = [i for i in trades.find({'id': {'$gte': num}})]
+		x = [i for i in trades.find({'id': {'$gte': num+1}})]
 
 		if not len(x):
 			sleep(5)

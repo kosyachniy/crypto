@@ -51,7 +51,7 @@ def monitor():
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gt': num}})]
+		x = [i for i in messages.find({'id': {'$gt': num+1}})]
 
 #Обработка
 		for i in x:
