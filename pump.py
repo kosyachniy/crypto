@@ -6,7 +6,7 @@ from time import sleep, gmtime, mktime
 import sys, re
 from func.trade import stock
 
-texted = lambda x: re.sub('[^a-z]', '', x)
+texted = lambda x: re.sub('[^a-z1234567890]', '', x)
 minut = lambda: mktime(gmtime()) // 60
 
 def pump(chat, text, exc=0):
