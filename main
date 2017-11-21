@@ -1,7 +1,9 @@
 python3 bot.py &
+python3 autoadd.py &
 python3 monitor.py &
 python3 trade.py &
 python3 channel.py &
 python3 stock.py &
 python3 info.py &
 jobs
+python3 pump.py

@@ -5,7 +5,7 @@ messages = db['messages']
 exchangers = [i[0] for i in exchangers]
 
 try:
-	num = messages.find().sort('id', -1)[0]
+	num = messages.find().sort('id', -1)[0]['id']
 except:
 	num = 0
 
