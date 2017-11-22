@@ -36,7 +36,7 @@ def autoadd():
 				except:
 					id = 0
 
-				doc = {'id': id, 'chat': from_id, 'message': num, 'text': text}
+				doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
 				messages.insert(doc)
 
 				num = i.id
