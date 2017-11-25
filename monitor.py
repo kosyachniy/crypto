@@ -42,20 +42,7 @@ def seller(text):
 messages = db['messages']
 trades = db['trade']
 
-def monitor():
-#Первоначальные значения
-	try:
-		num = messages.find().sort('id', -1)[0]['id'] + 1
-	except:
-		num = 0
-
-#Список новых сигналов
-	while True:
-		x = [i for i in messages.find({'id': {'$gt': num-1}})]
-
-#Обработка
-		for i in x:
-			num = max(num, i['id'])
+def recognize(i):
 			#Убирать ссылки (чтобы не путать лишними словами), VIP
 			text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
 			print(text)
@@ -69,7 +56,7 @@ def monitor():
 #Распознание сигнала
 			#Условия необработки
 			if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
-				continue
+				return None
 
 			#Определение сигнал покупки / продажи
 			if on(text, vocabulary['buy']):
@@ -99,7 +86,7 @@ def monitor():
 			#Определение валюты
 			cur = an(text, '#', ['status']) #поиск по хештегу
 			if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
-			if cur == -1: continue #если несколько валют
+			if cur == -1: return None #если несколько валют
 
 			print(cur, exc, term, buy)
 
@@ -140,15 +127,15 @@ def monitor():
 #Замены
 				#Если не указаны объёмы покупки
 				if not vol:
-					vol = 0.03
+					vol = 0.05 #сделать фиксированные объёмы?
 
 				#Если не указаны ордеры на продажу
 				if not len(out):
 					out = [
-						[0.5, 0, 1.1],
-						[0.3, 0, 1.15],
-						[0.1, 0, 1.2],
-						[0.1, 0, 1.25]
+						[0.5, 0, 1.05],
+						[0.3, 0, 1.07],
+						[0.1, 0, 1.1],
+						[0.1, 0, 1.15]
 					]
 
 				#Если не указаны объёмы продажи
@@ -164,8 +151,6 @@ def monitor():
 					out[0][0] = 1 - a
 
 #Отправка на обработку
-				num += 1
-
 				sett = {
 					'id': i['id'],
 					'currency': cur,
@@ -180,7 +165,27 @@ def monitor():
 				} #, 'time': time
 
 				#Если без покупки, первые поля пустые ?
-				trades.insert(sett)
+				return sett
+
+def monitor():
+#Первоначальные значения
+	try:
+		num = messages.find().sort('id', -1)[0]['id'] + 1
+	except:
+		num = 0
+
+#Список новых сигналов
+	while True:
+		x = [i for i in messages.find({'id': {'$gt': num-1}})]
+
+#Обработка
+		for i in x:
+			num = max(num, i['id'])
+
+			x = recognize(i)
+			if x:
+				num += 1
+				trades.insert(x)
 
 if __name__ == '__main__':
 	monitor()
