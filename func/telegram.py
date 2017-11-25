@@ -32,4 +32,7 @@ def send(message, forward=0, group=0):
 				bot.send_message(i, message) #, reply_markup=keyboard()
 		else:
 			for i in admin:
-				bot.forward_message(i, forward, message)
+				try:
+					bot.forward_message(i, forward, message)
+				except:
+					bot.send_message(i, 'Сообщение шифровано!')

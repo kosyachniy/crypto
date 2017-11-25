@@ -7,6 +7,9 @@ messages = db['messages']
 
 get = lambda x=1: client.get_message_history(client.get_entity(from_id), x)[1]
 
+clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
+on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
+
 def autoadd():
 	try:
 		num = messages.find().sort('id', -1)[0]['message']
@@ -36,8 +39,9 @@ def autoadd():
 				except:
 					id = 0
 
-				doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
-				messages.insert(doc)
+				if on(text, ['#CryptoSignals ', '#Иностранный', '#Альтернативный', '#CryptosignalsIo', '#CryptoWolf'], '#'):
+					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
+					messages.insert(doc)
 
 				num = i.id
 

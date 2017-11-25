@@ -38,136 +38,136 @@ def seller(text):
 	else:
 		return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
 
-#БД
-messages = db['messages']
-trades = db['trade']
-
 def recognize(i):
-			#Убирать ссылки (чтобы не путать лишними словами), VIP
-			text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
-			print(text)
-			#time = strftime('%d.%m.%Y %H:%M:%S')
+	#Убирать ссылки (чтобы не путать лишними словами), VIP
+	text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
+	print(text)
+	#time = strftime('%d.%m.%Y %H:%M:%S')
 
-			loss = [0, 0.9] #
-			out = []
-			vol = 0
-			price = 0
+	loss = [0, 0.9] #
+	out = []
+	vol = 0
+	price = 0
 
 #Распознание сигнала
-			#Условия необработки
-			if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
-				return None
+	#Условия необработки
+	if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
+		return None
 
-			#Определение сигнал покупки / продажи
-			if on(text, vocabulary['buy']):
-				buy = 2
-			elif on(text, vocabulary['sell']):
-				buy = 1
-			else:
-				buy = 0
+	#Определение сигнал покупки / продажи
+	if on(text, vocabulary['buy']):
+		buy = 2
+	elif on(text, vocabulary['sell']):
+		buy = 1
+	else:
+		buy = 0
 
-			#Определение биржи
-			exc = -1
-			for j in range(len(exchangers)):
-				if exchangers[j][0].lower() in text:
-					exc = j
-					break
+	#Определение биржи
+	exc = -1
+	for j in range(len(exchangers)):
+		if exchangers[j][0].lower() in text:
+			exc = j
+			break
 
-			#Определение срока
-			if on(text, vocabulary['short']):
-				term = 0
-			elif on(text, vocabulary['medium']):
-				term = 1
-			elif on(text, vocabulary['long']):
-				term = 2
-			else:
-				term = -1
+	#Определение срока
+	if on(text, vocabulary['short']):
+		term = 0
+	elif on(text, vocabulary['medium']):
+		term = 1
+	elif on(text, vocabulary['long']):
+		term = 2
+	else:
+		term = -1
 
-			#Определение валюты
-			cur = an(text, '#', ['status']) #поиск по хештегу
-			if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
-			if cur == -1: return None #если несколько валют
+	#Определение валюты
+	cur = an(text, '#', ['status']) #поиск по хештегу
+	if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
+	if cur == -1: return None #если несколько валют
 
-			print(cur, exc, term, buy)
+	print(cur, exc, term, buy)
 
-			#Распознание размеров
-			if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
-				t = True
-				text = text.split('\n')
-				for j in clean(text[0], '.%0123456789'):
-					try:
-						if t:
-							price = float(j)
-							t = False
-						else:
-							out.append(seller(j))
-					except:
-						pass
-				if len(text) >= 2 and on(text[1], vocabulary['loss']):
-					loss = stoploss(text[1], loss)
-			else:
-				for j in text.split('\n'):
-					try:
-						if on(j, vocabulary['buy']):
-							price = float(re.search(r'-?\d+\.\d*', j).group(0))
-							#Добавить разделение на несколько покупок
-						elif on(j, vocabulary['sell']):
-							out.append(seller(j))
-					except:
-						pass
+	#Распознание размеров
+	if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
+		t = True
+		text = text.split('\n')
+		for j in clean(text[0], '.%0123456789'):
+			try:
+				if t:
+					if '.' in j:
+						price = float(j)
+						t = False
+				else:
+					out.append(seller(j))
+			except:
+				pass
+		if len(text) >= 2 and on(text[1], vocabulary['loss']):
+			loss = stoploss(text[1], loss)
+	else:
+		for j in text.split('\n'):
+			try:
+				if on(j, vocabulary['buy']):
+					price = float(re.search(r'-?\d+\.\d*', j).group(0))
+					#Добавить разделение на несколько покупок
+				elif on(j, vocabulary['sell']):
+					out.append(seller(j))
+			except:
+				pass
 
-				#Определение стоп-лосса
-				for j in text.split('\n'):
-					if on(j, vocabulary['loss']):
-						loss = stoploss(j, loss)
+		#Определение стоп-лосса
+		for j in text.split('\n'):
+			if on(j, vocabulary['loss']):
+				loss = stoploss(j, loss)
 
 
-			#Рассмотреть случай продажи валюты
-			if cur >= 1 and buy != 1:
+	#Рассмотреть случай продажи валюты
+	if cur >= 1 and buy != 1:
 #Замены
-				#Если не указаны объёмы покупки
-				if not vol:
-					vol = 0.05 #сделать фиксированные объёмы?
+		#Если не указаны объёмы покупки
+		if not vol: vol = 0.05 #сделать фиксированные объёмы?
 
-				#Если не указаны ордеры на продажу
-				if not len(out):
-					out = [
-						[0.5, 0, 1.05],
-						[0.3, 0, 1.07],
-						[0.1, 0, 1.1],
-						[0.1, 0, 1.15]
-					]
+		#Если не указаны ордеры на продажу
+		if not len(out):
+			out = [
+				[0.5, 0, 1.05],
+				[0.3, 0, 1.07],
+				[0.1, 0, 1.1],
+				[0.1, 0, 1.15]
+			]
 
-				#Если не указаны объёмы продажи
-				if not out[0][0]:
-					s = 0
-					for j in range(len(out)):
-						s += math.exp(j)
-					x = 1 / s
-					a = 0
-					for j in range(len(out) - 1):
-						out[-1 * (j + 1)][0] = math.exp(j) * x
-						a += out[len(out) - j - 1][0]
-					out[0][0] = 1 - a
+		#Если не указаны объёмы продажи
+		if not out[0][0]:
+			s = 0
+			for j in range(len(out)):
+				s += math.exp(j)
+			x = 1 / s
+			a = 0
+			for j in range(len(out) - 1):
+				out[-1 * (j + 1)][0] = math.exp(j) * x
+				a += out[len(out) - j - 1][0]
+			out[0][0] = 1 - a
 
 #Отправка на обработку
-				sett = {
-					'id': i['id'],
-					'currency': cur,
-					'exchanger': exc,
-					'price': price,
-					'volume': vol,
-					'out': out,
-					'loss': loss,
-					'term': term,
-					'chat': i['chat'],
-					'mess': i['message']
-				} #, 'time': time
+		sett = {
+			'id': i['id'],
+			'currency': cur,
+			'exchanger': exc,
+			'price': price,
+			'volume': vol,
+			'out': out,
+			'loss': loss,
+			'term': term,
+			'chat': i['chat'],
+			'mess': i['message']
+		} #, 'time': time
 
-				#Если без покупки, первые поля пустые ?
-				return sett
+		#Если без покупки, первые поля пустые ?
+		return sett
 
 def monitor():
+#БД
+	messages = db['messages']
+	trades = db['trade']
+
 #Первоначальные значения
 	try:
 		num = messages.find().sort('id', -1)[0]['id'] + 1
