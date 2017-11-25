@@ -5,7 +5,7 @@ import json
 with open('data/user.txt', 'r') as file:
 	x = json.loads(file.read())
 
-client = TelegramClient(x['name'], x['id'], x['hash'], update_workers=4)
+client = TelegramClient('data/'+x['name'], x['id'], x['hash'], update_workers=4)
 client.connect()
 
 if not client.is_user_authorized():

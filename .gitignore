@@ -1,5 +1,5 @@
 **/__pycache__/
 data/set.txt
 data/user.txt
-*.session
+data/*.session
 -/

@@ -1,5 +1,6 @@
 from func.data import db
 from func.user import *
+from time import sleep
 
 from_id = -1001149594247 #-1001143136828
 
