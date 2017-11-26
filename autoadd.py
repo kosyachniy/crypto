@@ -1,6 +1,7 @@
 from func.data import db
 from func.user import *
 from time import sleep
+import re
 
 from_id = -1001149594247 #-1001143136828
 
@@ -12,10 +13,7 @@ clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lowe
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
 
 def autoadd():
-	try:
-		num = messages.find().sort('id', -1)[0]['message']
-	except:
-		num = 0
+	num = get()[0].id
 
 	while True:
 		last = get()[0].id
@@ -40,7 +38,7 @@ def autoadd():
 				except:
 					id = 0
 
-				if on(text, ['#CryptoSignals ', '#Иностранный', '#Альтернативный', '#CryptosignalsIo', '#CryptoWolf'], '#'):
+				if on(text, ['#cryptosignals ', '#иностранный', '#альтернативный', '#cryptosignalsio', '#cryptowolf', '#privatesignals'], '#'):
 					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
 					messages.insert(doc)
 
