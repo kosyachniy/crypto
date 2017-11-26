@@ -22,7 +22,7 @@ def trade():
 			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
 			i['exchanger'] = 1 #Временная замена на одну биржу
 
-			#i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
+			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет или в малом объёме
 

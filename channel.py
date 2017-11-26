@@ -1,8 +1,9 @@
 from func.main import *
-from bs4 import BeautifulSoup
 
 trades = db['trade']
 
+'''
+from bs4 import BeautifulSoup
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
 	print('!!!' + x) #
@@ -20,6 +21,13 @@ def price(x):
 		if index == x:
 			print(name, index, price)
 			return float(price)
+'''
+#переделать
+def price(x):
+	try:
+		return stock[1].price(x)
+	except:
+		return 0.0
 
 def channel():
 #Первоначальные значения

@@ -33,12 +33,12 @@ def autoadd():
 
 				#+изображения
 
-				try:
-					id = messages.find().sort('id', -1)[0]['id']
-				except:
-					id = 0
+				if on(text, ['#cryptosignals ', '#иностранный', '#альтернативный', '#cryptosignalsio', '#cryptowolf', '#privatesignals', '#insighttradebot'], '#'):
+					try:
+						id = messages.find().sort('id', -1)[0]['id']
+					except:
+						id = 0
 
-				if on(text, ['#cryptosignals ', '#иностранный', '#альтернативный', '#cryptosignalsio', '#cryptowolf', '#privatesignals'], '#'):
 					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
 					messages.insert(doc)
 
