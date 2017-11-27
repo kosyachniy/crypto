@@ -7,7 +7,8 @@ with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
-on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
+on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
+#on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
 
 def an(text, words, stop):
 	cur = 0
@@ -45,13 +46,14 @@ def recognize(i):
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
 	loss = [0, 0.9] #
+	reloss = loss + []
 	out = []
 	vol = 0
 	price = 0
 
 #Распознание сигнала
 	#Условия необработки
-	if on(text, vocabulary['stop']) or (len(clean(text, '')) * 1.5 > len(text) and len(text) > 70):
+	if on(text, vocabulary['stop'], '🚀') or (len(clean(text)) * 1.5 > len(text) and len(text) > 70):
 		return None
 
 	#Определение сигнал покупки / продажи
@@ -145,6 +147,10 @@ def recognize(i):
 				out[-1 * (j + 1)][0] = math.exp(j) * x
 				a += out[len(out) - j - 1][0]
 			out[0][0] = 1 - a
+
+		#Если неправильно определил стоп-лосс
+		if loss == None:
+			loss = reloss
 
 #Отправка на обработку
 		sett = {

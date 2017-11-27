@@ -14,6 +14,7 @@ on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & 
 
 def autoadd():
 	num = get()[0].id
+	print('!', num) #
 
 	while True:
 		last = get()[0].id
@@ -33,11 +34,15 @@ def autoadd():
 
 				#+изображения
 
+				print(text) #
+
 				if on(text, ['#cryptosignals ', '#иностранный', '#альтернативный', '#cryptosignalsio', '#cryptowolf', '#privatesignals', '#insighttradebot'], '#'):
 					try:
 						id = messages.find().sort('id', -1)[0]['id']
 					except:
 						id = 0
+
+					print(id+1)
 
 					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
 					messages.insert(doc)
