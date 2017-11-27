@@ -53,7 +53,7 @@ def recognize(i):
 
 #Распознание сигнала
 	#Условия необработки
-	if on(text, vocabulary['stop'], '🚀') or (len(clean(text)) * 1.5 > len(text) and len(text) > 70):
+	if on(text, vocabulary['stop'], '🚀$') or (len(clean(text)) * 1.5 > len(text) and len(text) > 70):
 		return None
 
 	#Определение сигнал покупки / продажи

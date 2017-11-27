@@ -5,12 +5,15 @@
 Канал Telegram | [@cryptosovet](https://t.me/cryptosovet)
 Бот Telegram | [@CryptoSovetBot](https://t.me/CryptoSovetBot)
 
+![Запуск бота](2.png)
+
 Биржи
 ---
 № | Биржа | GitHub | API
 ---|---|---|---
 0 | [YoBit](https://yobit.net/ru/wallets/) | [NanoBjorn](https://github.com/NanoBjorn/yobit) | [yobit.net](https://yobit.net/ru/api/)
 1 | [Bittrex](https://bittrex.com/Balance) | [EricSomdahl](https://github.com/ericsomdahl/python-bittrex) | [bittrex.com](https://bittrex.com/Home/Api)
+2 | [Poloniex](https://poloniex.com/) | [s4w3d0ff](https://github.com/s4w3d0ff/python-poloniex) | [poloniex.com](https://poloniex.com/support/api/)
 
 Схема работы
 ---
@@ -58,6 +61,9 @@
 32. Отменять сигнал, если долго не исполняется
 33. Значок ракеты в стоп + обработка этого символа в мониторинге
 34. Добавление новых валют
+35. Проверить дробные проенты в сигналах
+36. Временное ограничение для сигналов 5, 13, 18 часов минус 1% ордера +1% стоп-лосс
+37. Завышенные проценты на privatesignals
 
 Временные фиксы
 ---

@@ -24,7 +24,8 @@ def trade():
 
 			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
-			if not price: continue #валюты нет или в малом объёме
+			if not price: continue #валюты нет
+			#сделать проверку на объём валюты
 
 			#i['volume'] = 0.5 #
 			delta = 0.0008 #stock[i['exchanger']].info() * i['volume']
