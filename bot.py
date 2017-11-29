@@ -44,7 +44,7 @@ def pumpss(message):
 	if message.chat.id in admin:
 		bot.send_message(message.chat.id, '@zodzubot') #pump(message.text)
 
-@bot.message_handler(commands=['Информация', 'Инфо', 'info'])
+@bot.message_handler(commands=['Информация', 'Инфо', 'инфо', 'info'])
 def info(message):
 	if message.chat.id in admin:
 		for i in stock:

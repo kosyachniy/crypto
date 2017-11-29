@@ -36,7 +36,7 @@ def autoadd():
 
 				print(text) #
 
-				if on(text, ['#cryptosignals', '#иностранный', '#альтернативный', '#cryptosignalsio', '#cryptowolf', '#privatesignals', '#insighttradebot', '#premiumsignals'], '#'):
+				if on(text, ['#cryptosignals', '#иностранный', '#альтернативный', '#буржуйский', '#cryptosignalsio', '#cryptowolf', '#privatesignals', '#insighttradebot', '#premiumsignals'], '#'):
 					try:
 						id = messages.find().sort('id', -1)[0]['id']
 					except:

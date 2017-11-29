@@ -1,0 +1,46 @@
+#CSV
+import csv
+
+def write(text, name='db', sign=','):
+	with open(name+'.csv', 'a') as file:
+		csv.writer(file, delimiter=sign, quotechar=' ', quoting=csv.QUOTE_MINIMAL).writerow(text)
+
+#MongoClient
+from pymongo import MongoClient
+
+db = MongoClient()['crypto']
+messages = db['messages']
+#trade = db['trade']
+history = db['history']
+
+a = dict()
+
+for i in history.find():
+	try:
+		a[i['message']][i['type']] = i['success']
+	except:
+		a[i['message']] = {i['type']: i['success']}
+
+print(a)
+
+for i in range(1, max(a)+1):
+	try:
+		for j in db['messages'].find({'id': i}):
+			if a[i]['buy'] == 1:
+				if a[i]['sell'] == 1:
+					x = 'Продано в плюс!'
+				elif a[i]['sell'] == 2:
+					x = 'Продано в минус.'
+				else:
+					x = 'Ордер на продаже'
+			elif a[i]['buy'] == 2:
+				x = 'Ошибка покупки'
+			else:
+				x = 'Ордер на покупке'
+
+			#j['text'] = '\'' + j['text'].replace('\n', '\\n') + '\''
+
+			write([i, '"' + j['text'] + '"' if '\n' in j['text'] else j['text'], x])
+			print(i, '.', a[i]['buy'], '-', a[i]['sell'])
+	except:
+		print(i, '. None')
