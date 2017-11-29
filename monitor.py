@@ -45,7 +45,7 @@ def recognize(i):
 	print(text)
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
-	loss = [0, 0.94] #
+	loss = [0, 0.97] #
 	reloss = loss + []
 	out = []
 	vol = 0
