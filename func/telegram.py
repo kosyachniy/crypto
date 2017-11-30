@@ -1,5 +1,6 @@
 #Telegram
 import json, telebot
+from data import db
 
 from func.data import exchangers
 
@@ -38,4 +39,4 @@ def send(message, forward=0, group=0):
 				try:
 					bot.forward_message(i, forward, message)
 				except:
-					bot.send_message(i, 'Сообщение шифровано!')
+					bot.send_message(i, db['messages'].find_one({'chat': group, 'message': message})['text'])

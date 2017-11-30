@@ -56,14 +56,15 @@ while True:
 					j['loss'] = x['price'] if x else table.find_one({'message': i['message'], 'type': 'buy'})['price']
 					table.save(j)
 
-#Если стоп-лосс
 			else:
+#Если продажа долго не исполняется
 				if now() - stamp(i['time']) > timesell:
 					stock[i['exchanger']].cancel(i['order'])
 					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], stock[i['exchanger']].price(i['currency'], 1), 1)
 					i['price'] = sell
 					send('Вышло время на продаже №%d' % (i['message'],))
 				else:
+#Если стоп-лосс
 					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						stock[i['exchanger']].cancel(i['order'])
