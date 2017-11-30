@@ -1,9 +1,12 @@
 from func.data import db
 from func.user import *
 from time import sleep
-import re
+import re, json
 
-from_id = -1001149594247 #-1001143136828
+with open('data/constants.txt', 'r') as file:
+	s = json.loads(file.read())
+	tags = s['read']['tags']
+	from_id = s['read']['channel']
 
 messages = db['messages']
 
@@ -36,7 +39,7 @@ def autoadd():
 
 				print(text) #
 
-				if on(text, ['#cryptosignals', '#иностранный', '#альтернативный', '#буржуйский', '#cryptosignalsio', '#cryptowolf', '#privatesignals', '#insighttradebot', '#premiumsignals'], '#'):
+				if on(text, tags, '#'):
 					try:
 						id = messages.find().sort('id', -1)[0]['id']
 					except:

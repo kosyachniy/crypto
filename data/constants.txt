@@ -1,0 +1,8 @@
+{
+	"read": {
+		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptosignalsio", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals"],
+		"channel": -1001149594247
+	},
+	"default": {
+		"": 
+	}
