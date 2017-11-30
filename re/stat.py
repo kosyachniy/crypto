@@ -5,6 +5,10 @@ def write(text, name='db', sign=','):
 	with open(name+'.csv', 'a') as file:
 		csv.writer(file, delimiter=sign, quotechar=' ', quoting=csv.QUOTE_MINIMAL).writerow(text)
 
+import json
+with open('set.txt', 'r') as file:
+	tags = json.loads(file.read())['read']['tags']
+
 #MongoClient
 from pymongo import MongoClient
 
@@ -45,7 +49,13 @@ for i in range(1, max(a)+1):
 
 			#j['text'] = '\'' + j['text'].replace('\n', '\\n') + '\''
 
-			write([i, '"' + j['text'] + '"' if '\n' in j['text'] else j['text'], x])
+			l = ''
+			for i in tags:
+				if i in j['text'].lower():
+					l = i
+					break
+
+			write([i, l, '"' + j['text'] + '"' if '\n' in j['text'] else j['text'], x, '+' if x == 'Продано в плюс!' else ' '])
 			print(i, '.', a[i]['buy'], '-', a[i]['sell'])
 	except:
 		print(i, '. None')

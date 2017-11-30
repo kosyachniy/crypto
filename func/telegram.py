@@ -1,8 +1,6 @@
 #Telegram
+from func.data import db, exchangers
 import json, telebot
-from data import db
-
-from func.data import exchangers
 
 with open('data/keys.txt', 'r') as file:
 	token = json.loads(file.read())['telegram']['bot']
@@ -39,4 +37,7 @@ def send(message, forward=0, group=0):
 				try:
 					bot.forward_message(i, forward, message)
 				except:
-					bot.send_message(i, db['messages'].find_one({'chat': group, 'message': message})['text'])
+					try:
+						bot.send_message(i, db['messages'].find_one({'chat': group, 'message': message})['text'])
+					except:
+						bot.send_message(i, 'Сообщение шифровано!')
