@@ -37,7 +37,7 @@ def autoadd():
 
 				#+изображения
 
-				print(text) #
+				#print(text)
 
 				if on(text, tags, '#'):
 					try:

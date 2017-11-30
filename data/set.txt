@@ -1,0 +1,25 @@
+{
+	"read": {
+		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptosignalsio", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals"],
+		"channel": -1001149594247
+	},
+	"default": {
+		"stop-loss": 0.97,
+		"volume": 0.05,
+		"sell": [
+			[0.5, 0, 1.03],
+			[0.3, 0, 1.05],
+			[0.1, 0, 1.07],
+			[0.1, 0, 1.1]
+			]
+	},
+	"replacements": {
+		"volume": 0.0008,
+		"exchanger": 1
+	},
+	"write": {
+		"channel": -1001124440739,
+		"admin": [136563129, 180695558, 440219158]
+	},
+	"utc": 0
+}

@@ -1,6 +1,4 @@
 **/__pycache__/
-data/set.txt
 data/keys.txt
-data/user.txt
 data/*.session
 -/
