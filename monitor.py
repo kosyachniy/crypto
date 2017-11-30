@@ -6,6 +6,12 @@ import math
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
+with open('data/set.txt', 'r') as file:
+	s = json.loads(file.read())
+	stopl = s['default']['stop-loss']
+	outd = s['default']['sell']
+	vold = s['default']['volume']
+
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
 #on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
@@ -45,7 +51,7 @@ def recognize(i):
 	print(text)
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
-	loss = [0, 0.97] #
+	loss = [0, stopl]
 	reloss = loss + []
 	out = []
 	vol = 0
@@ -125,16 +131,11 @@ def recognize(i):
 	if cur >= 1 and buy != 1:
 #Замены
 		#Если не указаны объёмы покупки
-		if not vol: vol = 0.05 #сделать фиксированные объёмы?
+		if not vol: vol = vold + 0
 
 		#Если не указаны ордеры на продажу
 		if not len(out):
-			out = [
-				[0.5, 0, 1.03],
-				[0.3, 0, 1.05],
-				[0.1, 0, 1.07],
-				[0.1, 0, 1.1]
-			]
+			out = outd + []
 
 		#Если не указаны объёмы продажи
 		if not out[0][0]:

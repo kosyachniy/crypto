@@ -24,7 +24,7 @@ def refactor_result(json_ob):
 
 class YoBit(object):
     with open('data/set.txt', 'r') as file:
-    	key, secret = json.loads(file.read())['yobit']
+    	key, secret = json.loads(file.read())['stocks']['yobit']
 
     def __init__(self, api_key=key, api_secret=secret):
         self.api_key = str(api_key) if api_key is not None else ''

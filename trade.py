@@ -1,6 +1,12 @@
 #Торговля по сигналам
 from func.main import *
 
+import json
+with open('data/set.txt', 'r') as file:
+	s = json.loads(file.read())['replacements']
+	quant = s['volume']
+	excd = s['exchanger']
+
 trades = db['trade']
 table = db['history']
 
@@ -20,15 +26,14 @@ def trade():
 		for i in x:
 #Рассчёт основных параметров для биржи
 			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
-			i['exchanger'] = 1 #Временная замена на одну биржу
+			i['exchanger'] = excd + 0
 
 			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
 			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
 			if not price: continue #валюты нет
 			#сделать проверку на объём валюты
 
-			#i['volume'] = 0.5 #
-			delta = 0.0008 #stock[i['exchanger']].info() * i['volume']
+			delta = quant + 0 #stock[i['exchanger']].info() * i['volume']
 			if delta < stock[i['exchanger']].min:
 				delta = stock[i['exchanger']].min
 			count = delta / price
@@ -67,9 +72,7 @@ def trade():
 
 					su += coun * pric
 
-					succ = 0 #stock[i['exchanger']].trade(i['currency'], coun, pric, 1)
-
-					x.append({'message': i['id'], 'success': 0, 'order': succ, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
+					x.append({'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
 
 				for j in range(len(x)-1):
 					x[j]['loss'] = 0
