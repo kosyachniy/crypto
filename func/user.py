@@ -2,8 +2,8 @@ from telethon import TelegramClient
 #from telethon.tl.types import PeerChannel #PeerUser, PeerChat
 
 import json
-with open('data/user.txt', 'r') as file:
-	x = json.loads(file.read())
+with open('data/keys.txt', 'r') as file:
+	x = json.loads(file.read())['telegram']['user']
 
 client = TelegramClient('data/'+x['name'], x['id'], x['hash'], update_workers=4)
 client.connect()

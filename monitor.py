@@ -7,10 +7,10 @@ with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
 with open('data/set.txt', 'r') as file:
-	s = json.loads(file.read())
-	stopl = s['default']['stop-loss']
-	outd = s['default']['sell']
-	vold = s['default']['volume']
+	s = json.loads(file.read())['default']
+	stopl = s['stop-loss']
+	outd = s['sell']
+	vold = s['volume']
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
@@ -177,22 +177,20 @@ def monitor():
 
 #Первоначальные значения
 	try:
-		num = messages.find().sort('id', -1)[0]['id'] # + 1
+		num = messages.find().sort('id', -1)[0]['id']
 	except:
-		num = 0 #?
+		num = 0
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gt': num}})] #-1
+		x = [i for i in messages.find({'id': {'$gt': num}})]
 
 #Обработка
 		for i in x:
-			num = i['id'] #max(num, i['id']) #???
+			num = i['id']
 
 			x = recognize(i)
-			if x:
-				#num += 1
-				trades.insert(x)
+			if x: trades.insert(x)
 
 if __name__ == '__main__':
 	monitor()

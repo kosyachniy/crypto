@@ -1,5 +1,5 @@
 fix_price = 0.0006
-delta_first = 1.4
+delta_first = 1.2 #1.4
 delta_second = 0.75
 
 from time import sleep, gmtime, mktime
@@ -18,12 +18,15 @@ def pump(chat, text, exc=0):
 	text = texted(text)
 	start = minut()
 
-	#price = stock[exc].price(text)
-	y = stock[0].trader.trades(cur, limit)[cur]
+	price = stock[exc].price(text)
+	'''
+	limit = 50 #
+	y = stock[0].trader.trades(text, limit)[text]
 	price = y[0]['price']
 	for i in y:
 		if price > i['price']:
 			price = i['price']
+	'''
 
 	try:
 		volume = fix_price / price #stock[exc].info() * 0.5

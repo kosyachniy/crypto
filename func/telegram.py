@@ -2,9 +2,12 @@
 import json, telebot
 
 from func.data import exchangers
+
+with open('data/keys.txt', 'r') as file:
+	token = json.loads(file.read())['telegram']['bot']
+
 with open('data/set.txt', 'r') as file:
-	s = json.loads(file.read())
-	token = s['telegram']
+	s = json.loads(file.read())['write']
 	channelid = s['channel']
 	admin = s['admin']
 

@@ -14,9 +14,13 @@ table = db['history']
 while True:
 	for i in table.find({'success': 0}):
 #Если покупка исполнена
-		if i['type'] == 'buy' and stock[i['exchanger']].order(i['order']):
+		if i['type'] == 'buy':
+			if stock[i['exchanger']].order(i['order']):
 				i['success'] = 1
 				send('Покупка сработала №%d' % (i['message'],))
+			else:
+#Если покупка долго не исполняется
+				i['time']
 
 		elif i['type'] == 'sell':
 #Если продажа не выставлена

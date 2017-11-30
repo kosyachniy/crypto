@@ -4,9 +4,9 @@ from time import sleep
 import re, json
 
 with open('data/set.txt', 'r') as file:
-	s = json.loads(file.read())
-	tags = s['read']['tags']
-	from_id = s['read']['channel']
+	s = json.loads(file.read())['read']
+	tags = s['tags']
+	from_id = s['channel']
 
 messages = db['messages']
 
