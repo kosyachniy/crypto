@@ -176,21 +176,21 @@ def monitor():
 
 #Первоначальные значения
 	try:
-		num = messages.find().sort('id', -1)[0]['id'] + 1
+		num = messages.find().sort('id', -1)[0]['id'] # + 1
 	except:
-		num = 0
+		num = 0 #?
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gt': num-1}})]
+		x = [i for i in messages.find({'id': {'$gt': num}})] #-1
 
 #Обработка
 		for i in x:
-			num = max(num, i['id'])
+			num = i['id'] #max(num, i['id']) #???
 
 			x = recognize(i)
 			if x:
-				num += 1
+				#num += 1
 				trades.insert(x)
 
 if __name__ == '__main__':

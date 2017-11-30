@@ -28,11 +28,12 @@ for i in range(1, max(a)+1):
 		for j in db['messages'].find({'id': i}):
 			if a[i]['buy'] == 1:
 				if a[i]['sell'] == 1:
-					for t in history.find({'id': i, 'type': 'buy'}):
-						if j['price'] - t['price'] >= 0:
-							x = 'Продано в плюс!'
-						else:
-							x = 'Продано в минус.'
+					for u in history.find({'message': i, 'type': 'sell'}):
+						for t in history.find({'message': i, 'type': 'buy'}):
+							if u['price'] - t['price'] >= 0:
+								x = 'Продано в плюс!'
+							else:
+								x = 'Продано в минус.'
 				elif a[i]['sell'] == 2:
 					x = 'Продано в минус.'
 				else:
