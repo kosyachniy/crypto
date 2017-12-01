@@ -2,7 +2,7 @@ from func.main import *
 #from pump import pump
 
 messages = db['messages']
-exchangers = [i[0] for i in exchangers]
+exch = [i[0] for i in exchangers]
 
 try:
 	num = messages.find().sort('id', -1)[0]['id']
@@ -22,13 +22,13 @@ def start(message):
 @bot.message_handler(commands=['main', 'Назад'])
 def main(message):
 	if message.chat.id in admin:
-		keyboard(message.chat.id, exchangers, ['PUMP', 'Информация'])
+		bot.send_message(message.chat.id, 'Меню:', reply_markup=keyboard(exch, ['PUMP', 'Информация']))
 
 @bot.message_handler(commands=['PUMP', 'pump', 'памп', 'ПАМП', 'Памп'])
 def pumps(message):
 	if message.chat.id in admin:
 		#bot.send_message(message.chat.id, 'Памп на бирже: ')
-		x = keyboard(message.chat.id, exchangers, ['Назад'])
+		x = bot.send_message(message.chat.id, 'Пампы отключены!', reply_markup=keyboard(exch, ['Назад']))
 		bot.register_next_step_handler(x, pumpss)
 
 def pumpss(message):
@@ -45,7 +45,7 @@ def info(message):
 @bot.message_handler(commands=exchangers)
 def stockss(message):
 	if message.chat.id in admin:
-		keyboard(message.chat.id, ['Сигнал', 'Покупка', 'Продажа', 'ПАМП', 'Инфо', 'Назад'])
+		bot.send_message(message.chat.id, 'Работа с биржами отключена!', reply_markup=keyboard(['Сигнал', 'Покупка', 'Продажа', 'ПАМП', 'Инфо', 'Назад']))
 
 #Дальнейшая обработка
 @bot.message_handler(content_types=["text"])
