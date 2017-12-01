@@ -9,15 +9,6 @@ try:
 except:
 	num = 0
 
-#Меню
-from telebot import types
-
-def keyboard(chat, *cat):
-	x = types.ReplyKeyboardMarkup(resize_keyboard=True)
-	for j in cat:
-		x.add(*[types.KeyboardButton('/' + i) for i in j])
-	return bot.send_message(chat, 'Меню:', reply_markup=x)
-
 '''
 @bot.message_handler(commands=['start', 'help'])
 def start(message):

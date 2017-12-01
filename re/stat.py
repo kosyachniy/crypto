@@ -6,7 +6,7 @@ def write(text, name='db', sign=','):
 		csv.writer(file, delimiter=sign, quotechar=' ', quoting=csv.QUOTE_MINIMAL).writerow(text)
 
 import json
-with open('set.txt', 'r') as file:
+with open('../data/set.txt', 'r') as file:
 	tags = json.loads(file.read())['read']['tags']
 
 #MongoClient
@@ -50,12 +50,12 @@ for i in range(1, max(a)+1):
 			#j['text'] = '\'' + j['text'].replace('\n', '\\n') + '\''
 
 			l = ''
-			for i in tags:
-				if i in j['text'].lower():
-					l = i
+			for o in tags:
+				if o in j['text'].lower():
+					l = o
 					break
 
 			write([i, l, '"' + j['text'] + '"' if '\n' in j['text'] else j['text'], x, '+' if x == 'Продано в плюс!' else ' '])
-			print(i, '.', a[i]['buy'], '-', a[i]['sell'])
+			print(i, l, '.', a[i]['buy'], '-', a[i]['sell'])
 	except:
 		print(i, '. None')
