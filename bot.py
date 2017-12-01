@@ -2,7 +2,6 @@ from func.main import *
 #from pump import pump
 
 messages = db['messages']
-exch = [i[0] for i in exchangers]
 
 try:
 	num = messages.find().sort('id', -1)[0]['id']
@@ -42,7 +41,7 @@ def info(message):
 			bot.send_message(message.chat.id, i.all())
 		#main(message)
 
-@bot.message_handler(commands=exchangers)
+@bot.message_handler(commands=exch)
 def stockss(message):
 	if message.chat.id in admin:
 		bot.send_message(message.chat.id, 'Работа с биржами отключена!', reply_markup=keyboard(['Сигнал', 'Покупка', 'Продажа', 'ПАМП', 'Инфо', 'Назад']))

@@ -63,8 +63,8 @@ while True:
 					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], stock[i['exchanger']].price(i['currency'], 1), 1)
 					i['price'] = sell
 					send('Вышло время на продаже №%d' % (i['message'],))
-				else:
 #Если стоп-лосс
+				elif i['loss']:
 					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						stock[i['exchanger']].cancel(i['order'])

@@ -41,4 +41,4 @@ def send(message, forward=0, group=0):
 					try:
 						bot.send_message(i, db['messages'].find_one({'chat': group, 'message': message})['text'])
 					except:
-						bot.send_message(i, str({'chat': group, 'message': message}) #'Сообщение шифровано!')
+						bot.send_message(i, str({'chat': group, 'message': message})) #'Сообщение шифровано!')

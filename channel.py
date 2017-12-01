@@ -2,32 +2,31 @@ from func.main import *
 
 trades = db['trade']
 
-'''
 from bs4 import BeautifulSoup
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
-	print('!!!' + x) #
-	page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
-	soup = BeautifulSoup(page, 'lxml')
-	table = soup.find('table', id='top_crypto_tbl')
-	tr = table.find_all('tr')
-	for i in tr[1:]:
-		td = i.find_all('td')
-
-		name = td[1].text
-		index = td[2].text
-		price = td[7].text.replace('.', '').replace(',', '.')
-
-		if index == x:
-			print(name, index, price)
-			return float(price)
-'''
-#переделать
-def price(x):
+	#print('---' + x)
 	try:
-		return stock[1].price(x)
+		page = requests.get(url, headers={"User-agent": "Mozilla/5.0"}).text
+		soup = BeautifulSoup(page, 'lxml')
+		table = soup.find('table', id='top_crypto_tbl')
+		tr = table.find_all('tr')
+		for i in tr[1:]:
+			td = i.find_all('td')
+
+			name = td[2].text
+			index = td[3].text
+			price = td[8].text.replace('.', '').replace(',', '.')
+
+			if index == x:
+				print(name, index, price)
+				return float(price)
+
 	except:
-		return 0.0
+		try:
+			return stock[1].price(x)
+		except:
+			return 0.0
 
 def channel():
 #Первоначальные значения

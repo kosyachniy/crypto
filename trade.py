@@ -57,30 +57,38 @@ def trade():
 				table.insert(sett)
 
 #Продажа
-				su = 0
+				try:
+					su = 0
+					x = []
+					for j in range(1, len(i['out']) + 1):
+						#Если слишком маленький объём продажи
+						#может ли быть такое, что все кроме первого объединятся, а первый будет слишком маленький
+						pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
+						coun = count * i['out'][-j][0]
+						print('!!!COUN!!!', coun * pric)
+						if coun * pric < stock[i['exchanger']].min:
+							i['out'][-1-j][0] += i['out'][-j][0]
+							continue
 
-				x = []
-				for j in range(1, len(i['out']) + 1):
-					#Если слишком маленький объём продажи
-					#может ли быть такое, что все кроме первого объединятся, а первый будет слишком маленький
-					pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
-					coun = count * i['out'][-j][0]
-					print('!!!COUN!!!', coun * pric)
-					if coun * pric < stock[i['exchanger']].min:
-						i['out'][-1-j][0] += i['out'][-j][0]
-						continue
+						su += coun * pric
 
-					su += coun * pric
+						x.append({'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
 
-					x.append({'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
+					for j in range(len(x)-1):
+						x[j]['loss'] = 0
+					x[len(x)-1]['loss'] = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
 
-				for j in range(len(x)-1):
-					x[j]['loss'] = 0
-				x[len(x)-1]['loss'] = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
-				
-				for j in range(1, len(x)+1):
-					x[-j]['numsell'] = j
-					table.insert(x[-j])
+				except:
+					pric = i['out'][0][2] if i['out'][0][1] else price * i['out'][0][2]
+					su = count * pric
+					lost = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
+					x = {'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': count, 'time': time, 'loss': lost}
+					table.insert(x)
+
+				else:
+					for j in range(1, len(x)+1):
+						x[-j]['numsell'] = j
+						table.insert(x[-j])
 
 #Худший - лучший случай
 				vol = price * count
