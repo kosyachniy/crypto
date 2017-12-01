@@ -242,7 +242,8 @@ class Bittrex():
 		x = []
 		rub = self.ru()
 
-		for i in self.trader.get_balances()['result']:
+		y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
+		for i in y:
 			sell = self.price(i['Currency'], 1) * i['Balance']
 			if not sell:
 				continue
