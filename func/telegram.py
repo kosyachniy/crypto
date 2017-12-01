@@ -2,6 +2,8 @@
 from func.data import db, exchangers
 import json, telebot
 
+exch = [i[0] for i in exchangers]
+
 with open('data/keys.txt', 'r') as file:
 	token = json.loads(file.read())['telegram']['bot']
 
@@ -19,7 +21,7 @@ def keyboard(chat, *cat):
 	x = types.ReplyKeyboardMarkup(resize_keyboard=True)
 	for j in cat:
 		x.add(*[types.KeyboardButton('/' + i) for i in j])
-	return bot.send_message(chat, 'Меню:', reply_markup=x)
+	return bot.send_message(chat, reply_markup=x)
 
 def send(message, forward=0, group=0):
 	if group:
@@ -31,7 +33,7 @@ def send(message, forward=0, group=0):
 		if not forward:
 			for i in admin:
 				bot.send_message(i, message) #, reply_markup=keyboard()
-				keyboard(i, exchangers, ['PUMP', 'Информация'])
+				keyboard(i, exch, ['PUMP', 'Информация'])
 		else:
 			for i in admin:
 				try:
@@ -41,4 +43,4 @@ def send(message, forward=0, group=0):
 						bot.send_message(i, db['messages'].find_one({'chat': group, 'message': message})['text'])
 					except:
 						bot.send_message(i, 'Сообщение шифровано!')
-				keyboard(i, exchangers, ['PUMP', 'Информация'])
+				#keyboard(i, exch, ['PUMP', 'Информация'])
