@@ -83,7 +83,7 @@ class YoBit(object):
 
         request_url = BASE_TRADE
         options['method'] = method
-        options['nonce'] = str(int(time.time()))
+        options['nonce'] = str(int(time.time())) #
 
         body = urlencode(options)
 

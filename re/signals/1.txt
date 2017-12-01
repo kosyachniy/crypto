@@ -1,0 +1,2 @@
+bittrex eth 0.59 0.60 60%
+loss 14%

@@ -75,13 +75,14 @@ class YoBit():
 		if not price: price = self.price(cur, buy)
 		name = self.name(cur)
 		if not count: count = self.info() * self.per / price
+		price = '%.8f' % (price,)
 
 		buy = self.buys(buy, 0 if cur != 'btc_rur' else 1)
-		print('self.trader.trade(\'%s\', \'%s\', %.8f, %.8f)' % (name, buy, str(price), count))
+		print('self.trader.trade(\'%s\', \'%s\', \'%s\', %.8f)' % (name, buy, price, count))
 
 		try:
-			q = self.trader.trade(name, buy, str(price), count)
-			print(q)
+			q = self.trader.trade(name, buy, price, count)
+			#print(q)
 			if 'success' not in q:
 				return 0
 		except:

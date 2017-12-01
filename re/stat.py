@@ -27,7 +27,9 @@ for i in history.find():
 
 print(a)
 
-for i in range(1, max(a)+1):
+write(['id', 'Тег', 'Сообщение', 'Итог', '?'])
+
+for i in range(1, max(a)+1)[::-1]:
 	try:
 		for j in db['messages'].find({'id': i}):
 			if a[i]['buy'] == 1:

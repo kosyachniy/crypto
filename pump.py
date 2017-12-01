@@ -1,6 +1,6 @@
-fix_price = 0.0006
+fix_price = 0.0002 #0.0006
 delta_first = 1.2 #1.4
-delta_second = 0.75
+delta_second = 0.85 #0.75
 
 from time import sleep, gmtime, mktime
 import sys, re
@@ -36,7 +36,11 @@ def pump(chat, text, exc=0):
 
 #Покупка
 	order = stock[exc].trade(text, volume, price)
-	send('%s\n%fɃ' % (order, price))
+	send('%s\n%.8fɃ' % (order, price))
+
+	if not order:
+		send('Не было куплено!')
+		return 0
 
 	while not stock[exc].order(order):
 		sleep(1)
@@ -45,14 +49,14 @@ def pump(chat, text, exc=0):
 			send('Не было куплено!')
 			return 0
 
-	#sleep(1)
+	sleep(1) #
 	send('Успешно куплено!')
 
 #Первая попытка продать
 	start = minut()
 	price *= delta_first
 	order = stock[exc].trade(text, volume * 0.999999, price, 'sell')
-	send('%s\n%fɃ' % (order, price))
+	send('%s\n%.8fɃ' % (order, price))
 
 	while True:
 		if stock[exc].order(order):
@@ -61,13 +65,15 @@ def pump(chat, text, exc=0):
 		else:
 			if minut() - start >= 2:
 #Вторая попытка продать
+				sleep(1) #
 				stock[exc].cancel(order)
+				sleep(1) #
+
+				send('Понижаем цену!')
 
 				price *= delta_second
 				order = stock[exc].trade(text, volume * 0.999999, price, 'sell')
-				send('%s\n%fɃ' % (order, price))
-
-				send('Понижаем цену!')
+				send('%s\n%.8fɃ' % (order, price))
 
 				while True:
 					if stock[exc].order(order):

@@ -46,6 +46,8 @@ def trade():
 #Покупка
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
+			
+			send('------------------------------')
 			send(i['mess'], forward=i['chat'])
 
 			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price / rub, price * count, (price * count) / rub)
