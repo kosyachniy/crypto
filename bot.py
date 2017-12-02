@@ -38,7 +38,8 @@ def pumpss(message):
 def info(message):
 	if message.chat.id in admin:
 		for i in stock:
-			bot.send_message(message.chat.id, i.all())
+			a = i.all()
+			if a: bot.send_message(message.chat.id, a)
 		#main(message)
 
 @bot.message_handler(commands=exch)

@@ -109,17 +109,38 @@ class YoBit():
 	def all(self):
 		formated = exchangers[self.num][0] + '\n--------------------\n'
 		s = 0
-		x = []
+		x = {}
 		rub = self.ru()
-		y = self.trader.get_info()['return']['funds']
+		try:
+			y = self.trader.get_info()['return']['funds']
+		except:
+			return None
 
 		for i in y:
-			sell = self.price(i, 1) * y[i]
-			if sell > self.min:
-				x.append([sell, i])
+			price = self.price(i, 1)
+			sell = price * y[i]
+			if sell > self.min or i == 'rur':
+				x[i] = [0, price, sell]
 				s += sell
-		for i in sorted(x)[::-1]:
-			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1].upper(), i[0], i[0] / rub)
+
+		for i in x:
+			try:
+				o = list(self.trader.active_orders(i+'_btc')['return'])[0]
+			except:
+				continue
+			print(o)
+			try:
+				id = history.find_one({'order': o})['message']
+				price = history.find_one({'message': id, 'type': 'buy'})
+				x[i][0] = x[i][1] - price
+			except:
+				pass
+
+		x = sorted([[x[i][2], i, x[i][0]] for i in x])[::-1]
+
+		for i in x:
+			ch = '↑' if i[2] > 0 else '↓' if i[2] < 0 else ''
+			formated += '%s %s 	%fɃ 	(%d₽)\n' % (ch, i[1], i[0], i[0] / rub)
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
@@ -254,19 +275,22 @@ class Bittrex():
 				x[i['Currency']] = [0, price, sell]
 				s += sell
 
-		for i in stock[1].trader.get_open_orders()['result']:
-			id = history.find_one({'order': i['OrderUuid']})['message']
-			price = history.find_one({'message': id, 'type': 'buy'})
-			x[i['Exchange'][4:]][0] = x[i['Exchange'][4:]][1] - price
+		for i in self.trader.get_open_orders()['result']:
+			#print(i['OrderUuid'])
+			try:
+				id = history.find_one({'order': i['OrderUuid']})['message']
+				price = history.find_one({'message': id, 'type': 'buy'})
+				x[i['Exchange'][4:]][0] = x[i['Exchange'][4:]][1] - price
+			except:
+				pass
 
-		x = sorted([[x[i][2], i, x[i][0]]])[::-1]
+		x = sorted([[x[i][2], i, x[i][0]] for i in x])[::-1]
 
-		'''
-		for i in sorted(x)[::-1]:
-			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
+		for i in x:
+			ch = '↑' if i[2] > 0 else '↓' if i[2] < 0 else ''
+			formated += '%s %s 	%fɃ 	(%d₽)\n' % (ch, i[1], i[0], i[0] / rub)
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
-		'''
-		return x
+		return formated
 
 stock = [YoBit(), Bittrex()]
