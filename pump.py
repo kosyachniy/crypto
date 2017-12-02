@@ -1,6 +1,7 @@
-fix_price = 0.0002 #0.0006
-delta_first = 1.2 #1.4
-delta_second = 0.85 #0.75
+exch = 0
+fix_price = 0.0006
+delta_first = 1.4 #1.2
+delta_second = 0.75 #0.85
 
 from time import sleep, gmtime, mktime
 import sys, re
@@ -9,7 +10,7 @@ from func.trade import stock
 texted = lambda x: re.sub('[^a-z1234567890]', '', x)
 minut = lambda: mktime(gmtime()) // 60
 
-def pump(chat, text, exc=0):
+def pump(chat, text, exc=exch):
 	send = lambda x: bot.send_message(chat, x)
 
 #Подготовка данных

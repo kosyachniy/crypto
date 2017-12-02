@@ -240,21 +240,32 @@ class Bittrex():
 	def all(self):
 		formated = exchangers[self.num][0] + '\n--------------------\n'
 		s = 0
-		x = []
+		x = {}
 		rub = self.ru()
 
 		y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
 		for i in y:
-			sell = self.price(i['Currency'], 1) * i['Balance']
+			price = self.price(i['Currency'], 1)
+			sell = price * i['Balance']
 			if not sell:
 				continue
 			if sell > self.min:
-				x.append([sell, i['Currency']])
+				x[i['Currency']] = [0, price, sell]
 				s += sell
+
+		for i in stock[1].trader.get_open_orders()['result']:
+			id = history.find_one({'order': i['OrderUuid']})['message']
+			price = history.find_one({'message': id, 'type': 'buy'})
+			x[i['Exchange'][4:]][0] = x[i['Exchange'][4:]][1] - price
+
+		x = sorted([[x[i][2], i, x[i][0]]])[::-1]
+
+		'''
 		for i in sorted(x)[::-1]:
 			formated += '%s 	%fɃ 	(%d₽)\n' % (i[1], i[0], i[0] / rub)
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
-		return formated
+		'''
+		return x
 
 stock = [YoBit(), Bittrex()]
