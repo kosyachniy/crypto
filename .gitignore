@@ -3,3 +3,4 @@ data/keys.txt
 data/*.session
 re/db/mongo
 -/
+re.png

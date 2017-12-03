@@ -152,8 +152,8 @@ class YoBit():
 
 		pylab.plot([i for i in range(1, len(y) + 1)], y)
 		pylab.grid(True)
-		pylab.show()
-		#pylab.savefig(cur + '.png', format='png', dpi=150)
+		#pylab.show()
+		pylab.savefig('re.png', format='png', dpi=150) #cur + 
 
 	#Размеры волны пампа
 	def bar(self, cur):
@@ -245,8 +245,8 @@ class Bittrex():
 
 		pylab.plot([i for i in range(1, len(y) + 1)], y)
 		pylab.grid(True)
-		pylab.show()
-		#pylab.savefig(cur + '.png', format='png', dpi=150)
+		#pylab.show()
+		pylab.savefig('re.png', format='png', dpi=150) #cur + 
 
 	def order(self, id):
 		try:

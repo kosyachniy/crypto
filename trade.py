@@ -33,7 +33,7 @@ def trade():
 			if not price: continue #валюты нет
 			#сделать проверку на объём валюты
 
-			delta = max(stock[i['exchanger']].info() * i['volume'], quant + 0)
+			delta = max(stock[i['exchanger']].info() * i['volume'], quant)
 			if delta < stock[i['exchanger']].min:
 				delta = stock[i['exchanger']].min
 			count = delta / price

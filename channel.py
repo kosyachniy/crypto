@@ -45,10 +45,10 @@ def channel():
 		num = x[-1]['id']
 
 		for i in x:
-			formated = '%s\n'  % (currencies[i['currency']][0],)
+			formated = '%s\n' % (currencies[i['currency']][0],)
 			if i['exchanger'] != -1:
 				formated += exchangers[i['exchanger']][0] + ' - '
-			formated += currencies[i['currency']][1]
+			formated += '#%s' % (currencies[i['currency']][1],)
 			if i['term'] == 0:
 				formated += ' - краткосрочный'
 			elif i['term'] == 1:
@@ -70,13 +70,16 @@ def channel():
 				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
 			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
 			if len(i['out']):
-				formated += '\n\nПродажа:'
+				formated += '\n\nНаша стратегия:' #Продажа
 			for j in i['out']:
 				formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100)
 			formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
 			#send(i['mess'], i['chat'], channelid)
 			send(formated, group=channelid)
+
+			stock[i['exchanger']].last(i['currency'])
+			send(open('re.png', 'rb'), group=channelid)
 
 if __name__ == '__main__':
 	channel()
