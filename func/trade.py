@@ -128,10 +128,10 @@ class YoBit():
 				o = list(self.trader.active_orders(i+'_btc')['return'])[0]
 			except:
 				continue
-			print(o)
+			#print(o)
 			try:
 				id = history.find_one({'order': o})['message']
-				price = history.find_one({'message': id, 'type': 'buy'})
+				price = history.find_one({'message': id, 'type': 'buy'})['price']
 				x[i][0] = x[i][1] - price
 			except:
 				pass
@@ -279,12 +279,12 @@ class Bittrex():
 			#print(i['OrderUuid'])
 			try:
 				id = history.find_one({'order': i['OrderUuid']})['message']
-				price = history.find_one({'message': id, 'type': 'buy'})
+				price = history.find_one({'message': id, 'type': 'buy'})['price']
 				x[i['Exchange'][4:]][0] = x[i['Exchange'][4:]][1] - price
 			except:
 				pass
 
-		x = sorted([[x[i][2], i, x[i][0]] for i in x])[::-1]
+		x = sorted([[x[i][2], i.upper(), x[i][0]] for i in x])[::-1]
 
 		for i in x:
 			ch = '↑' if i[2] > 0 else '↓' if i[2] < 0 else ''

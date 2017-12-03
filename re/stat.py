@@ -8,6 +8,7 @@ def write(text, name='db', sign=','):
 import json
 with open('../data/set.txt', 'r') as file:
 	tags = json.loads(file.read())['read']['tags']
+tag = {i: [0, 0] for i in tags}
 
 #MongoClient
 from pymongo import MongoClient
@@ -56,8 +57,14 @@ for i in range(1, max(a)+1)[::-1]:
 				if o in j['text'].lower():
 					l = o
 					break
+			tag[l][1] += 1
+			if x == 'Продано в плюс!':
+				tag[l][0] += 1
 
 			write([i, l, '"' + j['text'] + '"' if '\n' in j['text'] else j['text'], x, '+' if x == 'Продано в плюс!' else ' '])
 			print(i, l, '.', a[i]['buy'], '-', a[i]['sell'])
 	except:
 		print(i, '. None')
+
+for i in tag:
+	print('%d%	%s' % (int(tag[i][0] / tag[i][1] * 100), i))
