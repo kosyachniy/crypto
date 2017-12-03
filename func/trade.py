@@ -13,6 +13,62 @@ history = db['history']
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 
+import numpy as np
+from time import mktime, strptime
+def graph(y, price):
+	#Разбиение на минуты
+	al = []
+	real_min = 0
+	real_max = 0
+	real_open = 0
+	real_last = 0
+
+	mi = y[-1][0]
+
+	for i in y[::-1]:
+		mo = i[0]
+		if mo > mi:
+			al.append([mo, real_min, real_open, real_last, real_max])
+			real_open = 0
+			mi = mo
+
+		if real_open:
+			if i[1] < real_min:
+				real_min = i[1]
+			elif i[1] > real_max:
+				real_max = i[1]
+			real_last = i[1]
+		else:
+			real_min = i[1]
+			real_max = i[1]
+			real_last = i[1]
+			real_open = i[1]
+
+	al = al[1:][-20:] #первый - не полный, последний - не вносится
+
+	#График
+	y = [i[1:] for i in al]
+	x = [int(i[0]%60) for i in al]
+
+	#print(y)
+	mi = min([min(i) for i in y])
+	ma = max([max(i) for i in y])
+
+	y = y + [[x[-1][3], x[-1][3], price, price]] #[[mi,mi,mi,mi],[mi,mi,mi,mi]] #[[mi,mi,mi*1.03,mi*1.03], [mi*1.03,mi*1.03,mi*1.05,mi*1.05]]
+	x = x + [x[-1]+5] #[int((x[-1]+5)%60), int((x[-1]+10)%60)]
+
+	pylab.boxplot(y, positions=x) #[i for i in range(1, len(y)+4)]
+
+	pylab.annotate(u'Up',
+	                xy=(x[-3], y[-3][3]),
+	                xytext = (x[-1], price), #y[-3][3]*1.05
+	                arrowprops = {'arrowstyle': '<|-'}
+	                )
+
+	pylab.grid(True)
+	#pylab.show()
+	pylab.savefig('re.png', format='png', dpi=150)
+
 class YoBit():
 	def __init__(self):
 		from func.library.yobit import YoBit as t
@@ -145,6 +201,7 @@ class YoBit():
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
 
+	'''
 	def last(self, cur, limit=200):
 		cur = self.name(cur)
 
@@ -166,6 +223,13 @@ class YoBit():
 			elif i['price'] > max:
 				max = i['price']
 		return min, max
+	'''
+
+	def last(self, cur, price):
+		cur = self.name(cur)
+		y = self.trader.trades(cur, 500)[cur]
+		y = [[i['timestamp'] // 60, i['price']] for i in y]
+		graph(y, price)
 
 class Bittrex():
 	def __init__(self):
@@ -238,15 +302,25 @@ class Bittrex():
 		except:
 			return 0
 
+	'''
 	def last(self, cur):
 		cur = self.name(cur)
 
 		y = [i['Price'] for i in self.trader.get_market_history(cur)['result']]
+		x = [i for i in range(1, len(y) + 1)]
 
-		pylab.plot([i for i in range(1, len(y) + 1)], y)
+		pylab.plot(x + [i for i in range(x[-1]+1, x[-1]+3)], y + [y[-1]*1.03, y[-1]*1.05])
 		pylab.grid(True)
+
+		pylab.annotate (u'',
+                        xy=(x[-1], y[-1]),
+                        xytext = (x[-1]+2, y[-1]*1.05), #
+                        arrowprops = {'arrowstyle': '<|-'}
+                        )
+
 		#pylab.show()
 		pylab.savefig('re.png', format='png', dpi=150) #cur + 
+	'''
 
 	def order(self, id):
 		try:
@@ -292,5 +366,11 @@ class Bittrex():
 
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
+
+	def last(self, cur, price):
+		cur = self.name(cur)
+		y = self.trader.get_market_history(cur)['result']
+		y = [[mktime(strptime(i['TimeStamp'].split('.')[0], '%Y-%m-%dT%H:%M:%S')) // 60, i['Price']] for i in y]
+		graph(y, price)
 
 stock = [YoBit(), Bittrex()]

@@ -78,7 +78,7 @@ def channel():
 			#send(i['mess'], i['chat'], channelid)
 			send(formated, group=channelid)
 
-			stock[i['exchanger']].last(i['currency'])
+			stock[i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][2])
 			send(open('re.png', 'rb'), group=channelid)
 
 if __name__ == '__main__':
