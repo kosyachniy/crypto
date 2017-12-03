@@ -15,7 +15,7 @@ ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&valu
 
 import numpy as np
 from time import mktime, strptime
-def graph(y, price):
+def graph(y, price, minutes=20):
 	#Разбиение на минуты
 	al = []
 	real_min = 0
@@ -44,7 +44,7 @@ def graph(y, price):
 			real_last = i[1]
 			real_open = i[1]
 
-	al = al[1:][-20:] #первый - не полный, последний - не вносится
+	al = al[1:][-minutes:] #первый - не полный, последний - не вносится
 
 	#График
 	y = [i[1:] for i in al]
@@ -54,13 +54,14 @@ def graph(y, price):
 	mi = min([min(i) for i in y])
 	ma = max([max(i) for i in y])
 
-	y = y + [[x[-1][3], x[-1][3], price, price]] #[[mi,mi,mi,mi],[mi,mi,mi,mi]] #[[mi,mi,mi*1.03,mi*1.03], [mi*1.03,mi*1.03,mi*1.05,mi*1.05]]
+	y = y + [[y[-1][3], y[-1][3], price, price]] #[[mi,mi,mi,mi],[mi,mi,mi,mi]] #[[mi,mi,mi*1.03,mi*1.03], [mi*1.03,mi*1.03,mi*1.05,mi*1.05]]
 	x = x + [x[-1]+5] #[int((x[-1]+5)%60), int((x[-1]+10)%60)]
 
+	pylab.clf()
 	pylab.boxplot(y, positions=x) #[i for i in range(1, len(y)+4)]
 
 	pylab.annotate(u'Up',
-	                xy=(x[-3], y[-3][3]),
+	                xy=(x[-2], y[-2][3]),
 	                xytext = (x[-1], price), #y[-3][3]*1.05
 	                arrowprops = {'arrowstyle': '<|-'}
 	                )
