@@ -57,7 +57,8 @@ for i in range(1, max(a)+1)[::-1]:
 				if o in j['text'].lower():
 					l = o
 					break
-			tag[l][1] += 1
+			if x not in ('Ордер на покупке', 'Ордер на продаж'):
+				tag[l][1] += 1
 			if x == 'Продано в плюс!':
 				tag[l][0] += 1
 
@@ -67,4 +68,7 @@ for i in range(1, max(a)+1)[::-1]:
 		print(i, '. None')
 
 for i in tag:
-	print('%d%	%s' % (int(tag[i][0] / tag[i][1] * 100), i))
+	if tag[i][1]:
+		print(tag[i][0] * 100 // tag[i][1], '%	', tag[i][1], '	', i, sep='') #('%d%	%d	%s' %)
+	else:
+		print('-	-	%s' % (i,))

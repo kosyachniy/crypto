@@ -1,11 +1,11 @@
 {
 	"read": {
-		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptosignalsio", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals", "#leosignals"],
+		"tags": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
 		"channel": -1001149594247
 	},
 	"default": {
-		"stop-loss": 0.97,
-		"volume": 0.05,
+		"stop-loss": 0.95,
+		"volume": 0.15,
 		"sell": [
 			[0.5, 0, 1.03],
 			[0.3, 0, 1.05],
@@ -13,7 +13,7 @@
 			[0.1, 0, 1.1]
 			],
 		"timebuy": 20,
-		"timesell": 300
+		"timesell": 480
 	},
 	"replacements": {
 		"volume": 0.0008,
