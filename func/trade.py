@@ -76,7 +76,7 @@ class YoBit():
 		self.trader = t() #оптимизировать
 		self.num = 0
 		self.comm = 0.002
-		self.min = 0.00011
+		self.min = 0.00011 #0.0001
 		self.per = 0.03
 		self.limit = 0.0001
 
@@ -193,7 +193,7 @@ class YoBit():
 			except:
 				pass
 
-		x = sorted([[x[i][2], i, x[i][0]] for i in x])[::-1]
+		x = sorted([[x[i][2], i.upper(), x[i][0]] for i in x])[::-1]
 
 		for i in x:
 			ch = '↑' if i[2] > 0 else '↓' if i[2] < 0 else ''
@@ -238,7 +238,7 @@ class Bittrex():
 		self.num = 1
 		self.trader = t() #оптимизировать
 		self.comm = 0.002
-		self.min = 0.00051 #0.005
+		self.min = 0.00051 #0.0005
 		self.per = 0.03
 
 	def name(self, cur):
@@ -359,7 +359,7 @@ class Bittrex():
 			except:
 				pass
 
-		x = sorted([[x[i][2], i.upper(), x[i][0]] for i in x])[::-1]
+		x = sorted([[x[i][2], i, x[i][0]] for i in x])[::-1]
 
 		for i in x:
 			ch = '↑' if i[2] > 0 else '↓' if i[2] < 0 else ''

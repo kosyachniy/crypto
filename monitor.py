@@ -7,10 +7,11 @@ with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
 with open('data/set.txt', 'r') as file:
-	s = json.loads(file.read())['default']
-	stopl = s['stop-loss']
-	outd = s['sell']
-	vold = s['volume']
+	s = json.loads(file.read())
+	stopl = s['default']['stop-loss']
+	outd = s['default']['sell']
+	vold = s['default']['volume']
+	veri = s['read']['garant']
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
@@ -56,6 +57,7 @@ def recognize(i):
 	out = []
 	vol = 0
 	price = 0
+	safe = 1 if on(text, veri, '#') else 0
 
 #Распознание сигнала
 	#Условия необработки
@@ -131,11 +133,12 @@ def recognize(i):
 	if cur >= 1 and buy != 1:
 #Замены
 		#Если не указаны объёмы покупки
-		if not vol: vol = vold + 0
+		if not vol:
+			vol = vold * 2 if safe else vold #vold * (safe + 1)
 
 		#Если не указаны ордеры на продажу
 		if not len(out):
-			out = outd + []
+			out = outd
 
 		#Если не указаны объёмы продажи
 		if not out[0][0]:
@@ -164,7 +167,8 @@ def recognize(i):
 			'loss': loss,
 			'term': term,
 			'chat': i['chat'],
-			'mess': i['message']
+			'mess': i['message'],
+			'safe': safe
 		} #, 'time': time
 
 		#Если без покупки, первые поля пустые ?
