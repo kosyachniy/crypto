@@ -177,7 +177,7 @@ def recognize(i):
 def monitor():
 #БД
 	messages = db['messages']
-	trades = db['trade']
+	trade = db['trade']
 
 #Первоначальные значения
 	try:
@@ -194,7 +194,7 @@ def monitor():
 			num = i['id']
 
 			x = recognize(i)
-			if x: trades.insert(x)
+			if x: trade.insert(x)
 
 if __name__ == '__main__':
 	monitor()

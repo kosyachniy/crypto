@@ -25,7 +25,7 @@ def trade():
 
 		for i in x:
 #Рассчёт основных параметров для биржи
-			#if i['exchanger'] == -1: i['exchanger'] = 1 #Биржа по умолчанию
+			#if i['exchanger'] == -1: i['exchanger'] = excd + 0 #Биржа по умолчанию
 			i['exchanger'] = excd + 0
 
 			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
@@ -46,7 +46,6 @@ def trade():
 #Покупка
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
-			
 			send('------------------------------')
 			send(i['mess'], forward=i['chat'])
 

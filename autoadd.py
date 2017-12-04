@@ -52,7 +52,7 @@ def autoadd():
 
 				num = i.id
 
-		sleep(5)
+		sleep(1)
 
 if __name__ == '__main__':
 	autoadd()
