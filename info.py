@@ -21,10 +21,15 @@ def end2(x):
 		return 'ый'
 	return 'ых'
 
+def end3(x):
+	if x % 10 == 1 and x != 11:
+		return 'лся'
+	return 'лось'
+
 #сделать регулярным по расписанию celery
 if __name__ == '__main__':
 	while True:
-		tim = gmtime().tm_hour - utc 
+		tim = gmtime().tm_hour - utc
 		if tim in (6, 12, 20):
 			for j in range(len(stock)):
 				send(stock[j].all())
@@ -36,11 +41,12 @@ if __name__ == '__main__':
 				i = days.find().sort('id', -1)[0]
 				del i['_id']
 			except:
-				i = {'id': 0, 'sumrub': 10000, 'sumbtc': 0.015}
+				i = {'id': 0, 'sumrub': 7735, 'sumbtc': 0.011407, 'sumusd': 100} #8000 0.12
 
 			i['id'] += 1
 			x = stock[excd].info()
 			xrub = x / stock[excd].ru()
+			xusd = x / stock[excd].us()
 			i['signals'] = sum([1 for j in messages.find() if stamp(j['time']) == now])
 
 			i['delta'] = x - i['sumbtc']
@@ -65,6 +71,17 @@ if __name__ == '__main__':
 			i['percentrub'] = i['deltarub'] * 100 / i['sumrub']
 			i['sumrub'] = xrub
 
+			i['deltausd'] = xusd - i['sumusd']
+			if i['deltausd'] > 0:
+				s3 = '+'
+			elif i['deltausd'] < 0:
+				s3 = '-'
+				i['deltausd'] *= -1
+			else:
+				s3 = ''
+			i['percentusd'] = i['deltausd'] * 100 / i['sumusd']
+			i['sumusd'] = xusd
+
 			i['orders'] = 0
 			i['plus'] = 0
 			i['minus'] = 0
@@ -86,9 +103,17 @@ if __name__ == '__main__':
 			days.insert(i)
 
 			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], i['signals'], end(i['signals']), i['orders'], end(i['orders']), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
-			if i['orders'] - i['success'] - i['bad']:
-				text += '\nЕщё не исполнилось %d ордеров.' % (i['orders'] - i['success'] - i['bad'],)
+			notclosed = i['orders'] - i['success'] - i['bad']
+			if notclosed:
+				text += '\nЕщё не исполнил%s %d ордер%s.' % (end3(notclosed), notclosed, end(notclosed))
 			text += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d₽ (%s%.1f%%)\n\n∑ %.6fɃ (%d₽)' % (s1, i['delta'], s1, i['percent'], s2, i['deltarub'], s2, i['percentrub'], i['sumbtc'], i['sumrub'])
+
+			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signals (%d orders)\n%d profit orders & %d not-profit orders.' % (i['id'], i['signals'], i['orders'], i['plus'], i['minus'])
+			if notclosed:
+				text2 += '\n%dorders in process.' % (notclosed,)
+			text2 += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d$ (%s%.1f%%)\n\n∑ %.6fɃ (%d$)' % (s1, i['delta'], s1, i['percent'], s3, i['deltausd'], s3, i['percentusd'], i['sumbtc'], i['sumusd'])
+
 			send(text, group=channelid)
+			send(text2, group=twochannel)
 
 		sleep(3600)

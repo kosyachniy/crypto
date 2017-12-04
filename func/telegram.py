@@ -10,6 +10,7 @@ with open('data/keys.txt', 'r') as file:
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())['write']
 	channelid = s['channel']
+	twochannel = s['channelen']
 	admin = s['admin']
 
 bot = telebot.TeleBot(token)

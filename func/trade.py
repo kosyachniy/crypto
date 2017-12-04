@@ -12,6 +12,7 @@ from celery import Task
 history = db['history']
 
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
+us = lambda: float(requests.get('https://blockchain.info/tobtc?currency=USD&value=1').text)
 
 import numpy as np
 from time import mktime, strptime
@@ -100,6 +101,9 @@ class YoBit():
 	#Перевод в рубли
 	def ru(self):
 		return 1 / self.trader.ticker('btc_rur')['btc_rur']['buy']
+
+	def us(self):
+		return 1 / self.trader.ticker('btc_usd')['btc_usd']['buy']
 
 	#Баланс валюты
 	def info(self, cur='btc'):
@@ -263,6 +267,9 @@ class Bittrex():
 
 	def ru(self):
 		return ru()
+
+	def us(self):
+		return 1 / self.trader.get_ticker('usdt-btc')['result']['Bid']
 
 	def price(self, cur, buy='buy'):
 		if type(cur) == str:
