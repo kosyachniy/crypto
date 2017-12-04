@@ -63,7 +63,7 @@ def text(message):
 			num = 0
 	
 		num += 1
-		doc = {'id': num, 'chat': chat, 'message': id, 'text': text}
+		doc = {'id': num, 'chat': chat, 'message': id, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
 		messages.insert(doc)
 	else:
 		bot.send_message(message.chat.id, 'У вас нет доступа!')

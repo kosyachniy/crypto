@@ -47,7 +47,7 @@ def autoadd():
 
 					print(id+1)
 
-					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text}
+					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
 					messages.insert(doc)
 
 				num = i.id

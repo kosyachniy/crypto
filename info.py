@@ -1,7 +1,7 @@
 from func.main import *
 
 days = db['days']
-trade = db['trade']
+messages = db['messages']
 history = db['history']
 
 with open('data/set.txt', 'r') as file:
@@ -17,12 +17,12 @@ if __name__ == '__main__':
 				send(stock[j].all())
 
 		if gmtime().tm_hour - utc == 17:
-			now = mktime() // 86400
+			now = mktime(gmtime()) // 86400
 
 			try:
 				i = days.find().sort('id', -1)[0]
 			except:
-				i = {'id': 0, 'sum': '10000'}
+				i = {'id': 0, 'sum': 10000}
 
 			i['id'] += 1
 			x = stock[excd].info()
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 				s = ''
 			i['percent'] = i['delta'] * 100 / i['sum']
 			i['sum'] = x
-			i['signals'] = sum([1 for j in trade.find() if stamp(j['time']) == now])
+			i['signals'] = sum([1 for j in messages.find() if stamp(j['time']) == now])
 
 			i['orders'] = 0
 			i['plus'] = 0
@@ -56,6 +56,7 @@ if __name__ == '__main__':
 								i['minus'] += 1
 					elif j['success'] == 2:
 						i['bad'] += 1
+			days.insert(i)
 
 			send('Добрый вечер!\nЗаканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигналов (%d ордеров)\nИз них %d прибыльных и %d убыточных\nЕщё не исполнилось %d ордеров.\n\nΔ %s%.8f (%s%.1f%)Ƀ∑ %.8fɃ' % (i['id'], i['signals'], i['orders'], i['plus'], i['minus'], i['orders'] - i['success'] - i['bad'], s, i['delta'], s, i['percent'], i['sum']), group=channelid)
 
