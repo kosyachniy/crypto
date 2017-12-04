@@ -81,7 +81,8 @@ def channel():
 			send(formated, group=channelid)
 
 			if pric:
-				stock[i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][2])
+				print('stock[' + str(i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2]) + ' if ' + str(i['out'][0][1]) + ' else ' + str(pric) + ' * ' + str(i['out'][0][2]) + ')')
+				stock[i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
 				send(open('re.png', 'rb'), group=channelid)
 
 if __name__ == '__main__':

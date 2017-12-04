@@ -24,11 +24,12 @@ def end2(x):
 #сделать регулярным по расписанию celery
 if __name__ == '__main__':
 	while True:
-		if gmtime().tm_hour - utc in (6, 12, 20):
+		tim = gmtime().tm_hour - utc 
+		if tim in (6, 12, 20):
 			for j in range(len(stock)):
 				send(stock[j].all())
 
-		if gmtime().tm_hour - utc == 17:
+		if tim == 17:
 			now = mktime(gmtime()) // 86400
 
 			try:

@@ -68,7 +68,7 @@ def trade():
 						pric = i['out'][-j][2] if i['out'][-j][1] else price * i['out'][-j][2]
 						coun = count * i['out'][-j][0]
 						print('!!!COUN!!!', coun * pric)
-						if coun * pric < stock[i['exchanger']].min:
+						if coun * pric < stock[i['exchanger']].min: #quant:
 							i['out'][-1-j][0] += i['out'][-j][0]
 							continue
 

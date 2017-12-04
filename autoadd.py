@@ -1,6 +1,6 @@
 from func.data import db
 from func.user import *
-from time import sleep
+from time import sleep, strftime
 import re, json
 
 with open('data/set.txt', 'r') as file:
