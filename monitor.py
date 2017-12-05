@@ -142,8 +142,8 @@ def recognize(i):
 
 		#Если указаны неправильные объёмы продажи
 		zam = False
-		for i in out:
-			if (i[1] == 0 and i[2] < 1) or (i[1] == 1 and i[2] < price):
+		for j in out:
+			if (j[1] == 0 and j[2] < 1) or (j[1] == 1 and j[2] < price):
 				zam = True
 		if zam:
 			out = outd
@@ -156,9 +156,11 @@ def recognize(i):
 			x = 1 / s
 			a = 0
 			for j in range(len(out) - 1):
-				out[-1 * (j + 1)][0] = math.exp(j) * x
+				out[-1 * (j + 1)][0] = round(math.exp(j) * x, 2)
 				a += out[len(out) - j - 1][0]
 			out[0][0] = 1 - a
+
+		#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
 
 		#Если неправильно определил стоп-лосс
 		if loss == None:

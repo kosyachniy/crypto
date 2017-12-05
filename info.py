@@ -101,14 +101,15 @@ if __name__ == '__main__':
 					elif j['success'] == 2:
 						i['bad'] += 1
 			days.insert(i)
+			orders = i['plus'] + i['minus'] + i['orders'] - i['success'] - i['bad']
 
-			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], i['signals'], end(i['signals']), i['orders'], end(i['orders']), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
+			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], i['signals'], end(i['signals']), orders, end(orders), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
 			notclosed = i['orders'] - i['success'] - i['bad']
 			if notclosed:
 				text += '\nЕщё не исполнил%s %d ордер%s.' % (end3(notclosed), notclosed, end(notclosed))
 			text += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d₽ (%s%.1f%%)\n\n∑ %.6fɃ (%d₽)' % (s1, i['delta'], s1, i['percent'], s2, i['deltarub'], s2, i['percentrub'], i['sumbtc'], i['sumrub'])
 
-			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signals (%d orders)\n%d profit orders & %d not-profit orders.' % (i['id'], i['signals'], i['orders'], i['plus'], i['minus'])
+			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signals (%d orders)\n%d profit orders & %d not-profit orders.' % (i['id'], i['signals'], orders, i['plus'], i['minus'])
 			if notclosed:
 				text2 += '\n%dorders in process.' % (notclosed,)
 			text2 += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d$ (%s%.1f%%)\n\n∑ %.6fɃ (%d$)' % (s1, i['delta'], s1, i['percent'], s3, i['deltausd'], s3, i['percentusd'], i['sumbtc'], i['sumusd'])

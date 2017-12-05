@@ -1,5 +1,8 @@
 #Операции с биржами
 from func.data import *
+
+import matplotlib
+matplotlib.use('Agg')
 import pylab
 
 '''
@@ -109,11 +112,21 @@ class YoBit():
 	def info(self, cur='btc'):
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
-		try:
-			return self.trader.get_info()['return']['funds_incl_orders'][cur]
-		except:
-			sleep(5)
-			return self.trader.get_info()['return']['funds_incl_orders'][cur]
+		if cur:
+			try:
+				return self.trader.get_info()['return']['funds_incl_orders'][cur]
+			except:
+				sleep(5)
+				return self.trader.get_info()['return']['funds_incl_orders'][cur]
+		else:
+			s = 0
+			y = self.trader.get_info()['return']['funds']
+			for i in y:
+				price = self.price(i, 1)
+				sell = price * y[i]
+				if sell > self.min or i == 'rur':
+					s += sell
+			return s
 
 	#Курс
 	def price(self, cur, buy='buy'):
@@ -260,10 +273,22 @@ class Bittrex():
 		return 'ABsikd'[(x + dop) % 2::2]
 	
 	def info(self, name='btc'):
-		name = name.lower()
-		for i in self.trader.get_balances()['result']:
-			if i['Currency'].lower() == name:
-				return i['Available']
+		if name:
+			name = name.lower()
+			for i in self.trader.get_balances()['result']:
+				if i['Currency'].lower() == name:
+					return i['Available']
+		else:
+			s = 0
+			y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
+			for i in y:
+				price = self.price(i['Currency'], 1)
+				sell = price * i['Balance']
+				if not sell:
+					continue
+				if sell > self.min:
+					s += sell
+			return s
 
 	def ru(self):
 		return ru()

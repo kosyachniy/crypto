@@ -100,10 +100,10 @@ def channel():
 			send(format2, group=twochannel)
 
 			if pric:
-				print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
-				#stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
-				#send(open('re.png', 'rb'), group=channelid)
-				#send(open('re.png', 'rb'), group=twochannel)
+				#print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
+				stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
+				send(open('re.png', 'rb'), group=channelid)
+				send(open('re.png', 'rb'), group=twochannel)
 
 if __name__ == '__main__':
 	channel()
