@@ -2,6 +2,9 @@ from func.main import *
 
 trades = db['trade']
 
+with open('data/set.txt', 'r') as file:
+	excd = json.loads(file.read())['replacements']['exchanger'] + 0
+
 from bs4 import BeautifulSoup
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
@@ -74,6 +77,7 @@ def channel():
 			formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
 			'''
 			formated += '\n--------------------\nПокупка:'
+			format2 += '\n--------------------\nBuy:'
 			if i['price']:
 				pric = i['price']
 				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
@@ -84,7 +88,7 @@ def channel():
 			if pric:
 				if len(i['out']):
 					formated += '\n\nНаша стратегия:' #Продажа
-					format2 += '\n\nOut strategy:' #Sell
+					format2 += '\n\nOur strategy:' #Sell
 				for j in i['out']:
 					formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100)
 					format2 += '\n%.8fɃ - %d%% of the purchased' % (j[2] if j[1] else pric * j[2], j[0] * 100)
@@ -96,8 +100,8 @@ def channel():
 			send(format2, group=twochannel)
 
 			if pric:
-				print('stock[' + str(i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2]) + ' if ' + str(i['out'][0][1]) + ' else ' + str(pric) + ' * ' + str(i['out'][0][2]) + ')')
-				#stock[i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
+				print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
+				#stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
 				#send(open('re.png', 'rb'), group=channelid)
 				#send(open('re.png', 'rb'), group=twochannel)
 

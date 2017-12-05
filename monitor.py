@@ -140,6 +140,14 @@ def recognize(i):
 		if not len(out):
 			out = outd
 
+		#Если указаны неправильные объёмы продажи
+		zam = False
+		for i in out:
+			if (i[1] == 0 and i[2] < 1) or (i[1] == 1 and i[2] < price):
+				zam = True
+		if zam:
+			out = outd
+
 		#Если не указаны объёмы продажи
 		if not out[0][0]:
 			s = 0

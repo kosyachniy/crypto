@@ -10,7 +10,12 @@ with open('data/set.txt', 'r') as file:
 
 messages = db['messages']
 
-get = lambda x=1: client.get_message_history(client.get_entity(from_id), x)[1]
+def get(x=1):
+	try:
+		return client.get_message_history(client.get_entity(from_id), x)[1]
+	except:
+		sleep(5)
+		return []
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
@@ -52,7 +57,7 @@ def autoadd():
 
 				num = i.id
 
-		sleep(1)
+		sleep(2)
 
 if __name__ == '__main__':
 	autoadd()
