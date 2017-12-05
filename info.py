@@ -44,7 +44,7 @@ if __name__ == '__main__':
 				i = {'id': 0, 'sumrub': 7735, 'sumbtc': 0.011407, 'sumusd': 100} #8000 0.12
 
 			i['id'] += 1
-			x = stock[excd].info()
+			x = stock[excd].info('')
 			xrub = x / stock[excd].ru()
 			xusd = x / stock[excd].us()
 			i['signals'] = sum([1 for j in messages.find() if stamp(j['time']) == now])
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
 			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signals (%d orders)\n%d profit orders & %d not-profit orders.' % (i['id'], i['signals'], orders, i['plus'], i['minus'])
 			if notclosed:
-				text2 += '\n%dorders in process.' % (notclosed,)
+				text2 += '\n%d orders in process.' % (notclosed,)
 			text2 += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d$ (%s%.1f%%)\n\n∑ %.6fɃ (%d$)' % (s1, i['delta'], s1, i['percent'], s3, i['deltausd'], s3, i['percentusd'], i['sumbtc'], i['sumusd'])
 
 			send(text, group=channelid)

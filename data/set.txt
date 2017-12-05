@@ -14,7 +14,7 @@
 			[0.1, 0, 1.1]
 			],
 		"timebuy": 20,
-		"timesell": 480
+		"timesell": 300
 	},
 	"replacements": {
 		"volume": 0.0008,
