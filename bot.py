@@ -68,4 +68,8 @@ def text(message):
 	else:
 		bot.send_message(message.chat.id, 'У вас нет доступа!')
 
-bot.polling(none_stop=True)
+while True:
+	try:
+		bot.polling(none_stop=True)
+	except:
+		sleep(5)

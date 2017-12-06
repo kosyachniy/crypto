@@ -1,6 +1,6 @@
 {
 	"read": {
-		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals", "#leosignals", "#libermansignals", "#cryptosignalsio"],
+		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals", "#leosignals", "#libermansignals"],
 		"garant": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
 		"channel": -1001149594247
 	},

@@ -19,7 +19,38 @@ us = lambda: float(requests.get('https://blockchain.info/tobtc?currency=USD&valu
 
 import numpy as np
 from time import mktime, strptime
+import matplotlib.pyplot as plt
 def graph(y, price, minutes=20):
+	tim = {}
+	for i in y[::-1]:
+		if i[0] not in tim:
+			print(i[0])
+			tim[i[0]] = []
+		tim[i[0]].append(i[1])
+
+	startx = y[0][0]
+	starty = tim[startx][-1]
+	tim[startx+5] = [starty, starty, price, price]
+
+	pylab.clf()
+	fig, ax = plt.subplots()
+
+	bp = ax.boxplot([tim[i] for i in tim if tim[i][0] > tim[i][-1]], positions=[int(i-y[-1][0]+1) for i in tim if tim[i][0] > tim[i][-1]], patch_artist=True)
+	plt.setp(bp['boxes'], color='red')
+	vp = ax.boxplot([tim[i] if tim[i][0] <= tim[i][-1] else [] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim], patch_artist=True)
+	plt.setp(vp['boxes'], color='green')
+
+	for element in ['whiskers', 'fliers', 'means', 'medians', 'caps']:
+		plt.setp(bp[element], color='black')
+		plt.setp(vp[element], color='black')
+	#pylab.boxplot([tim[i] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim])
+
+	pylab.annotate(u'Up',
+	                xy=(startx-y[-1][0]+1, starty),
+	                xytext = (startx+5-y[-1][0]+1, price),
+	                arrowprops = {'arrowstyle': '<|-'}
+	                )
+	'''
 	#Разбиение на минуты
 	al = []
 	real_min = 0
@@ -69,6 +100,7 @@ def graph(y, price, minutes=20):
 	                xytext = (x[-1], price), #y[-3][3]*1.05
 	                arrowprops = {'arrowstyle': '<|-'}
 	                )
+	'''
 
 	pylab.grid(True)
 	#pylab.show()
