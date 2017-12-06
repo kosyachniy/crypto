@@ -4,9 +4,6 @@ days = db['days']
 messages = db['messages']
 history = db['history']
 
-with open('data/set.txt', 'r') as file:
-	excd = json.loads(file.read())['replacements']['exchanger'] + 0 #?
-
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 86400
 
 def end(x):

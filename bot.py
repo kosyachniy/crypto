@@ -3,11 +3,6 @@ from func.main import *
 
 messages = db['messages']
 
-try:
-	num = messages.find().sort('id', -1)[0]['id']
-except:
-	num = 0
-
 '''
 @bot.message_handler(commands=['start', 'help'])
 def start(message):

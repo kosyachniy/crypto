@@ -1,10 +1,6 @@
 #Операции с биржами
 from func.data import *
 
-import matplotlib
-matplotlib.use('Agg')
-import pylab
-
 '''
 from celery.decorators import task
 from celery.decorators import periodic_task
@@ -17,8 +13,8 @@ history = db['history']
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 us = lambda: float(requests.get('https://blockchain.info/tobtc?currency=USD&value=1').text)
 
-import numpy as np
-from time import mktime, strptime
+from matplotlib import use
+use('Agg')
 import matplotlib.pyplot as plt
 def graph(y, price, minutes=20):
 	tim = {}
@@ -32,79 +28,22 @@ def graph(y, price, minutes=20):
 	starty = tim[startx][-1]
 	tim[startx+5] = [starty, starty, price, price]
 
-	pylab.clf()
+	plt.clf()
 	fig, ax = plt.subplots()
 
 	bp = ax.boxplot([tim[i] for i in tim if tim[i][0] > tim[i][-1]], positions=[int(i-y[-1][0]+1) for i in tim if tim[i][0] > tim[i][-1]], patch_artist=True)
 	plt.setp(bp['boxes'], color='red')
 	vp = ax.boxplot([tim[i] if tim[i][0] <= tim[i][-1] else [] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim], patch_artist=True)
 	plt.setp(vp['boxes'], color='green')
-
 	for element in ['whiskers', 'fliers', 'means', 'medians', 'caps']:
 		plt.setp(bp[element], color='black')
 		plt.setp(vp[element], color='black')
-	#pylab.boxplot([tim[i] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim])
 
-	pylab.annotate(u'Up',
-	                xy=(startx-y[-1][0]+1, starty),
-	                xytext = (startx+5-y[-1][0]+1, price),
-	                arrowprops = {'arrowstyle': '<|-'}
-	                )
-	'''
-	#Разбиение на минуты
-	al = []
-	real_min = 0
-	real_max = 0
-	real_open = 0
-	real_last = 0
+	plt.annotate(u'Up', xy=(startx-y[-1][0]+1, starty), xytext=(startx+5-y[-1][0]+1, price), arrowprops={'arrowstyle': '<|-'})
 
-	mi = y[-1][0]
-
-	for i in y[::-1]:
-		mo = i[0]
-		if mo > mi:
-			al.append([mo, real_min, real_open, real_last, real_max])
-			real_open = 0
-			mi = mo
-
-		if real_open:
-			if i[1] < real_min:
-				real_min = i[1]
-			elif i[1] > real_max:
-				real_max = i[1]
-			real_last = i[1]
-		else:
-			real_min = i[1]
-			real_max = i[1]
-			real_last = i[1]
-			real_open = i[1]
-
-	al = al[1:][-minutes:] #первый - не полный, последний - не вносится
-
-	#График
-	y = [i[1:] for i in al]
-	x = [int(i[0]%60) for i in al]
-
-	#print(y)
-	mi = min([min(i) for i in y])
-	ma = max([max(i) for i in y])
-
-	y = y + [[y[-1][3], y[-1][3], price, price]] #[[mi,mi,mi,mi],[mi,mi,mi,mi]] #[[mi,mi,mi*1.03,mi*1.03], [mi*1.03,mi*1.03,mi*1.05,mi*1.05]]
-	x = x + [x[-1]+5] #[int((x[-1]+5)%60), int((x[-1]+10)%60)]
-
-	pylab.clf()
-	pylab.boxplot(y, positions=x) #[i for i in range(1, len(y)+4)]
-
-	pylab.annotate(u'Up',
-	                xy=(x[-2], y[-2][3]),
-	                xytext = (x[-1], price), #y[-3][3]*1.05
-	                arrowprops = {'arrowstyle': '<|-'}
-	                )
-	'''
-
-	pylab.grid(True)
-	#pylab.show()
-	pylab.savefig('re.png', format='png', dpi=150)
+	plt.grid(True)
+	#plt.show()
+	plt.savefig('re.png', format='png', dpi=150)
 
 class YoBit():
 	def __init__(self):
@@ -251,30 +190,6 @@ class YoBit():
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
 
-	'''
-	def last(self, cur, limit=200):
-		cur = self.name(cur)
-
-		y = [i['price'] for i in self.trader.trades(cur, limit)[cur]]
-
-		pylab.plot([i for i in range(1, len(y) + 1)], y)
-		pylab.grid(True)
-		#pylab.show()
-		pylab.savefig('re.png', format='png', dpi=150) #cur + 
-
-	#Размеры волны пампа
-	def bar(self, cur):
-		cur = self.name(cur)
-		x = self.trader.trades(cur)[cur]
-		min = max = x[0]['price']
-		for i in x:
-			if i['price'] < min:
-				min = i['price']
-			elif i['price'] > max:
-				max = i['price']
-		return min, max
-	'''
-
 	def last(self, cur, price):
 		cur = self.name(cur)
 		y = self.trader.trades(cur, 500)[cur]
@@ -366,26 +281,6 @@ class Bittrex():
 				return x['result']['uuid']
 		except:
 			return 0
-
-	'''
-	def last(self, cur):
-		cur = self.name(cur)
-
-		y = [i['Price'] for i in self.trader.get_market_history(cur)['result']]
-		x = [i for i in range(1, len(y) + 1)]
-
-		pylab.plot(x + [i for i in range(x[-1]+1, x[-1]+3)], y + [y[-1]*1.03, y[-1]*1.05])
-		pylab.grid(True)
-
-		pylab.annotate (u'',
-                        xy=(x[-1], y[-1]),
-                        xytext = (x[-1]+2, y[-1]*1.05), #
-                        arrowprops = {'arrowstyle': '<|-'}
-                        )
-
-		#pylab.show()
-		pylab.savefig('re.png', format='png', dpi=150) #cur + 
-	'''
 
 	def order(self, id):
 		try:

@@ -2,9 +2,6 @@ from func.main import *
 
 trades = db['trade']
 
-with open('data/set.txt', 'r') as file:
-	excd = json.loads(file.read())['replacements']['exchanger'] + 0
-
 from bs4 import BeautifulSoup
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):

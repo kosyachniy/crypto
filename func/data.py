@@ -9,7 +9,9 @@ with open('data/exchangers.txt', 'r') as file:
 	exchangers = json.loads(file.read())
 
 with open('data/set.txt', 'r') as file:
-	utc = json.loads(file.read())['utc']
+	s = json.loads(file.read())
+	utc = s['utc']
+	excd = s['replacements']['exchanger']
 
 #MongoDB
 from pymongo import MongoClient

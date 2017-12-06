@@ -5,7 +5,6 @@ import json
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())['replacements']
 	quant = s['volume']
-	excd = s['exchanger']
 
 trades = db['trade']
 table = db['history']
