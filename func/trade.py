@@ -19,10 +19,10 @@ import matplotlib.pyplot as plt
 def graph(y, price, minutes=20):
 	tim = {}
 	for i in y[::-1]:
-		if i[0] not in tim:
-			print(i[0])
-			tim[i[0]] = []
-		tim[i[0]].append(i[1])
+		if y[0][0] - i[0] < 30:
+			if i[0] not in tim:
+				tim[i[0]] = []
+			tim[i[0]].append(i[1])
 
 	startx = y[0][0]
 	starty = tim[startx][-1]
@@ -31,7 +31,7 @@ def graph(y, price, minutes=20):
 	plt.clf()
 	fig, ax = plt.subplots()
 
-	bp = ax.boxplot([tim[i] for i in tim if tim[i][0] > tim[i][-1]], positions=[int(i-y[-1][0]+1) for i in tim if tim[i][0] > tim[i][-1]], patch_artist=True)
+	bp = ax.boxplot([tim[i] if tim[i][0] > tim[i][-1] else [] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim], patch_artist=True)
 	plt.setp(bp['boxes'], color='red')
 	vp = ax.boxplot([tim[i] if tim[i][0] <= tim[i][-1] else [] for i in tim], positions=[int(i-y[-1][0]+1) for i in tim], patch_artist=True)
 	plt.setp(vp['boxes'], color='green')

@@ -10,6 +10,7 @@ with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
 	stopl = s['default']['stop-loss']
 	outd = s['default']['sell']
+	outg = s['default']['gell']
 	vold = s['default']['volume']
 	veri = s['read']['garant']
 
@@ -138,7 +139,7 @@ def recognize(i):
 
 		#Если не указаны ордеры на продажу
 		if not len(out):
-			out = outd
+			out = outg if safe else outd
 
 		#Если указаны неправильные объёмы продажи
 		zam = False
@@ -146,7 +147,7 @@ def recognize(i):
 			if (j[1] == 0 and j[2] < 1) or (j[1] == 1 and j[2] < price):
 				zam = True
 		if zam:
-			out = outd
+			out = outg if safe else outd
 
 		#Если не указаны объёмы продажи
 		if not out[0][0]:

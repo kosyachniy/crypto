@@ -23,6 +23,8 @@ def end3(x):
 		return 'лся'
 	return 'лось'
 
+end4 = lambda x: 's' if x != 1 else ''
+
 #сделать регулярным по расписанию celery
 if __name__ == '__main__':
 	while True:
@@ -103,12 +105,12 @@ if __name__ == '__main__':
 			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], i['signals'], end(i['signals']), orders, end(orders), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
 			notclosed = i['orders'] - i['success'] - i['bad']
 			if notclosed:
-				text += '\nЕщё не исполнил%s %d ордер%s.' % (end3(notclosed), notclosed, end(notclosed))
+				text += '\nЕщё не исполни%s %d ордер%s.' % (end3(notclosed), notclosed, end(notclosed))
 			text += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d₽ (%s%.1f%%)\n\n∑ %.6fɃ (%d₽)' % (s1, i['delta'], s1, i['percent'], s2, i['deltarub'], s2, i['percentrub'], i['sumbtc'], i['sumrub'])
 
-			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signals (%d orders)\n%d profit orders & %d not-profit orders.' % (i['id'], i['signals'], orders, i['plus'], i['minus'])
+			text2 = 'Good evening, guys!\nIt\'s our day\'s #results (day %d)\n\nIn total: %d signal%s (%d order%s)\n%d profit order%s & %d not-profit order%s.' % (i['id'], i['signals'], end4(i['signals']), orders, end4(orders), i['plus'], end4(i['plus']), i['minus'], end4(i['minus']))
 			if notclosed:
-				text2 += '\n%d orders in process.' % (notclosed,)
+				text2 += '\n%d order%s in process.' % (notclosed, end4(notclosed))
 			text2 += '\n\nΔ %s%.6fɃ (%s%.1f%%)\nΔ %s%d$ (%s%.1f%%)\n\n∑ %.6fɃ (%d$)' % (s1, i['delta'], s1, i['percent'], s3, i['deltausd'], s3, i['percentusd'], i['sumbtc'], i['sumusd'])
 
 			send(text, group=channelid)
