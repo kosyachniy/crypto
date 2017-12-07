@@ -6,6 +6,11 @@ history = db['history']
 bit = db['bit']
 settings = db['set']
 
+with open('set.txt', 'r') as file:
+	s = json.loads(file.read())['default']
+	jumpup = s['jumpup']
+	jumpdown = s['jumpdown']
+
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 86400
 
 def end(x):
@@ -146,16 +151,18 @@ if __name__ == '__main__':
 			except:
 				low = ch
 
-		if ch / up >= 1.03 or ch / one >= 1.03:
+		if ch / up >= jumpup or ch / one >= jumpup:
 			if i['cont'] != 1:
-				text = '#ВБиток\nРост биткоина за 3 часа: +%d%' % (ch * 100 / up,)
+				text = '#ВБиток\nРост биткоина за 3 часа: +%d%'.format(int(ch * 100 / up))
+				text2 = '#InBitCoin\nGrowing bitcoin in 3 hours: +%d%'.format(int(ch * 100 / up))
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 1
 
-		elif ch / low <= 0.96 or ch / one <= 0.96:
+		elif ch / low <= jumpdown or ch / one <= jumpdown:
 			if i['cont'] != 2:
-				text = '#ВАльты\nПадение биткоина за 5 часа: -%d%' % (int(100 * (1 - (ch / low))),)
+				text = '#ВАльты\nПадение биткоина за 5 часа: -%d%'.format(int(100 * (1 - (ch / low))))
+				text2 = '#InAlts\nBitcoin dropping in 5 hours: -%d%'.format(int(100 * (1 - (ch / low))))
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 2

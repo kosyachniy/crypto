@@ -189,6 +189,7 @@ def monitor():
 #БД
 	messages = db['messages']
 	trade = db['trade']
+	settings = db['set']
 
 #Первоначальные значения
 	try:

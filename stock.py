@@ -1,6 +1,7 @@
 from func.main import *
 
 table = db['history']
+settings = db['set']
 
 '''
 		if i['type'] == 'buy':
