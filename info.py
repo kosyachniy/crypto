@@ -3,6 +3,8 @@ from func.main import *
 days = db['days']
 messages = db['messages']
 history = db['history']
+bit = db['bit']
+settings = db['set']
 
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 86400
 
@@ -29,10 +31,12 @@ end4 = lambda x: 's' if x != 1 else ''
 if __name__ == '__main__':
 	while True:
 		tim = gmtime().tm_hour - utc
+#Сводка балансов
 		if tim in (6, 12, 20):
 			for j in range(len(stock)):
 				send(stock[j].all())
 
+#Сводка дня в каналы
 		if tim == 17:
 			now = mktime(gmtime()) // 86400
 
@@ -115,5 +119,35 @@ if __name__ == '__main__':
 
 			send(text, group=channelid)
 			send(text2, group=twochannel)
+
+#Изменение курсов
+		try:
+			i = settings.find_one({'name': 'jump'})
+		except:
+			i = {'name': 'jump', 'cont': 0}
+
+		ch = 1 / stock[excd].us()
+		try:
+			up = bit.find().sort('id', -1)[2]['id']
+			low = bit.find().sort('id', -1)[4]['id']
+		except:
+			up = low = ch
+
+		if ch / up > 1.03:
+			if i['cont'] != 1:
+				text = '#ВБиток\nРост биткоина за 3 часа: +%d%' % (ch * 100 / up,)
+				send(text, group=channelid)
+				send(text2, group=twochannel)
+				i['cont'] = 1
+
+		elif ch / low < 0.96:
+			if i['cont'] != 2:
+				text = '#ВАльты\nПадение биткоина за 5 часа: -%d%' % (100 * (1 - (ch / low)),)
+				send(text, group=channelid)
+				send(text2, group=twochannel)
+				i['cont'] = 2
+		
+		bit.insert({'id'})
+		settings.save(i)
 
 		sleep(3600)

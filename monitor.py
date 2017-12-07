@@ -200,12 +200,18 @@ def monitor():
 	while True:
 		x = [i for i in messages.find({'id': {'$gt': num}})]
 
-#Обработка
-		for i in x:
-			num = i['id']
+		try:
+			jump = settings.find_one({'name': 'jump'})['cont']
+		except:
+			jump = 0
 
-			x = recognize(i)
-			if x: trade.insert(x)
+#Обработка
+		if jump != 1: #если продажа
+			for i in x:
+				num = i['id']
+
+				x = recognize(i)
+				if x: trade.insert(x)
 
 if __name__ == '__main__':
 	monitor()

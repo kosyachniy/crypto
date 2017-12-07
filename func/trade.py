@@ -40,7 +40,7 @@ def graph(y, price, minutes=20):
 		plt.setp(bp[element], color='black')
 		plt.setp(vp[element], color='black')
 
-	plt.annotate(u'Up', xy=(startx-delt, starty), xytext=(startx+5-y[-1][0]+1, price), arrowprops={'arrowstyle': '<|-'})
+	plt.annotate(u'Up', xy=(startx-delt, starty), xytext=(startx+5-delt, price), arrowprops={'arrowstyle': '<|-'})
 
 	plt.grid(True)
 	#plt.show()
