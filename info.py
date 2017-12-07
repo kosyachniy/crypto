@@ -121,33 +121,51 @@ if __name__ == '__main__':
 			send(text2, group=twochannel)
 
 #Изменение курсов
+		i = settings.find_one({'name': 'jump'})
 		try:
-			i = settings.find_one({'name': 'jump'})
+			if i['cont']: pass
 		except:
 			i = {'name': 'jump', 'cont': 0}
 
 		ch = 1 / stock[excd].us()
 		try:
-			up = bit.find().sort('id', -1)[2]['id']
-			low = bit.find().sort('id', -1)[4]['id']
+			x = bit.find().sort('id', -1)
+			num = x[0]['id']
+			one = x[0]['cont']
 		except:
 			up = low = ch
+			num = 0
+		else:
+			try:
+				up = x[2]['cont']
+			except:
+				up = ch
 
-		if ch / up > 1.03:
+			try:
+				low = x[4]['cont']
+			except:
+				low = ch
+
+		if ch / up >= 1.03 or ch / one >= 1.03:
 			if i['cont'] != 1:
 				text = '#ВБиток\nРост биткоина за 3 часа: +%d%' % (ch * 100 / up,)
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 1
 
-		elif ch / low < 0.96:
+		elif ch / low <= 0.96 or ch / one <= 0.96:
 			if i['cont'] != 2:
-				text = '#ВАльты\nПадение биткоина за 5 часа: -%d%' % (100 * (1 - (ch / low)),)
+				text = '#ВАльты\nПадение биткоина за 5 часа: -%d%' % (int(100 * (1 - (ch / low))),)
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 2
-		
-		bit.insert({'id'})
-		settings.save(i)
+		else:
+			i['cont'] = 0
+
+		bit.insert({'id': num+1, 'cont': ch})
+		if '_id' in i:
+			settings.save(i)
+		else:
+			settings.insert(i)
 
 		sleep(3600)
