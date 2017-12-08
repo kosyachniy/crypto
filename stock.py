@@ -20,24 +20,23 @@ with open('data/set.txt', 'r') as file:
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 60
 now = lambda: mktime(gmtime()) // 60
 
-def selll(i):
-	stock[i['exchanger']].cancel(i['order'])
-	i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], sell, 1)
-	i['price'] = sell
-	#изменить тип на loss и отдельно отслеживать
+def selll(i, sell):
+	if not i['processed']:
+		stock[i['exchanger']].cancel(i['order'])
+		i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], sell, 1)
+		i['price'] = sell
+		#изменить тип на loss и отдельно отслеживать
 
-	if i['order']:
-		rub = stock[i['exchanger']].ru()
-		formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
-		send(formated)
-	else:
-		i['success'] = 2
-		send('Ошибка продажи!')
+		if i['order']:
+			i['processed'] = 1
+			rub = stock[i['exchanger']].ru()
+			formated = 'Продать %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], i['count'], i['price'], i['price'] / rub, i['price'] * i['count'], (i['price'] * i['count']) / rub)
+			send(formated)
+		else:
+			i['success'] = 2
+			send('Ошибка продажи!')
 
-	#Остальные ордеры тоже снять
-	for j in table.find({'message': i['message'], 'type': 'sell'}):
-		j['loss'] = i['loss']
-		table.save(j)
+	return i
 
 while True:
 	for i in table.find({'success': 0}):
@@ -61,8 +60,9 @@ while True:
 				jump = 0
 
 			if jump == 1:
+				sell = stock[i['exchanger']].price(i['currency'], 1)
 				send('Начался рост биткоина!')
-				selll(i)
+				i = selll(i, sell)
 
 #Если продажа не выставлена
 			if not i['order'] and table.find_one({'message': i['message'], 'type': 'buy'})['success']:
@@ -98,6 +98,11 @@ while True:
 					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						send('Сработал стоп-лосс на заказе №%d' % (i['message'],))
-						selll(i)
+						i = selll(i, sell)
+
+						#Остальные ордеры тоже снять
+						for j in table.find({'message': i['message'], 'type': 'sell'}):
+							j['loss'] = i['loss']
+							table.save(j)
 
 		table.save(i)
