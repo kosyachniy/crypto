@@ -207,10 +207,10 @@ def monitor():
 			jump = 0
 
 #Обработка
-		if jump != 1: #если продажа
-			for i in x:
-				num = i['id']
+		for i in x:
+			num = i['id']
 
+			if jump != 1: #если продажа
 				x = recognize(i)
 				if x: trade.insert(x)
 

@@ -153,16 +153,16 @@ if __name__ == '__main__':
 
 		if ch / up >= jumpup or ch / one >= jumpup:
 			if i['cont'] != 1:
-				text = '#ВБиток\nРост биткоина за 3 часа: +{}%\nПродавайте альткоины!'.format(int(ch * 100 / up))
-				text2 = '#InBitCoin\nGrowing bitcoin in 3 hours: +{}%\nSell altcoins!'.format(int(ch * 100 / up))
+				text = '#ВБиток\nРост биткоина за 3 часа: +{}%\nПродавайте альткоины!'.format(int(100 * (ch / up - 1)))
+				text2 = '#toBTC\nGrowing bitcoin in 3 hours: +{}%\nSell altcoins!'.format(int(100 * (ch / up - 1)))
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 1
 
 		elif ch / low <= jumpdown or ch / one <= jumpdown:
 			if i['cont'] != 2:
-				text = '#ВАльты\nПадение биткоина за 5 часа: -{}%'.format(int(100 * (1 - (ch / low))))
-				text2 = '#InAlts\nBitcoin dropping in 5 hours: -{}%'.format(int(100 * (1 - (ch / low))))
+				text = '#ВАльты\nПадение биткоина за 5 часов: -{}%'.format(int(100 * (1 - (ch / low))))
+				text2 = '#toAlt\nBitcoin dropping in 5 hours: -{}%'.format(int(100 * (1 - (ch / low))))
 				send(text, group=channelid)
 				send(text2, group=twochannel)
 				i['cont'] = 2
