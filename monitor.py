@@ -8,7 +8,7 @@ with open('data/vocabulary.txt', 'r') as file:
 
 with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())
-	stopl = s['default']['stop-loss']
+	reloss = [0, s['default']['stop-loss']]
 	outd = s['default']['sell']
 	outg = s['default']['gell']
 	vold = s['default']['volume']
@@ -53,8 +53,7 @@ def recognize(i):
 	print(text)
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
-	loss = [0, stopl]
-	reloss = loss + []
+	loss = reloss + []
 	out = []
 	vol = 0
 	price = 0
@@ -164,7 +163,7 @@ def recognize(i):
 		#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
 
 		#Если неправильно определил стоп-лосс
-		if loss == None:
+		if loss == None or (loss[0] and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]):
 			loss = reloss
 
 #Отправка на обработку

@@ -94,7 +94,7 @@ while True:
 					i['price'] = sell
 					send('Вышло время на продаже №%d' % (i['message'],))
 #Если стоп-лосс
-				elif i['loss']:
+				elif i['loss'] and now() - stamp(i['time']) >= 30:
 					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						send('Сработал стоп-лосс на заказе №%d' % (i['message'],))
