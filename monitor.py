@@ -12,7 +12,8 @@ with open('data/set.txt', 'r') as file:
 	outd = s['default']['sell']
 	outg = s['default']['gell']
 	vold = s['default']['volume']
-	veri = s['read']['garant']
+	veri = s['read']['reliable']
+	unveri = s['read']['unreliable']
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
@@ -58,6 +59,7 @@ def recognize(i):
 	vol = 0
 	price = 0
 	safe = 1 if on(text, veri, '#') else 0
+	unsafe = 1 if on(text, unveri, '#') else 0
 
 #Распознание сигнала
 	#Условия необработки
@@ -129,11 +131,24 @@ def recognize(i):
 		for j in text.split('\n'):
 			if on(j, vocabulary['loss']):
 				loss = stoploss(j, loss)
-	print('Price:', price)
 
 	#Рассмотреть случай продажи валюты
 	if cur >= 1 and buy != 1:
 #Замены
+		#Биржа
+		if i['exchanger'] == -1:
+			i['exchanger'] = excd #Биржа по умолчанию
+		#i['exchanger'] = excd
+
+		#Цена
+		realprice = stock[i['exchanger']].price(i['currency'])
+
+		#Если не указана цена покупки или сигнал недоверенный
+		print('Price:', price)
+		if not price or unsafe:
+			price = realprice
+		print('Price:', price)
+
 		#Если не указаны объёмы покупки
 		if not vol:
 			vol = vold * 2 if safe else vold #vold * (safe + 1)
@@ -147,8 +162,8 @@ def recognize(i):
 		#Если указаны неправильные объёмы продажи #замены
 		zam = False
 		for j in out:
-			if (j[1] == 0 and j[2] < 1) or (j[1] == 1 and j[2] < price):
-				zam = True
+			if (not j[1] and j[2] < 1) or (j[1] and j[2] < price and price):
+				return None #zam = True
 		if zam:
 			out = outg if safe else outd
 
@@ -169,7 +184,7 @@ def recognize(i):
 
 		#Если неправильно определил стоп-лосс
 		print('Stop-loss:', loss)
-		if loss == None or (loss[0] and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
+		if loss == None or (loss[0] and price and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
 			loss = reloss
 		print('Stop-loss:', loss)
 
@@ -179,6 +194,7 @@ def recognize(i):
 			'currency': cur,
 			'exchanger': exc,
 			'price': price,
+			'realprice': realprice,
 			'volume': vol,
 			'out': out,
 			'loss': loss,

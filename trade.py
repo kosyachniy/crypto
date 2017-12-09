@@ -24,12 +24,7 @@ def trade():
 
 		for i in x:
 #Рассчёт основных параметров для биржи
-			if i['exchanger'] == -1:
-				i['exchanger'] = excd + 0 #Биржа по умолчанию
-			#i['exchanger'] = excd + 0
-
-			i['price'] = 0 #чтобы не заморачиваться и каждый раз быстро вводить покупку #теперь вводим 0.0
-			price = i['price'] if i['price'] else stock[i['exchanger']].price(i['currency'])
+			price = i['realprice'] #чтобы не заморачиваться и каждый раз быстро вводить покупку
 			if not price: continue #валюты нет
 			#сделать проверку на объём валюты
 
@@ -73,7 +68,7 @@ def trade():
 
 						su += coun * pric
 
-						x.append({'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time})
+						x.append({'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': coun, 'time': time, 'processed': 0})
 
 					for j in range(len(x)-1):
 						x[j]['loss'] = 0

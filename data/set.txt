@@ -1,7 +1,8 @@
 {
 	"read": {
-		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#privatesignals", "#insighttradebot", "#premiumsignals", "#leosignals", "#libermansignals"],
-		"garant": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
+		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#privatesignals", "#insighttradebot", "#libermansignals"],
+		"reliable": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
+		"unreliable": ["#иностранный"],
 		"channel": -1001149594247
 	},
 	"default": {
@@ -15,15 +16,16 @@
 			],
 		"gell": [
 			[0.5, 0, 1.05],
-			[0.3, 0, 1.1],
-			[0.1, 0, 1.15],
-			[0.1, 0, 1.2]
+			[0.3, 0, 1.07],
+			[0.1, 0, 1.1],
+			[0.1, 0, 1.15]
 			],
 		"timebuy": 20,
 		"timesell": 360,
 		"jumpup": 1.03,
 		"jumpdown": 0.96,
-		"timeloss": 30
+		"timeloss": 30,
+		"channeldeposit": 0.65
 	},
 	"replacements": {
 		"volume": 0.0008,

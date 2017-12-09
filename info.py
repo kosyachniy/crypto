@@ -10,6 +10,7 @@ with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())['default']
 	jumpup = s['jumpup']
 	jumpdown = s['jumpdown']
+	channeldeposit = s['channeldeposit']
 
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 86400
 
@@ -52,7 +53,7 @@ if __name__ == '__main__':
 				i = {'id': 0, 'sumrub': 7735, 'sumbtc': 0.011407, 'sumusd': 100} #8000 0.12
 
 			i['id'] += 1
-			x = stock[excd].info('')
+			x = stock[excd].info('') * channeldeposit
 			xrub = x / stock[excd].ru()
 			xusd = x / stock[excd].us()
 			i['signals'] = sum([1 for j in messages.find() if stamp(j['time']) == now])
