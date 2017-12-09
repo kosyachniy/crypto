@@ -89,15 +89,14 @@ def channel():
 				formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 				format2 += '\n\nStop-loss: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
-			send(formated, group=channelid)
-			send(format2, group=twochannel)
+			send(formated, channelid)
+			send(format2, twochannel)
 
 			if pric:
 				try:
 					#print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
 					stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
-					bot.send_photo(channelid, open('re.png', 'rb'))
-					bot.send_photo(twochannel, open('re.png', 'rb'))
+					send('#'+currencies[i['currency']][1], [channelid, twochannel], 're.png')
 				except:
 					pass
 

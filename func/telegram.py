@@ -24,22 +24,17 @@ def keyboard(*cat):
 		x.add(*[types.KeyboardButton('/' + i) for i in j])
 	return x
 
-def send(message, forward=0, group=0):
-	if group:
+def send(message='', to=admin, image='', forward=0):
+	if type(to) != list:
+		to = [to]
+	for i in to:
 		if not forward:
-			bot.send_message(group, message)
-		else:
-			bot.forward_message(group, forward, message)
-	else:
-		if not forward:
-			for i in admin:
+			if image:
+				bot.send_photo(i, open(image, 'rb'), message)
+			else:
 				bot.send_message(i, message, reply_markup=keyboard(exch, ['PUMP', 'Информация']))
 		else:
-			for i in admin:
-				try:
-					bot.forward_message(i, forward, message)
-				except:
-					try:
-						bot.send_message(i, db['messages'].find_one({'chat': forward, 'message': message})['text'])
-					except:
-						bot.send_message(i, str({'chat': group, 'message': message}))
+			try:
+				bot.forward_message(i, forward, message)
+			except:
+				bot.send_message(i, db['messages'].find_one({'chat': forward, 'message': message})['text'])
