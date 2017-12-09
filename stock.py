@@ -16,6 +16,7 @@ with open('data/set.txt', 'r') as file:
 	s = json.loads(file.read())['default']
 	timebuy = s['timebuy']
 	timesell = s['timesell']
+	timeloss = s['timeloss']
 
 stamp = lambda x: mktime(strptime(x, '%d.%m.%Y %H:%M:%S')) // 60
 now = lambda: mktime(gmtime()) // 60
@@ -94,7 +95,7 @@ while True:
 					i['price'] = sell
 					send('Вышло время на продаже №%d' % (i['message'],))
 #Если стоп-лосс
-				elif i['loss'] and now() - stamp(i['time']) >= 30:
+				elif i['loss'] and now() - stamp(i['time']) >= timeloss:
 					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						send('Сработал стоп-лосс на заказе №%d' % (i['message'],))

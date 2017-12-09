@@ -22,7 +22,8 @@
 		"timebuy": 20,
 		"timesell": 360,
 		"jumpup": 1.03,
-		"jumpdown": 0.96
+		"jumpdown": 0.96,
+		"timeloss": 30
 	},
 	"replacements": {
 		"volume": 0.0008,

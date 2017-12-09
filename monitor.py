@@ -71,6 +71,7 @@ def recognize(i):
 		buy = 1
 	else:
 		buy = 0
+	print('Type:', buy)
 
 	#Определение биржи
 	exc = -1
@@ -78,6 +79,7 @@ def recognize(i):
 		if exchangers[j][0].lower() in text:
 			exc = j
 			break
+	print('Exchanger', exc)
 
 	#Определение срока
 	if on(text, vocabulary['short']):
@@ -88,13 +90,13 @@ def recognize(i):
 		term = 2
 	else:
 		term = -1
+	print('Term:', term)
 
 	#Определение валюты
 	cur = an(text, '#', ['status']) #поиск по хештегу
 	if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
 	if cur == -1: return None #если несколько валют
-
-	print(cur, exc, term, buy)
+	print('Currency:', cur)
 
 	#Распознание размеров
 	if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
@@ -127,7 +129,7 @@ def recognize(i):
 		for j in text.split('\n'):
 			if on(j, vocabulary['loss']):
 				loss = stoploss(j, loss)
-
+	print('Price:', price)
 
 	#Рассмотреть случай продажи валюты
 	if cur >= 1 and buy != 1:
@@ -135,12 +137,14 @@ def recognize(i):
 		#Если не указаны объёмы покупки
 		if not vol:
 			vol = vold * 2 if safe else vold #vold * (safe + 1)
+		print('Volume:', vol)
 
 		#Если не указаны ордеры на продажу
 		if not len(out):
 			out = outg if safe else outd
 
-		#Если указаны неправильные объёмы продажи
+		print('Sell:', out)
+		#Если указаны неправильные объёмы продажи #замены
 		zam = False
 		for j in out:
 			if (j[1] == 0 and j[2] < 1) or (j[1] == 1 and j[2] < price):
@@ -159,12 +163,15 @@ def recognize(i):
 				out[-1 * (j + 1)][0] = round(math.exp(j) * x, 2)
 				a += out[len(out) - j - 1][0]
 			out[0][0] = 1 - a
+		print('Sell:', out)
 
 		#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
 
 		#Если неправильно определил стоп-лосс
-		if loss == None or (loss[0] and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]):
+		print('Stop-loss:', loss)
+		if loss == None or (loss[0] and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
 			loss = reloss
+		print('Stop-loss:', loss)
 
 #Отправка на обработку
 		sett = {
