@@ -88,6 +88,7 @@ while True:
 					table.save(j)
 
 			else:
+				sell = stock[i['exchanger']].price(i['currency'], 1)
 #Если продажа долго не исполняется
 				if now() - stamp(i['time']) > timesell:
 					stock[i['exchanger']].cancel(i['order'])
@@ -96,7 +97,6 @@ while True:
 					send('Вышло время на продаже №%d' % (i['message'],))
 #Если стоп-лосс
 				elif i['loss'] and now() - stamp(i['time']) >= timeloss:
-					sell = stock[i['exchanger']].price(i['currency'], 1)
 					if type(sell) in (float, int) and sell < i['loss']:
 						send('Сработал стоп-лосс на заказе №%d' % (i['message'],))
 						i = selll(i, sell)

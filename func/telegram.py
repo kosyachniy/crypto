@@ -32,7 +32,10 @@ def send(message='', to=admin, image='', forward=0):
 			if image:
 				bot.send_photo(i, open(image, 'rb'), message)
 			else:
-				bot.send_message(i, message, reply_markup=keyboard(exch, ['PUMP', 'Информация']))
+				if str(i)[0] == '-':
+					bot.send_message(i, message)
+				else:
+					bot.send_message(i, message, reply_markup=keyboard(exch, ['PUMP', 'Информация']))
 		else:
 			try:
 				bot.forward_message(i, forward, message)
