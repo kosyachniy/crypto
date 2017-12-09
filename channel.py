@@ -62,24 +62,21 @@ def channel():
 				formated += ' #долгорочный'
 				format2 += ' #long'
 
-			pric = stock[i['exchanger']].price(i['currency']) if i['exchanger'] >= 0 else price(currencies[i['currency']][1])
+			pric = i['realprice']
+			if not pric:
+				pric = price(currencies[i['currency']][1])
 			rub = stock[i['exchanger']].ru()
 			usd = stock[i['exchanger']].us()
 			if pric:
 				formated += '\n%.8fɃ (%d₽)' % (pric, pric / rub)
 				format2 += '\n%.8fɃ (%d$)' % (pric, pric / usd)
-			'''
-			if total != -1:
-				formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
-			formated += '\n--------------------\n∑ %fɃ (%d₽)\nK %f\nΔ %s%fɃ (%s%d₽)' % (total, total / rub, count, sign, delta, sign, delta / rub)
-			'''
 			formated += '\n--------------------\nПокупка:'
 			format2 += '\n--------------------\nBuy:'
 			if i['price']:
 				pric = i['price']
 				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
 				format2 += '\nɃ %.8f (%d$)' % (pric, pric / usd)
-			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,) #\n↓ %s  str(i['loss'][1]) + 'Ƀ' if i['loss'][0] else str(int(i['loss'][1] * 100)) + '%'
+			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,)
 			format2 += '\nV %d%% of the deposit' % (i['volume'] * 100,)
 
 			if pric:
@@ -92,7 +89,6 @@ def channel():
 				formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 				format2 += '\n\nStop-loss: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
 
-			#send(i['mess'], i['chat'], channelid)
 			send(formated, group=channelid)
 			send(format2, group=twochannel)
 

@@ -158,11 +158,11 @@ def recognize(i):
 		if not len(out):
 			out = outg if safe else outd
 
-		print('Sell:', out)
 		#Если указаны неправильные объёмы продажи #замены
+		print('Sell:', out)
 		zam = False
 		for j in out:
-			if (not j[1] and j[2] < 1) or (j[1] and j[2] < price and price):
+			if (not j[1] and j[2] < 1) or (j[1] and realprice and j[2] < realprice):
 				return None #zam = True
 		if zam:
 			out = outg if safe else outd
@@ -184,7 +184,9 @@ def recognize(i):
 
 		#Если неправильно определил стоп-лосс
 		print('Stop-loss:', loss)
-		if loss == None or (loss[0] and price and loss[1] >= price * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
+		if loss[0] and realprice <= loss[1]:
+			return None
+		if (loss[0] and realprice and loss[1] >= realprice * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
 			loss = reloss
 		print('Stop-loss:', loss)
 
