@@ -1,5 +1,6 @@
 #Контроль сигналов
 from func.data import *
+from func.trade import stock
 import math
 
 #Данные

@@ -23,10 +23,7 @@ def price(x):
 				return float(price)
 
 	except:
-		try:
-			return stock[1].price(x)
-		except:
-			return 0.0
+		return 0.0
 
 def channel():
 #Первоначальные значения
