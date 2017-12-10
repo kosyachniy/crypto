@@ -154,8 +154,8 @@ if __name__ == '__main__':
 
 		if ch / up >= jumpup or ch / one >= jumpup:
 			if i['cont'] != 1:
-				text = '#ВБиток\nРост биткоина +%d%% за 3 часа и +%d%% за час.\nПродавайте альткоины!' % (100 * (ch / up - 1), 0 * (ch / one - 1))
-				text2 = '#toBTC\nBitCoin increased by +%d%% in 3 hours and +%d%% per hour.\nSell altcoins!' % (100 * (ch / up - 1), 0 * (ch / one - 1))
+				text = '#ВБиток\nРост биткоина +%d%% за 3 часа и +%d%% за час.\nПродавайте альткоины!' % (100 * (ch / up - 1), 100 * (ch / one - 1))
+				text2 = '#toBTC\nBitCoin increased by +%d%% in 3 hours and +%d%% in one hour.\nSell altcoins!' % (100 * (ch / up - 1), 100 * (ch / one - 1))
 				send(text, to=channelid)
 				send(text2, to=twochannel)
 				i['cont'] = 1
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 		elif ch / low <= jumpdown or ch / one <= jumpdown:
 			if i['cont'] != 2:
 				text = '#ВАльты\nПадение биткоина -%d%% за 5 часов и -%d%% за час.' % ((100 * (1 - ch / low)), (100 * (1 - ch / one)))
-				text2 = '#toAlt\nBitCoin fell -%d%% in 5 hours and -%d%% per hour.' % ((100 * (1 - ch / low)), (100 * (1 - ch / one)))
+				text2 = '#toAlt\nBitCoin falling -%d%% in 5 hours and -%d%% in one hour.' % ((100 * (1 - ch / low)), (100 * (1 - ch / one)))
 				send(text, to=channelid)
 				send(text2, to=twochannel)
 				i['cont'] = 2

@@ -145,7 +145,7 @@ def recognize(i):
 		if stock[exc].check(cur): return None
 
 		#Цена
-		realprice = stock[i['exchanger']].price(i['currency'])
+		realprice = stock[exc].price(cur)
 
 		#Если не указана цена покупки или сигнал недоверенный
 		print('Price:', price)
