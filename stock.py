@@ -89,8 +89,8 @@ while True:
 
 			else:
 				sell = stock[i['exchanger']].price(i['currency'], 1)
-#Если продажа долго не исполняется
-				if now() - stamp(i['time']) > timesell:
+#Если продажа долго не исполняется (кроме среднесрока и долгосрока)
+				if i['term'] in (-1, 0) and now() - stamp(i['time']) > timesell:
 					stock[i['exchanger']].cancel(i['order'])
 					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], stock[i['exchanger']].price(i['currency'], 1), 1)
 					i['price'] = sell
