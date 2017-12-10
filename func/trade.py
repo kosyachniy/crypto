@@ -197,6 +197,13 @@ class YoBit():
 		y = [[i['timestamp'] // 60, i['price']] for i in y]
 		graph(y, price)
 
+	def check(self, cur):
+		cur = currencies[cur][1].lower()
+		x = self.trader.get_info()['return']['funds_incl_orders']
+		if cur in x and x[cur]:
+			return 1
+		return 0
+
 class Bittrex():
 	def __init__(self):
 		from func.library.bittrex import Bittrex as t
@@ -333,5 +340,13 @@ class Bittrex():
 		y = self.trader.get_market_history(cur)['result']
 		y = [[mktime(strptime(i['TimeStamp'].split('.')[0], '%Y-%m-%dT%H:%M:%S')) // 60, i['Price']] for i in y]
 		graph(y, price)
+
+	def check(self, cur):
+		cur = currencies[cur][1]
+		x = self.trader.get_balances()['result']
+		for i in x:
+			if i['Currency'] == cur and i['Balance']:
+				return 1
+		return 0
 
 stock = [YoBit(), Bittrex()]

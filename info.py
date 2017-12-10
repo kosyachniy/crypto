@@ -162,8 +162,8 @@ if __name__ == '__main__':
 
 		elif ch / low <= jumpdown or ch / one <= jumpdown:
 			if i['cont'] != 2:
-				text = '#ВАльты\nПадение биткоина -%d%% за 5 часов и -%d%% за час.' % ((100 * (1 - ch / low)), (100 * (1 - ch / now)))
-				text2 = '#toAlt\nBitCoin fell -%d%% in 5 hours and -%d%% per hour.' % ((100 * (1 - ch / low)), (100 * (1 - ch / now)))
+				text = '#ВАльты\nПадение биткоина -%d%% за 5 часов и -%d%% за час.' % ((100 * (1 - ch / low)), (100 * (1 - ch / one)))
+				text2 = '#toAlt\nBitCoin fell -%d%% in 5 hours and -%d%% per hour.' % ((100 * (1 - ch / low)), (100 * (1 - ch / one)))
 				send(text, to=channelid)
 				send(text2, to=twochannel)
 				i['cont'] = 2

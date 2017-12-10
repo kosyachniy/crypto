@@ -97,7 +97,7 @@ def recognize(i):
 	#Определение валюты
 	cur = an(text, '#', ['status']) #поиск по хештегу
 	if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
-	if cur == -1: return None #если несколько валют
+	if cur in (-1, 0): return None #если несколько валют
 	print('Currency:', cur)
 
 	#Распознание размеров
@@ -133,12 +133,15 @@ def recognize(i):
 				loss = stoploss(j, loss)
 
 	#Рассмотреть случай продажи валюты
-	if cur >= 1 and buy != 1:
+	if buy != 1:
 #Замены
 		#Биржа
-		if i['exchanger'] == -1:
-			i['exchanger'] = excd #Биржа по умолчанию
+		if exc == -1:
+			exc = excd #Биржа по умолчанию
 		#i['exchanger'] = excd
+
+		#Если вылюта уже имеется
+		if stock[exc].check(cur): return None
 
 		#Цена
 		realprice = stock[i['exchanger']].price(i['currency'])
