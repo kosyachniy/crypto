@@ -82,7 +82,7 @@ def recognize(i):
 		if exchangers[j][0].lower() in text:
 			exc = j
 			break
-	print('Exchanger', exc)
+	print('Exchanger:', exc)
 
 	#Определение срока
 	if on(text, vocabulary['short']):
@@ -188,9 +188,9 @@ def recognize(i):
 
 		#Если неправильно определил стоп-лосс
 		print('Stop-loss:', loss)
-		if loss[0] and realprice <= loss[1]:
+		if loss != None and loss[0] and realprice <= loss[1]:
 			return None
-		if (loss[0] and realprice and loss[1] >= realprice * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
+		if loss == None or (loss[0] and realprice and loss[1] >= realprice * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
 			loss = reloss
 		print('Stop-loss:', loss)
 
@@ -207,7 +207,7 @@ def recognize(i):
 			'term': term,
 			'chat': i['chat'],
 			'mess': i['message'],
-			'safe': safe
+			'safe': 1 if safe else -1 if unsafe else 0
 		} #, 'time': time
 
 		#Если без покупки, первые поля пустые ?

@@ -28,6 +28,10 @@ def selll(i, sell):
 		i['price'] = sell
 		#изменить тип на loss и отдельно отслеживать
 
+		for j in table.find({'type': 'sell', 'message': i['message']}):
+			j['loss'] = i['loss']
+			table.save(j)
+
 		if i['order']:
 			i['processed'] = 1
 			rub = stock[i['exchanger']].ru()

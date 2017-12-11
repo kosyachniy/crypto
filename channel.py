@@ -47,8 +47,12 @@ def channel():
 				formated += exchangers[i['exchanger']][0] + ' ' #' - '
 			formated += '#%s ' % (currencies[i['currency']][1],)
 			format2 = formated + ''
-			formated += '#надёжный' if i['safe'] else '#рискованный'
-			format2 += '#reliable' if i['safe'] else '#unreliable'
+			if i['safe'] == 1:
+				formated += '#надёжный'
+				format2 += '#reliable'
+			elif i['safe'] == -1:
+				formated += '#рискованный'
+				format2 += '#unreliable'
 			if i['term'] == 0:
 				formated += ' #краткосрочный'
 				format2 += ' #short'
