@@ -22,7 +22,7 @@ on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & 
 
 def an(text, words, stop):
 	cur = 0
-	text = clean(text, words)
+	text = clean(text, words+'0-9')
 	for j in range(1, len(currencies)):
 		if words + currencies[j][1].lower() in text or (words + currencies[j][0].lower() in text and currencies[j][0].lower() not in stop):
 			print(j, currencies[j])
@@ -141,11 +141,11 @@ def recognize(i):
 			exc = excd #Биржа по умолчанию
 		#i['exchanger'] = excd
 
-		#Если вылюта уже имеется
-		if stock[exc].check(cur): return None
-
 		#Цена
 		realprice = stock[exc].price(cur)
+
+		#Если вылюта уже покупалась
+		if stock[exc].check(cur) * realprice > stock[exc].min: return None
 
 		#Если не указана цена покупки или сигнал недоверенный
 		print('Price:', price)

@@ -201,7 +201,7 @@ class YoBit():
 		cur = currencies[cur][1].lower()
 		x = self.trader.get_info()['return']['funds_incl_orders']
 		if cur in x and x[cur]:
-			return 1
+			return x[cur]
 		return 0
 
 class Bittrex():
@@ -346,7 +346,7 @@ class Bittrex():
 		x = self.trader.get_balances()['result']
 		for i in x:
 			if i['Currency'] == cur and i['Balance']:
-				return 1
+				return i['Balance']
 		return 0
 
 stock = [YoBit(), Bittrex()]
