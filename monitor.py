@@ -136,13 +136,13 @@ def recognize(i):
 	#Рассмотреть случай продажи валюты
 	if buy != 1:
 #Замены
-		#Биржа
-		if exc == -1:
-			exc = excd #Биржа по умолчанию
-		#i['exchanger'] = excd
-
 		#Цена
-		realprice = stock[exc].price(cur)
+		realprice = stock[exc if exc != -1 else excd].price(cur)
+
+		#Биржа
+		if exc == -1 and realprice:
+			exc = excd #Биржа по умолчанию
+		#exc = excd
 
 		#Если вылюта уже покупалась
 		if stock[exc].check(cur) * realprice > stock[exc].min: return None

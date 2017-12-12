@@ -228,7 +228,7 @@ class Bittrex():
 	def buys(self, buy='buy', dop=0):
 		x = 0 if buy in ('sell', 1) else 1
 		return 'ABsikd'[(x + dop) % 2::2]
-	
+
 	def info(self, name='btc'):
 		if name:
 			name = name.lower()
@@ -236,12 +236,15 @@ class Bittrex():
 			try:
 				x = self.trader.get_balances()['result']
 			except:
+				x = 0
+
+			if not x:
 				try:
 					x = self.trader.get_balances()['result']
 				except:
 					return 0
 
-			for i in :
+			for i in x:
 				if i['Currency'].lower() == name:
 					return i['Available']
 		else:
