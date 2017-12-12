@@ -46,6 +46,8 @@ def graph(y, price, minutes=20):
 	#plt.show()
 	plt.savefig('re.png', format='png', dpi=150)
 
+	return len(tim)
+
 class YoBit():
 	def __init__(self):
 		from func.library.yobit import YoBit as t
@@ -195,7 +197,7 @@ class YoBit():
 		cur = self.name(cur)
 		y = self.trader.trades(cur, 500)[cur]
 		y = [[i['timestamp'] // 60, i['price']] for i in y]
-		graph(y, price)
+		return graph(y, price)
 
 	def check(self, cur):
 		cur = currencies[cur][1].lower()
@@ -230,7 +232,16 @@ class Bittrex():
 	def info(self, name='btc'):
 		if name:
 			name = name.lower()
-			for i in self.trader.get_balances()['result']:
+
+			try:
+				x = self.trader.get_balances()['result']
+			except:
+				try:
+					x = self.trader.get_balances()['result']
+				except:
+					return 0
+
+			for i in :
 				if i['Currency'].lower() == name:
 					return i['Available']
 		else:
@@ -339,7 +350,7 @@ class Bittrex():
 		cur = self.name(cur)
 		y = self.trader.get_market_history(cur)['result']
 		y = [[mktime(strptime(i['TimeStamp'].split('.')[0], '%Y-%m-%dT%H:%M:%S')) // 60, i['Price']] for i in y]
-		graph(y, price)
+		return graph(y, price)
 
 	def check(self, cur):
 		cur = currencies[cur][1]

@@ -31,6 +31,11 @@ def end3(x):
 		return 'лся'
 	return 'лось'
 
+def emd5(x):
+	if x % 10 == 1 and x != 11:
+		return ''
+	return 'о'
+
 end4 = lambda x: 's' if x != 1 else ''
 
 #сделать регулярным по расписанию celery
@@ -112,7 +117,7 @@ if __name__ == '__main__':
 			days.insert(i)
 			orders = i['plus'] + i['minus'] + i['orders'] - i['success'] - i['bad']
 
-			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего было %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], i['signals'], end(i['signals']), orders, end(orders), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
+			text = 'Добрый вечер!\nИтак, заканчивается %dй день и мы подводим #итоги:\n\nВсего был%s %d сигнал%s (%d ордер%s)\nИз них %d прибыльн%s и %d убыточн%s.' % (i['id'], end5(i['signals']), i['signals'], end(i['signals']), orders, end(orders), i['plus'], end2(i['plus']), i['minus'], end2(i['minus']))
 			notclosed = i['orders'] - i['success'] - i['bad']
 			if notclosed:
 				text += '\nЕщё не исполни%s %d ордер%s.' % (end3(notclosed), notclosed, end(notclosed))

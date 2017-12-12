@@ -96,8 +96,9 @@ def channel():
 			if pric:
 				try:
 					#print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
-					stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
-					send('#'+currencies[i['currency']][1], [channelid, twochannel], 're.png')
+					minutes = stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])
+					if minutes > 5:
+						send('#'+currencies[i['currency']][1], [channelid, twochannel], 're.png')
 				except:
 					pass
 

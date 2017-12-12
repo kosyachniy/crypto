@@ -147,9 +147,9 @@ def recognize(i):
 		#Если вылюта уже покупалась
 		if stock[exc].check(cur) * realprice > stock[exc].min: return None
 
-		#Если не указана цена покупки или сигнал недоверенный
+		#Если не указана цена покупки
 		print('Price:', price)
-		if not price or unsafe:
+		if not price:
 			price = realprice
 		print('Price:', price)
 
@@ -158,8 +158,8 @@ def recognize(i):
 			vol = vold * 2 if safe else vold #vold * (safe + 1)
 		print('Volume:', vol)
 
-		#Если не указаны ордеры на продажу
-		if not len(out):
+		#Если не указаны ордеры на продажу или сигнал недоверенный
+		if not len(out) or unsafe:
 			out = outg if safe else outd
 
 		#Если указаны неправильные объёмы продажи #замены
@@ -170,6 +170,8 @@ def recognize(i):
 				return None #zam = True
 		if zam:
 			out = outg if safe else outd
+		#Продумать слуяай, когда продажа и покупка указаны не верно
+		#Продумать случай, когда уже произошёл этот рост
 
 		#Если не указаны объёмы продажи
 		if not out[0][0]:
