@@ -83,24 +83,27 @@ class YoBit():
 		return 1 / self.trader.ticker('btc_usd')['btc_usd']['buy']
 
 	#Баланс валюты
-	def info(self, cur='btc'):
+	def info(self, cur='btc', attempt=0):
 		#иногда возникает баг
 		#учитывать, что может тратить те деньги, что сейчас на ордере -> ошибка
-		if cur:
-			try:
+		try:
+			if cur:
 				return self.trader.get_info()['return']['funds_incl_orders'][cur]
-			except:
-				sleep(5)
-				return self.trader.get_info()['return']['funds_incl_orders'][cur]
-		else:
-			s = 0
-			y = self.trader.get_info()['return']['funds']
-			for i in y:
-				price = self.price(i, 1)
-				sell = price * y[i]
-				if sell > self.min or i == 'rur':
-					s += sell
-			return s
+			else:
+				s = 0
+				y = self.trader.get_info()['return']['funds']
+				for i in y:
+					price = self.price(i, 1)
+					sell = price * y[i]
+					if sell > self.min or i == 'rur':
+						s += sell
+				return s
+		except:
+			sleep(5)
+			if attempt:
+				return 0
+			else:
+				return self.info(cur, 1)
 
 	#Курс
 	def price(self, cur, buy='buy'):
@@ -229,35 +232,28 @@ class Bittrex():
 		x = 0 if buy in ('sell', 1) else 1
 		return 'ABsikd'[(x + dop) % 2::2]
 
-	def info(self, name='btc'):
-		if name:
-			name = name.lower()
-
-			try:
-				x = self.trader.get_balances()['result']
-			except:
-				x = 0
-
-			if not x:
-				try:
-					x = self.trader.get_balances()['result']
-				except:
-					return 0
-
-			for i in x:
-				if i['Currency'].lower() == name:
-					return i['Available']
-		else:
-			s = 0
-			y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
-			for i in y:
-				price = self.price(i['Currency'], 1)
-				sell = price * i['Balance']
-				if not sell:
-					continue
-				if sell > self.min:
-					s += sell
-			return s
+	def info(self, name='btc', attempt=0):
+		try:
+			if name:
+				for i in self.trader.get_balances()['result']:
+					if i['Currency'].lower() == name.lower():
+						return i['Available']
+			else:
+				s = 0
+				y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
+				for i in y:
+					price = self.price(i['Currency'], 1)
+					sell = price * i['Balance']
+					if not sell:
+						continue
+					if sell > self.min:
+						s += sell
+				return s
+		except:
+			if attempt:
+				return 0
+			else:
+				return self.info(name, 1)
 
 	def ru(self):
 		return ru()

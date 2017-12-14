@@ -31,7 +31,7 @@ def end3(x):
 		return 'лся'
 	return 'лось'
 
-def emd5(x):
+def end5(x):
 	if x % 10 == 1 and x != 11:
 		return ''
 	return 'о'

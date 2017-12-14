@@ -80,20 +80,24 @@ def channel():
 			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,)
 			format2 += '\nV %d%% of the deposit' % (i['volume'] * 100,)
 
+			first = 0
 			if pric:
 				if len(i['out']):
 					formated += '\n\nНаша стратегия:' #Продажа
 					format2 += '\n\nOur strategy:' #Sell
 				for j in i['out']:
-					formated += '\n%.8fɃ - %d%% от купленного' % (j[2] if j[1] else pric * j[2], j[0] * 100)
-					format2 += '\n%.8fɃ - %d%% of the purchased' % (j[2] if j[1] else pric * j[2], j[0] * 100)
-				formated += '\n\nСтоп-цена: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
-				format2 += '\n\nStop-loss: %.8fɃ' % (i['loss'][1] if i['loss'][0] else pric * i['loss'][1],)
+					x = j[2] if j[1] else pric * j[2]
+					if not first: x = first + 0
+					formated += '\n%.8fɃ - %d%% от купленного' % (x, j[0] * 100)
+					format2 += '\n%.8fɃ - %d%% of the purchased' % (x, j[0] * 100)
+				x = i['loss'][1] if i['loss'][0] else pric * i['loss'][1]
+				formated += '\n\nСтоп-цена: %.8fɃ' % x
+				format2 += '\n\nStop-loss: %.8fɃ' % x
 
 			send(formated, channelid)
 			send(format2, twochannel)
 
-			if pric:
+			if pric and first >= i['realprice']:
 				try:
 					#print('stock[' + str(excd if i['exchanger'] == -1 else i['exchanger']) + '].last(' + str(i['currency']) + ', ' + str(i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2]) + ')')
 					minutes = stock[excd if i['exchanger'] == -1 else i['exchanger']].last(i['currency'], i['out'][0][2] if i['out'][0][1] else pric * i['out'][0][2])

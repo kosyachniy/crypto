@@ -25,37 +25,38 @@ def autoadd():
 	print('!', num) #
 
 	while True:
-		last = get()[0].id
-		for i in get(last - num):
-			if i.id > num:
-				#print(i)
+		last = get()
+		if len(last):
+			for i in get(last[0].id - num):
+				if i.id > num:
+					#print(i)
 
-				try:
-					text = i.message
-				except:
-					text = ' '
-
-				try:
-					text += i.media.caption
-				except:
-					pass
-
-				#+изображения
-
-				#print(text)
-
-				if on(text, tags, '#'):
 					try:
-						id = messages.find().sort('id', -1)[0]['id']
+						text = i.message
 					except:
-						id = 0
+						text = ' '
 
-					print(id+1)
+					try:
+						text += i.media.caption
+					except:
+						pass
 
-					doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
-					messages.insert(doc)
+					#+изображения
 
-				num = i.id
+					#print(text)
+
+					if on(text, tags, '#'):
+						try:
+							id = messages.find().sort('id', -1)[0]['id']
+						except:
+							id = 0
+
+						print(id+1)
+
+						doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
+						messages.insert(doc)
+
+					num = i.id
 
 		sleep(2)
 
