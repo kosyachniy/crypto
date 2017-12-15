@@ -166,7 +166,7 @@ def recognize(i):
 		print('Sell:', out)
 		zam = False
 		for j in out:
-			if (not j[1] and j[2] < 1) or (j[1] and realprice and j[2] < realprice):
+			if (not j[1] and price * j[2] < realprice) or (j[1] and realprice and j[2] < realprice): #j[2] < 1
 				return None #zam = True
 		if zam:
 			out = outg if safe else outd
@@ -175,10 +175,7 @@ def recognize(i):
 
 		#Если не указаны объёмы продажи
 		if not out[0][0]:
-			s = 0
-			for j in range(len(out)):
-				s += math.exp(j)
-			x = 1 / s
+			x = 1 / sum((math.exp(j) for j in range(len(out))))
 			a = 0
 			for j in range(len(out) - 1):
 				out[-1 * (j + 1)][0] = round(math.exp(j) * x, 2)

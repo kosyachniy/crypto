@@ -87,7 +87,7 @@ def channel():
 					format2 += '\n\nOur strategy:' #Sell
 				for j in i['out']:
 					x = j[2] if j[1] else pric * j[2]
-					if not first: x = first + 0
+					if not first: first = x
 					formated += '\n%.8fɃ - %d%% от купленного' % (x, j[0] * 100)
 					format2 += '\n%.8fɃ - %d%% of the purchased' % (x, j[0] * 100)
 				x = i['loss'][1] if i['loss'][0] else pric * i['loss'][1]

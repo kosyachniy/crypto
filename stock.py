@@ -99,6 +99,11 @@ while True:
 					i['order'] = stock[i['exchanger']].trade(i['currency'], i['count'], stock[i['exchanger']].price(i['currency'], 1), 1)
 					i['price'] = sell
 					send('Вышло время на продаже №%d' % (i['message'],))
+#Все убыльные после моратория
+				elif sell < table.find_one({'message': i['message'], 'type': 'buy'})['price'] and now() - stamp(i['time']) >= timeloss:
+					send('После маротория ордер признан убыльным!')
+					i = selll(i, sell)
+				'''
 #Если стоп-лосс
 				elif i['loss'] and now() - stamp(i['time']) >= timeloss:
 					if type(sell) in (float, int) and sell < i['loss']:
@@ -109,5 +114,6 @@ while True:
 						for j in table.find({'message': i['message'], 'type': 'sell'}):
 							j['loss'] = i['loss']
 							table.save(j)
+				'''
 
 		table.save(i)
