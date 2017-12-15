@@ -6,7 +6,7 @@
 		"channel": -1001149594247
 	},
 	"default": {
-		"stop-loss": 0.95,
+		"stop-loss": 0.97,
 		"volume": 0.075,
 		"sell": [
 			[0.5, 0, 1.03],
