@@ -49,10 +49,11 @@ def seller(text):
 	else:
 		return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
 
-def recognize(i):
-	#Убирать ссылки (чтобы не путать лишними словами), VIP
-	text = i['text'].lower().replace(',', '.') #Сделать замену запятой на точку
+#Распознание сигнала
+def recognize(text):
 	print(text)
+	text = text.lower().replace(',', '.')
+	#Убирать ссылки (чтобы не путать лишними словами), VIP
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
 	loss = reloss + []
@@ -62,7 +63,6 @@ def recognize(i):
 	safe = 1 if on(text, veri, '#') else 0
 	unsafe = 1 if on(text, unveri, '#') else 0
 
-#Распознание сигнала
 	#Условия необработки
 	if on(text, vocabulary['stop'], '🚀$') or (len(clean(text)) * 1.5 > len(text) and len(text) > 70):
 		return None
@@ -133,84 +133,84 @@ def recognize(i):
 			if on(j, vocabulary['loss']):
 				loss = stoploss(j, loss)
 
+	print('Price:', price)
+	print('Sell:', out)
+
 	#Рассмотреть случай продажи валюты
 	if buy != 1:
-#Замены
-		#Цена
-		realprice = stock[exc if exc != -1 else excd].price(cur)
-
-		#Биржа
-		if exc == -1 and realprice:
-			exc = excd #Биржа по умолчанию
-		#exc = excd
-
-		#Если вылюта уже покупалась
-		if stock[exc].check(cur) * realprice > stock[exc].min: return None
-
-		#Если не указана цена покупки
-		print('Price:', price)
-		if not price:
-			price = realprice
-		print('Price:', price)
-
-		#Если не указаны объёмы покупки
-		if not vol:
-			vol = vold * 2 if safe else vold #vold * (safe + 1)
-		print('Volume:', vol)
-
-		#Если не указаны ордеры на продажу или сигнал недоверенный
-		if not len(out) or unsafe:
-			out = outg if safe else outd
-
-		#Если указаны неправильные объёмы продажи #замены
-		print('Sell:', out)
-		zam = False
-		for j in out:
-			if (not j[1] and price * j[2] < realprice) or (j[1] and realprice and j[2] < realprice): #j[2] < 1
-				return None #zam = True
-		if zam:
-			out = outg if safe else outd
-		#Продумать слуяай, когда продажа и покупка указаны не верно
-		#Продумать случай, когда уже произошёл этот рост
-
-		#Если не указаны объёмы продажи
-		if not out[0][0]:
-			x = 1 / sum((math.exp(j) for j in range(len(out))))
-			a = 0
-			for j in range(len(out) - 1):
-				out[-1 * (j + 1)][0] = round(math.exp(j) * x, 2)
-				a += out[len(out) - j - 1][0]
-			out[0][0] = 1 - a
-		print('Sell:', out)
-
-		#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
-
-		#Если неправильно определил стоп-лосс
-		print('Stop-loss:', loss)
-		if loss != None and loss[0] and realprice <= loss[1]:
-			return None
-		if loss == None or (loss[0] and realprice and loss[1] >= realprice * reloss[1]) or (not loss[0] and loss[1] >= reloss[1]): #замены
-			loss = reloss
-		print('Stop-loss:', loss)
 
 #Отправка на обработку
-		sett = {
-			'id': i['id'],
+		x = {
 			'currency': cur,
 			'exchanger': exc,
 			'price': price,
-			'realprice': realprice,
 			'volume': vol,
 			'out': out,
 			'loss': loss,
 			'term': term,
-			'chat': i['chat'],
-			'mess': i['message'],
 			'safe': 1 if safe else -1 if unsafe else 0
 		} #, 'time': time
 
 		#Если без покупки, первые поля пустые ?
-		return sett
+		return x
+
+#Замены
+def replacements(x):
+	#Цена
+	x['realprice'] = realprice = stock[x['exchanger'] if x['exchanger'] != -1 else x['exchanger']].price(x['currency'])
+
+	#Биржа
+	if x['exchanger'] == -1 and realprice:
+		x['exchanger'] = excd #Биржа по умолчанию
+	#exc = excd
+
+	#Если вылюта уже покупалась
+	if stock[x['exchanger']].check(x['currency']) * realprice > stock[x['exchanger']].min: return None
+
+	#Если не указана цена покупки
+	if not x['price']:
+		x['price'] = realprice
+	print('Price:', x['price'])
+
+	#Если не указаны объёмы покупки
+	if not x['volume']:
+		x['volume'] = vold * 2 if x['safe'] == 1 else vold #vold * (safe + 1)
+	print('Volume:', x['volume'])
+
+	#Если не указаны ордеры на продажу или сигнал недоверенный
+	if not len(x['out']) or x['safe'] == -1:
+		x['out'] = outg if x['safe'] == 1 else outd
+
+	#Если указаны неправильные объёмы продажи #замены
+	#zam = False
+	for j in x['out']:
+		if (not j[1] and x['price'] * j[2] < realprice) or (j[1] and realprice and j[2] < realprice): #j[2] < 1
+			return None #zam = True
+	#if zam: x['out'] = outg if x['safe'] == 1 else outd
+	#Продумать слуяай, когда продажа и покупка указаны не верно
+	#Продумать случай, когда уже произошёл этот рост
+
+	#Если не указаны объёмы продажи
+	if not x['out'][0][0]:
+		x = 1 / sum((math.exp(j) for j in range(len(x['out']))))
+		a = 0
+		for j in range(len(x['out']) - 1):
+			x['out'][-1 * (j + 1)][0] = round(math.exp(j) * x, 2)
+			a += x['out'][len(x['out']) - j - 1][0]
+		x['out'][0][0] = 1 - a
+	print('Sell:', x['out'])
+
+	#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
+
+	#Если неправильно определил стоп-лосс
+	print('Stop-loss:', x['loss'])
+	if x['loss'] != None and x['loss'][0] and realprice <= x['loss'][1]:
+		return None
+	if x['loss'] == None or (x['loss'][0] and realprice and x['loss'][1] >= realprice * reloss[1]) or (not x['loss'][0] and x['loss'][1] >= reloss[1]): #замены
+		x['loss'] = reloss
+	print('Stop-loss:', x['loss'])
+
+	return x
 
 def monitor():
 #БД
@@ -238,8 +238,20 @@ def monitor():
 			num = i['id']
 
 			if jump != 1: #если продажа
-				x = recognize(i)
-				if x: trade.insert(x)
+				x = recognize(i['text'])
+				if x:
+					x = replacements(x)
+					if x:
+						x['chat'] = i['chat']
+						x['mess'] = i['message']
+						x['id'] = i['id']
+						trade.insert(x)
+					else:
+						print('Сигнал отвергнут после замен!')
+				else:
+					print('Сигнал отвергнут после рапознания!')
+			else:
+				print('Сигнал отвергнут из-за ограничений!')
 
 if __name__ == '__main__':
 	monitor()
