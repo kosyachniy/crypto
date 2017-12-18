@@ -191,11 +191,12 @@ def replacements(x):
 	#Продумать случай, когда уже произошёл этот рост
 
 	#Если не указаны объёмы продажи
+
 	if not x['out'][0][0]:
-		x = 1 / sum((math.exp(j) for j in range(len(x['out']))))
+		y = 1 / sum((math.exp(j) for j in range(len(x['out']))))
 		a = 0
 		for j in range(len(x['out']) - 1):
-			x['out'][-1 * (j + 1)][0] = round(math.exp(j) * x, 2)
+			x['out'][-1 * (j + 1)][0] = round(math.exp(j) * y, 2)
 			a += x['out'][len(x['out']) - j - 1][0]
 		x['out'][0][0] = 1 - a
 	print('Sell:', x['out'])
