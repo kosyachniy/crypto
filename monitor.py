@@ -180,25 +180,24 @@ def replacements(x):
 	#Если не указаны ордеры на продажу или сигнал недоверенный
 	if not len(x['out']) or x['safe'] == -1:
 		x['out'] = outg if x['safe'] == 1 else outd
+	else:
+		#Если указаны неправильные объёмы продажи
+		#zam = False
+		for j in x['out']:
+			if (not j[1] and x['price'] * j[2] < realprice) or (j[1] and realprice and j[2] < realprice): #j[2] < 1
+				return None #zam = True
+		#if zam: x['out'] = outg if x['safe'] == 1 else outd
+		#Продумать слуяай, когда продажа и покупка указаны не верно
+		#Продумать случай, когда уже произошёл этот рост
 
-	#Если указаны неправильные объёмы продажи #замены
-	#zam = False
-	for j in x['out']:
-		if (not j[1] and x['price'] * j[2] < realprice) or (j[1] and realprice and j[2] < realprice): #j[2] < 1
-			return None #zam = True
-	#if zam: x['out'] = outg if x['safe'] == 1 else outd
-	#Продумать слуяай, когда продажа и покупка указаны не верно
-	#Продумать случай, когда уже произошёл этот рост
-
-	#Если не указаны объёмы продажи
-
-	if not x['out'][0][0]:
-		y = 1 / sum((math.exp(j) for j in range(len(x['out']))))
-		a = 0
-		for j in range(len(x['out']) - 1):
-			x['out'][-1 * (j + 1)][0] = round(math.exp(j) * y, 2)
-			a += x['out'][len(x['out']) - j - 1][0]
-		x['out'][0][0] = 1 - a
+		#Если не указаны объёмы продажи
+		if not x['out'][0][0]:
+			y = 1 / sum((math.exp(j) for j in range(len(x['out']))))
+			a = 0
+			for j in range(len(x['out']) - 1):
+				x['out'][-1 * (j + 1)][0] = round(math.exp(j) * y, 2)
+				a += x['out'][len(x['out']) - j - 1][0]
+			x['out'][0][0] = 1 - a
 	print('Sell:', x['out'])
 
 	#Последняя продажа = 100 - сумма остальных для определённых в сигнале объёмов
