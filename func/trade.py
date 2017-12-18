@@ -241,9 +241,10 @@ class Bittrex():
 			else:
 				s = 0
 				y = [i for i in self.trader.get_balances()['result'] if i['Balance']]
+				z = {i['MarketName']: i['Bid'] for i in self.trader.get_market_summaries()['result']}
+
 				for i in y:
-					price = self.price(i['Currency'], 1)
-					sell = price * i['Balance']
+					sell = z['BTC-'+i['Currency']] * i['Balance'] if i['Currency'] != 'BTC' else i['Balance']
 					if not sell:
 						continue
 					if sell > self.min:
