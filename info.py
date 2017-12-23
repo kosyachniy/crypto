@@ -166,7 +166,7 @@ if __name__ == '__main__':
 					text += '+%d%% за 3 часа и ' % (100 * (ch / up - 1),)
 					text2 += '+%d%% in 3 hours and ' % (100 * (ch / up - 1),)
 
-				text += '+%d%% за час.' , (100 * (ch / one - 1),)
+				text += '+%d%% за час.' % (100 * (ch / one - 1),)
 				text2 += '+%d%% in one hour.' % (100 * (ch / one - 1),)
 
 				send(text, to=channelid)

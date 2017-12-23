@@ -69,16 +69,25 @@ def channel():
 			rub = stock[i['exchanger']].ru()
 			usd = stock[i['exchanger']].us()
 			if pric:
-				formated += '\n%.8fɃ (%d₽)' % (pric, pric / rub)
-				format2 += '\n%.8fɃ (%d$)' % (pric, pric / usd)
+				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
+				format2 += '\nɃ %.8f (%d$)' % (pric, pric / usd)
 			formated += '\n--------------------\nПокупка:'
 			format2 += '\n--------------------\nBuy:'
 			if i['price']:
+				if i['price'] > pric:
+					formated += '\nɃ %.8f (отложенный ордер)' % pric
+					format2 += '\nɃ %.8f (pending order)' % pric
+				elif i['price'] < pric:
+					formated += '\nɃ %.8f (ждём коррекции)' % pric
+					format2 += '\nɃ %.8f (waiting for correction)' % pric
+
 				pric = i['price']
-				formated += '\nɃ %.8f (%d₽)' % (pric, pric / rub)
-				format2 += '\nɃ %.8f (%d$)' % (pric, pric / usd)
 			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,)
 			format2 += '\nV %d%% of the deposit' % (i['volume'] * 100,)
+			if i['exchanger'] >= 0:
+				balance = stock[i['exchanger']].info('')
+				formated += '\n%.8fɃ (%d₽)' % (balance, balance / rub)
+				format2 += '\n%.8fɃ (%d$)' % (balance, balance / usd)
 
 			first = 0
 			if pric:
