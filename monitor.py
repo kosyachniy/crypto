@@ -237,21 +237,21 @@ def monitor():
 		for i in x:
 			num = i['id']
 
-			if jump != 1: #если продажа
-				x = recognize(i['text'])
+			#if jump != 1: #если продажа
+			x = recognize(i['text'])
+			if x:
+				x = replacements(x)
 				if x:
-					x = replacements(x)
-					if x:
-						x['chat'] = i['chat']
-						x['mess'] = i['message']
-						x['id'] = i['id']
-						trade.insert(x)
-					else:
-						print('Сигнал отвергнут после замен!')
+					x['chat'] = i['chat']
+					x['mess'] = i['message']
+					x['id'] = i['id']
+					trade.insert(x)
 				else:
-					print('Сигнал отвергнут после рапознания!')
+					print('Сигнал отвергнут после замен!')
 			else:
-				print('Сигнал отвергнут из-за ограничений!')
+				print('Сигнал отвергнут после рапознания!')
+			#else:
+			#	print('Сигнал отвергнут из-за ограничений!')
 
 if __name__ == '__main__':
 	monitor()
