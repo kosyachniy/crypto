@@ -2,6 +2,9 @@ from func.main import *
 
 trades = db['trade']
 
+with open('data/set.txt', 'r') as file:
+	channeldeposit = json.loads(file.read())['default']['channeldeposit']
+
 from bs4 import BeautifulSoup
 url = 'https://ru.investing.com/crypto/currencies'
 def price(x):
@@ -85,7 +88,7 @@ def channel():
 			formated += '\nV %d%% от бюджета' % (i['volume'] * 100,)
 			format2 += '\nV %d%% of the deposit' % (i['volume'] * 100,)
 			if i['exchanger'] >= 0:
-				balance = stock[i['exchanger']].info('')
+				balance = stock[i['exchanger']].info('') * channeldeposit * i['volume']
 				formated += '\n%.8fɃ (%d₽)' % (balance, balance / rub)
 				format2 += '\n%.8fɃ (%d$)' % (balance, balance / usd)
 
