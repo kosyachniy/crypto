@@ -59,6 +59,7 @@ while True:
 
 		elif i['type'] == 'sell':
 #Если биткоин начал рост
+			'''
 			try:
 				jump = settings.find_one({'name': 'jump'})['cont']
 			except:
@@ -68,6 +69,7 @@ while True:
 				sell = stock[i['exchanger']].price(i['currency'], 1)
 				send('Начался рост биткоина!')
 				i = selll(i, sell)
+			'''
 
 #Если продажа не выставлена
 			if not i['order'] and table.find_one({'message': i['message'], 'type': 'buy'})['success']:
