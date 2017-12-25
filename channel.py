@@ -89,8 +89,9 @@ def channel():
 			format2 += '\nV %d%% of the deposit' % (i['volume'] * 100,)
 			if i['exchanger'] >= 0:
 				balance = stock[i['exchanger']].info('') * channeldeposit * i['volume']
-				formated += '\n%.8fɃ (%d₽)' % (balance, balance / rub)
-				format2 += '\n%.8fɃ (%d$)' % (balance, balance / usd)
+				if balance:
+					formated += '\n%.8fɃ (%d₽)' % (balance, balance / rub)
+					format2 += '\n%.8fɃ (%d$)' % (balance, balance / usd)
 
 			first = 0
 			if pric:

@@ -175,8 +175,8 @@ if __name__ == '__main__':
 
 		elif ch / low <= jumpdown or ch / one <= jumpdown:
 			if i['cont'] != 2:
-				text = '#ВАльты\nПадение биткоина '
-				text2 = text2 = '#toAlt\nBitCoin falling '
+				text = '#ВФиат\nПадение биткоина '
+				text2 = text2 = '#toFiat\nBitCoin falling '
 
 				if ch / low < 1:
 					text += '-%d%% за 5 часов и ' % (100 * (1 - ch / low),)
