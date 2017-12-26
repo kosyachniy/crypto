@@ -13,16 +13,25 @@ history = db['history']
 ru = lambda: float(requests.get('https://blockchain.info/tobtc?currency=RUB&value=1000').text) / 1000
 us = lambda: float(requests.get('https://blockchain.info/tobtc?currency=USD&value=1').text)
 
-from matplotlib import use
-use('Agg')
-import matplotlib.pyplot as plt
-def graph(y, price, minutes=20):
+
+def bar(y, size=1, quantity=0):
+	if size > 1:
+		y = [[i[0] // size, i[1]] for i in y]
+
 	tim = {}
-	for i in y[::-1]:
-		if y[0][0] - i[0] <= minutes:
+	for i in y:
+		if not quantity or y[0][0] - i[0] < quantity:
 			if i[0] not in tim:
 				tim[i[0]] = []
 			tim[i[0]].append(i[1])
+
+	return tim
+
+from matplotlib import use
+use('Agg')
+import matplotlib.pyplot as plt
+def graph(y, price=0, size=1, minutes=20):
+	tim = bar(y, size, minutes)
 
 	startx = y[0][0]
 	starty = tim[startx][-1]
@@ -40,7 +49,8 @@ def graph(y, price, minutes=20):
 		plt.setp(bp[element], color='black')
 		plt.setp(vp[element], color='black')
 
-	plt.annotate(u'Up', xy=(startx-delt, starty), xytext=(startx+5-delt, price), arrowprops={'arrowstyle': '<|-'})
+	if price:
+		plt.annotate(u'Up', xy=(startx-delt, starty), xytext=(startx+5-delt, price), arrowprops={'arrowstyle': '<|-'})
 
 	plt.grid(True)
 	#plt.show()
@@ -199,8 +209,7 @@ class YoBit():
 	def last(self, cur, price):
 		cur = self.name(cur)
 		y = self.trader.trades(cur, 500)[cur]
-		y = [[i['timestamp'] // 60, i['price']] for i in y]
-		return graph(y, price)
+		return [[i['timestamp'] // 60, i['price']] for i in y]
 
 	def check(self, cur):
 		cur = currencies[cur][1].lower()
@@ -351,11 +360,10 @@ class Bittrex():
 		formated += '--------------------\nИтог: %fɃ (%d₽)' % (s, s / rub)
 		return formated
 
-	def last(self, cur, price):
+	def last(self, cur):
 		cur = self.name(cur)
 		y = self.trader.get_market_history(cur)['result']
-		y = [[mktime(strptime(i['TimeStamp'].split('.')[0], '%Y-%m-%dT%H:%M:%S')) // 60, i['Price']] for i in y]
-		return graph(y, price)
+		return [[mktime(strptime(i['TimeStamp'].split('.')[0], '%Y-%m-%dT%H:%M:%S')) // 60, i['Price']] for i in y]
 
 	def check(self, cur):
 		cur = currencies[cur][1]
