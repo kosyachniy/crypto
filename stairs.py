@@ -1,25 +1,42 @@
 from func.trade import stock, bar
+from time import sleep
 
 exc = 1
-cur = 'eth'
+cur = 'usdt-btc'
 
-y = stock[exc].last(cur)
+def buy():
+	y = stock[exc].last(cur)
 
-m5 = bar(y, 5, 1) #2)
-m1 = bar(y, 1, 1) #2)
+	m5 = bar(y, 5, 1)
+	m1 = bar(y, 1, 1)
 
-m5 = m5[0][-1] - m5[0][0] #[m5[i][-1] - m5[i][0] for i in sorted(m5.keys())]
-m1 = m1[0][-1] - m1[0][0] #[m1[i][-1] - m1[i][0] for i in sorted(m1.keys())]
+	#m5 = m5[list(m5)[0]]
+	#m1 = m1[list(m1)[0]]
 
-#size1trend1 = m5[]
+	m5 = [m5[i] for i in m5]
+	m1 = [m1[i] for i in m1]
 
-if m5 >= 0 and m1 > 0:
-	print('In', stock[exc].price(cur, 'buy'))
-	t = True
+	if m5[0][-1] >= m5[0][0] and m1[0][-1] > m1[0][0]:
+		return m1[0][-1]
+	return 0
 
-	while t:
-		delay(1)
-		
+def sell():
+	return stock[exc].price(cur, 'buy')
 
-print(m5)
-print(m1)
+while True:
+	price = buy()
+
+	if price:
+		print('In %.8f' % stock[exc].price(cur, 'buy'))
+
+		sleep(60)
+		tim = 1
+		t = sell()
+
+		while t > price:
+			price = t
+			sleep(60)
+			tim += 1
+			t = sell()
+
+		print('Out %.8f (%d min)' % (stock[exc].price(cur, 'sell'), tim))

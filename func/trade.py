@@ -25,6 +25,9 @@ def bar(y, size=1, quantity=0):
 				tim[i[0]] = []
 			tim[i[0]].append(i[1])
 
+	for i in tim:
+		tim[i] = tim[i][::-1]
+
 	return tim
 
 from matplotlib import use
