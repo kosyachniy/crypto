@@ -284,9 +284,10 @@ class Bittrex():
 			return 1
 
 		cur = self.name(cur)
-		x = self.trader.get_ticker(cur)
 		buy = self.buys(buy, 1)
+
 		try:
+			x = self.trader.get_ticker(cur)
 			if x['success']:
 				return x['result'][buy]
 		except:

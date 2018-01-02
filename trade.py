@@ -78,7 +78,7 @@ def trade():
 					pric = i['out'][0][2] if i['out'][0][1] else price * i['out'][0][2]
 					su = count * pric
 					lost = i['loss'][1] if i['loss'][0] else i['loss'][1] * price
-					x = {'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': count, 'time': time, 'loss': lost, 'processed': 0, 'term': i['term']}
+					x = {'message': i['id'], 'success': 0, 'order': 0, 'type': 'sell', 'currency': i['currency'], 'exchanger': i['exchanger'], 'price': pric, 'count': count, 'time': time, 'loss': lost, 'processed': 0, 'term': i['term'], 'numsell': 1}
 					table.insert(x)
 
 				else:
