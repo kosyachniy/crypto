@@ -1,6 +1,6 @@
 {
 	"read": {
-		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#privatesignals", "#insighttradebot", "#libermansignals"],
+		"tags": ["#cryptosignals", "#иностранный", "#альтернативный", "#буржуйский", "#cryptowolf", "#insighttradebot", "#libermansignals"],
 		"reliable": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
 		"unreliable": ["#иностранный"],
 		"channel": -1001149594247
