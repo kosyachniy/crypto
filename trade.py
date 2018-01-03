@@ -29,8 +29,7 @@ def trade():
 			#сделать проверку на объём валюты
 
 			delta = max(stock[i['exchanger']].info() * i['volume'], quant)
-			if delta < stock[i['exchanger']].min:
-				delta = stock[i['exchanger']].min
+			delta = min(delta, stock[i['exchanger']].min) #?время if delta < stock[i['exchanger']].min
 			count = delta / price
 
 			#сделать проверку достаточно ли средств
@@ -41,7 +40,7 @@ def trade():
 #Покупка
 			succ = stock[i['exchanger']].trade(i['currency'], count, price, 2)
 
-			send('------------------------------')
+			send('-' * 20)
 			send(i['mess'], forward=i['chat'])
 
 			formated = 'Купить %s!\n-----\nК %.8f\nɃ %.8f (%d₽)\n∑ %.8f (%d₽)' % (currencies[i['currency']][1], count, price, price / rub, price * count, (price * count) / rub)
@@ -94,7 +93,7 @@ def trade():
 			else:
 				print('Ошибка покупки!\n')
 				send('Ошибка покупки!')
-			send('------------------------------')
+			send('-' * 20)
 
 if __name__ == '__main__':
 	trade()
