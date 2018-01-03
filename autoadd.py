@@ -10,55 +10,32 @@ with open('data/set.txt', 'r') as file:
 
 messages = db['messages']
 
-def get(x=1):
-	try:
-		return client.get_message_history(client.get_entity(from_id), x)[1]
-	except:
-		sleep(5)
-		return []
-
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
 
-def autoadd():
-	num = get()[0].id
-	print('!', num) #
+def replier(update):
+	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and update.message.from_id == from_id:
+		text = update.message.message
 
-	while True:
-		last = get()
-		if len(last):
-			for i in get(last[0].id - num):
-				if i.id > num:
-					#print(i)
+		try:
+			text += '\n' + update.message.media.caption
+		except:
+			pass
 
-					try:
-						text = i.message
-					except:
-						text = ' '
+		#+изображения
 
-					try:
-						text += i.media.caption
-					except:
-						pass
+		#print(text)
 
-					#+изображения
+		if on(text, tags, '#'):
+			try:
+				id = messages.find().sort('id', -1)[0]['id'] + 1
+			except:
+				id = 1
 
-					#print(text)
+			print(id)
 
-					if on(text, tags, '#'):
-						try:
-							id = messages.find().sort('id', -1)[0]['id']
-						except:
-							id = 0
+			doc = {'id': id, 'chat': update.message.from_id, 'message': update.message.id, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
+			messages.insert(doc)
 
-						print(id+1)
-
-						doc = {'id': id+1, 'chat': from_id, 'message': num, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
-						messages.insert(doc)
-
-					num = i.id
-
-		sleep(2)
-
-if __name__ == '__main__':
-	autoadd()
+client.add_update_handler(replier)
+while True: sleep(3600)

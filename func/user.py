@@ -1,5 +1,5 @@
 from telethon import TelegramClient
-#from telethon.tl.types import PeerChannel #PeerUser, PeerChat
+from telethon.tl.types import UpdateShortMessage, UpdateNewMessage, UpdateNewChannelMessage #PeerChannel #PeerUser, PeerChat
 
 import json
 with open('data/keys.txt', 'r') as file:
