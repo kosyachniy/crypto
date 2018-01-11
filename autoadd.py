@@ -14,7 +14,8 @@ clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lowe
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
 
 def replier(update):
-	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and (update.message.from_id == from_id or update.message.to_id.channel_id == from_id):
+	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and (update.message.from_id == from_id or update.message.to_id.channel_id == 1149594247): #from_id):
+		print(update) #
 		text = update.message.message
 
 		try:
@@ -37,6 +38,8 @@ def replier(update):
 			doc = {'id': id, 'chat': update.message.from_id, 'message': update.message.id, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
 			messages.insert(doc)
 
-client.add_update_handler(replier)
-#input('!')
-while True: sleep(3600)
+while True:
+	try:
+		client.add_update_handler(replier)
+	except:
+		pass
