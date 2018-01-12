@@ -38,9 +38,15 @@ def replier(update):
 			doc = {'id': id, 'chat': update.message.from_id, 'message': update.message.id, 'text': text, 'time': strftime('%d.%m.%Y %H:%M:%S')}
 			messages.insert(doc)
 
+client.add_update_handler(replier)
+input('!')
+client.disconnect()
+print('!!')
+'''
 while True:
 	try:
 		client.add_update_handler(replier)
 		input()
 	except:
 		pass
+'''

@@ -237,7 +237,13 @@ def monitor():
 		for i in x:
 			num = i['id']
 
-			#if jump != 1: #если продажа
+			#Временное ограничение на какие-либо действия
+			'''
+			if jump == 1:
+				print('Сигнал отвергнут из-за ограничений!')
+				continue
+			'''
+
 			x = recognize(i['text'])
 			if x:
 				x = replacements(x)
@@ -250,8 +256,6 @@ def monitor():
 					print('Сигнал отвергнут после замен!')
 			else:
 				print('Сигнал отвергнут после распознания!')
-			#else:
-			#	print('Сигнал отвергнут из-за ограничений!')
 
 if __name__ == '__main__':
 	monitor()
