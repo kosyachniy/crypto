@@ -41,5 +41,6 @@ def replier(update):
 while True:
 	try:
 		client.add_update_handler(replier)
+		input()
 	except:
 		pass

@@ -181,7 +181,15 @@ class YoBit():
 			return None
 
 		for i in y:
-			price = self.price(i, 1)
+			try:
+				price = self.price(i, 1)
+			except:
+				sleep(1)
+				try:
+					price = self.price(i, 1)
+				except:
+					return None
+
 			sell = price * y[i]
 			if sell > self.min or i == 'rur':
 				x[i] = [0, price, sell]
