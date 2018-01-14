@@ -15,10 +15,17 @@ with open('data/set.txt', 'r') as file:
 	vold = s['default']['volume']
 	veri = s['read']['reliable']
 	unveri = s['read']['unreliable']
+	exception = s['read']['not_currency']
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
 on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
-#on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
+
+'''
+clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
+on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
+
+on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
+'''
 
 def an(text, words, stop):
 	cur = 0
@@ -96,8 +103,8 @@ def recognize(text):
 	print('Term:', term)
 
 	#Определение валюты
-	cur = an(text, '#', ['status']) #поиск по хештегу
-	if cur <= 0: cur = an(text, '', ['status']) #сделать список стоп слов, которые не учитываются в поиске валют
+	cur = an(text, '#', exception) #поиск по хештегу
+	if cur <= 0: cur = an(text, '', exception) #сделать список стоп слов, которые не учитываются в поиске валют
 	if cur in (-1, 0): return None #если несколько валют
 	print('Currency:', cur)
 
