@@ -11,7 +11,8 @@ with open('data/set.txt', 'r') as file:
 
 messages = db['messages']
 
-def tag(text):
+def tag(text): #! update.message.caption
+	text = text.lower()
 	for i in tags:
 		if i in text:
 			return True

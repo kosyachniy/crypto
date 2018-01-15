@@ -45,7 +45,6 @@ def stockss(message):
 #Дальнейшая обработка
 @bot.message_handler(content_types=["text"])
 def text(message):
-	print('!!!') #
 	try:
 		chat, id, text = message.forward_from_chat.id, message.forward_from_message_id, message.text
 	except:
