@@ -1164,3 +1164,4 @@
 ["Global Business Revolution", "GBRC"]
 ["Limited Coin", "LTD"]
 ["Cardano", "ADA"]
+["Viberate", "VIB"]
