@@ -18,7 +18,7 @@ def tag(text):
 	return False
 
 def replier(update):
-	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and (update.message.from_id == from_id or update.message.to_id.channel_id == channel_id): #from_id):
+	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and (update.message.from_id == from_id or update.message.to_id.channel_id == channel_id): #добавить проверку, что недавнее сообщение (чтобы не срабатывали старые сообщения)
 		#print(update)
 		text = update.message.message
 
