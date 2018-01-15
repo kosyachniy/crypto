@@ -4,6 +4,8 @@ from func.trade import stock
 import math
 
 #Данные
+currencies = [[i[0].lower(), i[1].lower()] for i in currencies]
+
 with open('data/vocabulary.txt', 'r') as file:
 	vocabulary = json.loads(file.read())
 
@@ -17,24 +19,18 @@ with open('data/set.txt', 'r') as file:
 	unveri = s['read']['unreliable']
 	exception = s['read']['not_currency']
 
-clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
-on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
-
-'''
-clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split()
-on = lambda x, y, words='': len(set(clean(x, words) if type(x) == str else x) & set(clean(y, words) if type(y) == str else y))
-
-on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
-'''
+clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split() if type(cont) == str else cont
+on = lambda x, y, words='': len(set(clean(x, words)) & set(clean(y, words)))
+#on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
 
 def an(text, words, stop):
 	cur = 0
 	text = clean(text, words+'0-9')
-	for j in range(1, len(currencies)):
-		if words + currencies[j][1].lower() in text or (words + currencies[j][0].lower() in text and currencies[j][0].lower() not in stop):
-			print(j, currencies[j])
+	for i, j in enumerate(currencies[1:]):
+		if (words + j[0] in text and words + j[0] not in stop) or (words + j[1] in text and words + j[1] not in stop):
+			print(i, j)
 			if not cur:
-				cur = j + 0
+				cur = i + 1
 			else:
 				return -1
 	return cur
