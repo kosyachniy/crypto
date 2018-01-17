@@ -90,7 +90,10 @@ class YoBit():
 
 	#Перевод в рубли
 	def ru(self):
-		return 1 / self.trader.ticker('btc_rur')['btc_rur']['buy']
+		try:
+			return 1 / self.trader.ticker('btc_rur')['btc_rur']['buy']
+		except:
+			return ru()
 
 	def us(self):
 		return 1 / self.trader.ticker('btc_usd')['btc_usd']['buy']
