@@ -21,50 +21,46 @@ with open('data/set.txt', 'r') as file:
 
 clean = lambda cont, words='': re.sub('[^a-zа-я' + words + ']', ' ', cont.lower()).split() if type(cont) == str else cont
 on = lambda x, y, words='': len(set(clean(x, words)) & set(clean(y, words)))
-#on = lambda a, b: 1 if any([i in a for i in b]) else 0 #len(set(clean(a)) & set(b))
 
-def an(text, words, stop):
-	cur = 0
-	text = clean(text, words+'0-9')
-	for i, j in enumerate(currencies[1:]):
-		if (words + j[0] in text and words + j[0] not in stop) or (words + j[1] in text and words + j[1] not in stop):
-			print(i, j)
-			if not cur:
-				cur = i + 1
-			else:
-				return -1
-	return cur
-
-def stoploss(text, catch):
-	try:
-		if '%' in text:
-			l = 1 - int(re.findall(r'\d+', text)[0]) / 100
-			if l < 0: return catch
-			return [0, l]
-		elif '.' in text:
-			return [1, float(re.search(r'-?\d+\.\d*', text).group(0))]
-	except:
-		return catch
-
-def seller(text):
-	if '%' in text:
-		return [0, 0, 1 + int(re.findall(r'\d+', text)[0]) / 100]
-	else:
-		return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
-
-#Распознание сигнала
+#Распознание сигнала (строгое вычленение ключевой информации из текста)
 def recognize(text):
-	print(text)
+	def an(text, words, stop):
+		cur = 0
+		text = clean(text, words+'0-9')
+		for i, j in enumerate(currencies[1:]):
+			if (words + j[0] in text and words + j[0] not in stop) or (words + j[1] in text and words + j[1] not in stop):
+				print(i+1, j)
+				if not cur:
+					cur = i + 1
+				else:
+					return -1
+		return cur
+
+	def stoploss(text, catch):
+		try:
+			if '%' in text:
+				l = 1 - int(re.findall(r'\d+', text)[0]) / 100
+				return catch if l < 0 else [0, l]
+			elif '.' in text:
+				return [1, float(re.search(r'-?\d+\.\d*', text).group(0))]
+		except:
+			return catch
+
+	def seller(text):
+		if '%' in text:
+			return [0, 0, 1 + int(re.findall(r'\d+', text)[0]) / 100]
+		else:
+			return [0, 1, float(re.search(r'-?\d+\.\d*', text).group(0))]
+
+	#print(text)
 	text = text.lower().replace(',', '.')
 	#Убирать ссылки (чтобы не путать лишними словами), VIP
 	#time = strftime('%d.%m.%Y %H:%M:%S')
 
-	loss = reloss + []
+	loss = -1
 	out = []
 	vol = 0
 	price = 0
-	safe = 1 if on(text, veri, '#') else 0
-	unsafe = 1 if on(text, unveri, '#') else 0
 
 	#Условия необработки
 	if on(text, vocabulary['stop'], '🚀$') or (len(clean(text)) * 1.5 > len(text) and len(text) > 70):
@@ -105,10 +101,10 @@ def recognize(text):
 	print('Currency:', cur)
 
 	#Распознание размеров
+	texted = text.split('\n')
 	if ('\n' not in text) or (on(text, vocabulary['loss']) and text.count('\n') == 1):
 		t = True
-		text = text.split('\n')
-		for j in clean(text[0], '.%0123456789'):
+		for j in clean(texted[0], '.%0123456789'):
 			try:
 				if t:
 					if '.' in j:
@@ -118,10 +114,10 @@ def recognize(text):
 					out.append(seller(j))
 			except:
 				pass
-		if len(text) >= 2 and on(text[1], vocabulary['loss']):
-			loss = stoploss(text[1], loss)
+		if len(texted) >= 2 and on(texted[1], vocabulary['loss']):
+			loss = stoploss(texted[1], loss)
 	else:
-		for j in text.split('\n'):
+		for j in texted:
 			try:
 				if on(j, vocabulary['buy']):
 					price = float(re.search(r'-?\d+\.\d*', j).group(0))
@@ -132,7 +128,7 @@ def recognize(text):
 				pass
 
 		#Определение стоп-лосса
-		for j in text.split('\n'):
+		for j in texted:
 			if on(j, vocabulary['loss']):
 				loss = stoploss(j, loss)
 
@@ -144,21 +140,28 @@ def recognize(text):
 
 #Отправка на обработку
 		x = {
+			'text': text,
 			'currency': cur,
 			'exchanger': exc,
 			'price': price,
 			'volume': vol,
 			'out': out,
 			'loss': loss,
-			'term': term,
-			'safe': 1 if safe else -1 if unsafe else 0
+			'term': term
 		} #, 'time': time
 
 		#Если без покупки, первые поля пустые ?
 		return x
 
-#Замены
+#Замены (замена неверной информации и переопределение под разными условиями и ограничениями)
 def replacements(x):
+	#Если не определена продажа
+	if x['loss'] == -1:
+		x['loss'] = reloss + []
+
+	#Надёжность (проверенность / доверенность) сигналу #Переделать -> ИИ
+	x['safe'] = 1 if on(x['text'], veri, '#') else -1 if on(x['text'], unveri, '#') else 0
+
 	#Цена
 	x['realprice'] = realprice = stock[x['exchanger'] if x['exchanger'] != -1 else x['exchanger']].price(x['currency'])
 
@@ -229,16 +232,17 @@ def monitor():
 
 #Список новых сигналов
 	while True:
-		x = [i for i in messages.find({'id': {'$gt': num}})]
-
+		'''
 		try:
 			jump = settings.find_one({'name': 'jump'})['cont']
 		except:
 			jump = 0
+		'''
 
 #Обработка
-		for i in x:
+		for i in messages.find({'id': {'$gt': num}}):
 			num = i['id']
+			print('-' * 100, '\nMessage: ', num) #
 
 			#Временное ограничение на какие-либо действия
 			'''
@@ -254,6 +258,7 @@ def monitor():
 					x['chat'] = i['chat']
 					x['mess'] = i['message']
 					x['id'] = i['id']
+					del x['text']
 					trade.insert(x)
 				else:
 					print('Сигнал отвергнут после замен!')
