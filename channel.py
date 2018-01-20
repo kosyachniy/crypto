@@ -2,7 +2,7 @@ from func.main import *
 
 trades = db['trade']
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	channeldeposit = json.loads(file.read())['default']['channeldeposit']
 
 from bs4 import BeautifulSoup

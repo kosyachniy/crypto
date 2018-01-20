@@ -2,7 +2,7 @@
 from func.main import *
 
 import json
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['replacements']
 	quant = s['volume']
 

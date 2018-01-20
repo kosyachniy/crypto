@@ -3,7 +3,7 @@ from func.user import *
 from time import sleep, strftime
 import re, json
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['read']
 	tags = s['tags']
 	from_id = s['channel']

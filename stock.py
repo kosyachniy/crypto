@@ -12,7 +12,7 @@ settings = db['set']
 			elif stock[i['exchanger']].order(i['order']):
 '''
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['default']
 	timebuy = s['timebuy']
 	timesell = s['timesell']

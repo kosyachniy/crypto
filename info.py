@@ -6,7 +6,7 @@ history = db['history']
 bit = db['bit']
 settings = db['set']
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['default']
 	jumpup = s['jumpup']
 	jumpdown = s['jumpdown']

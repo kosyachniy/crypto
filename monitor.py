@@ -6,10 +6,10 @@ import math
 #Данные
 currencies = [[i[0].lower(), i[1].lower()] for i in currencies]
 
-with open('data/vocabulary.txt', 'r') as file:
+with open('data/vocabulary.txt', 'r', encoding='utf-8') as file:
 	vocabulary = json.loads(file.read())
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())
 	reloss = [0, s['default']['stop-loss']]
 	outd = s['default']['sell']
@@ -152,6 +152,8 @@ def recognize(text):
 
 		#Если без покупки, первые поля пустые ?
 		return x
+
+import time #
 
 #Замены (замена неверной информации и переопределение под разными условиями и ограничениями)
 def replacements(x):
