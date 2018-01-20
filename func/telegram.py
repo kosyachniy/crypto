@@ -4,10 +4,10 @@ import json, telebot
 
 exch = [i[0] for i in exchangers]
 
-with open('data/keys.txt', 'r') as file:
+with open('data/keys.txt', 'r', encoding='utf-8') as file:
 	token = json.loads(file.read())['telegram']['bot']
 
-with open('data/set.txt', 'r') as file:
+with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['write']
 	channelid = s['channel']
 	twochannel = s['channelen']

@@ -76,7 +76,7 @@ def using_requests(request_url, apisign):
 
 
 class Bittrex(object):
-    with open('data/keys.txt', 'r') as file:
+    with open('data/keys.txt', 'r', encoding='utf-8') as file:
         key, secret = json.loads(file.read())['stocks']['bittrex']
 
     def __init__(self, api_key=key, api_secret=secret, calls_per_second=1, dispatch=using_requests, api_version=API_V1_1):

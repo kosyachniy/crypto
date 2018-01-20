@@ -23,7 +23,7 @@ def refactor_result(json_ob):
 
 
 class YoBit(object):
-    with open('data/keys.txt', 'r') as file:
+    with open('data/keys.txt', 'r', encoding='utf-8') as file:
     	key, secret = json.loads(file.read())['stocks']['yobit']
 
     def __init__(self, api_key=key, api_secret=secret):
