@@ -18,6 +18,7 @@
 Схема работы
 ---
 ``` pip install -r requirements.txt ```
+``` pipreqs . ```
 
 Операция | Mac | Linux | Windows
 ---|---|---|---
