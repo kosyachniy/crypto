@@ -6,8 +6,7 @@ import re, json
 with open('data/set.txt', 'r', encoding='utf-8') as file:
 	s = json.loads(file.read())['read']
 	tags = s['tags']
-	from_id = s['channel']
-	channel_id = s['id']
+	from_id = str(s['channel'])
 
 messages = db['messages']
 
@@ -19,7 +18,7 @@ def tag(text): #! update.message.caption
 	return False
 
 def replier(update):
-	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and (update.message.from_id == from_id or update.message.to_id.channel_id == channel_id): #добавить проверку, что недавнее сообщение (чтобы не срабатывали старые сообщения)
+	if isinstance(update, (UpdateNewMessage, UpdateNewChannelMessage)) and str(update.message.to_id.channel_id) in from_id:
 		#print(update)
 		text = update.message.message
 

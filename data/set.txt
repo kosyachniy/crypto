@@ -4,7 +4,6 @@
 		"reliable": ["#cryptosignals", "#cryptowolf", "#privatesignals"],
 		"unreliable": ["#иностранный"],
 		"channel": -1001149594247,
-		"id": 1149594247,
 		"not_currency": ["status", "all", "u", "post", "put", "start", "trust"]
 	},
 	"default": {
