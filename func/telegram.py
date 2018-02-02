@@ -25,6 +25,7 @@ def keyboard(*cat):
 	return x
 
 def send(message='', to=admin, image='', forward=0):
+	if not message: return 0
 	if type(to) != list:
 		to = [to]
 	for i in to:
