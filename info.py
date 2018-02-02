@@ -144,7 +144,7 @@ if __name__ == '__main__':
 			num = x[0]['id']
 			one = x[0]['cont']
 		except:
-			up = low = ch
+			one = up = low = ch
 			num = 0
 		else:
 			try:
